@@ -17,5 +17,11 @@ public abstract class BinaryExpression implements Expression {
         return dynamicEvaluate(left.evaluate(), right.evaluate());
     }
 
-    public abstract double dynamicEvaluate(double left, double right);
+    @Override
+    public String toString()
+    {
+        return "(" + left.toString() + getOperationSign() + right.toString() +")";
+    }
+
+    protected abstract double dynamicEvaluate(double left, double right);
 }

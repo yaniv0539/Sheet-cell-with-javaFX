@@ -1,13 +1,22 @@
 package expression.impl;
 
+import expression.Expression;
+
 public class Minus extends BinaryExpression{
-    @Override
-    public String getOperationSign() {
-        return "";
+
+    public Minus(){}
+
+    public Minus(Expression left, Expression right) {
+        super(left, right);
     }
 
     @Override
-    public double dynamicEvaluate(double left, double right) {
-        return 0;
+    public String getOperationSign() {
+        return "-";
+    }
+
+    @Override
+    protected double dynamicEvaluate(double left, double right) {
+        return left - right;
     }
 }
