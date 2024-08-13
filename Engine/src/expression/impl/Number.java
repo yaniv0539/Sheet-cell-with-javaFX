@@ -1,18 +1,19 @@
 package expression.impl;
+import expression.Expression;
 import expression.NumericExpression;
 
-public class Number implements NumericExpression {
+public class Number implements Expression<Double>,NumericExpression {
 
     private double value;
 
-    public Number() {};
+    public Number() {}
 
     public Number(double value) {
         this.value = value;
     }
 
     @Override
-    public double evaluate() {
+    public Double evaluate() {
         return value;
     }
 

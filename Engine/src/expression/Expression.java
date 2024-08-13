@@ -1,6 +1,7 @@
 package expression;
 
-public interface Expression {
+public interface Expression<T> {
 
+    T evaluate();
     String getOperationSign();
 }

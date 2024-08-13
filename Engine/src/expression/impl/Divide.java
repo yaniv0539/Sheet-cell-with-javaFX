@@ -3,14 +3,17 @@ package expression.impl;
 import expression.Expression;
 import expression.NumericExpression;
 
-public class Divide extends BinaryExpression {
+public class Divide extends BinaryExpression<Double> implements NumericExpression{
 
     public Divide(){}
-    public Divide(NumericExpression left, NumericExpression right) {
+
+    public Divide(Expression<Double> left, Expression<Double> right) {
+
         super(left, right);
     }
     @Override
-    public double dynamicEvaluate(double left, double right) {
+    public Double dynamicEvaluate(Double left, Double right) {
+
         return left / right;
     }
 
