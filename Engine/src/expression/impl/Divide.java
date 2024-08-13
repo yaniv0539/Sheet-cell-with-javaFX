@@ -1,11 +1,12 @@
 package expression.impl;
 
 import expression.Expression;
+import expression.NumericExpression;
 
 public class Divide extends BinaryExpression {
 
     public Divide(){}
-    public Divide(Expression left, Expression right) {
+    public Divide(NumericExpression left, NumericExpression right) {
         super(left, right);
     }
     @Override

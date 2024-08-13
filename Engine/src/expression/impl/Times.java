@@ -1,12 +1,13 @@
 package expression.impl;
 
 import expression.Expression;
+import expression.NumericExpression;
 
 public class Times extends BinaryExpression {
 
     public Times(){}
 
-    public Times(Expression left, Expression right) {
+    public Times(NumericExpression left, NumericExpression right) {
         super(left, right);
     }
     @Override
