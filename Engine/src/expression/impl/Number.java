@@ -22,4 +22,8 @@ public class Number implements Expression<Double>,NumericExpression {
         return "";
     }
 
+    @Override
+    public String toString() {
+        return value >= 0 ? Double.toString(value): "(" + Double.toString(value) + ")";
+    }
 }
