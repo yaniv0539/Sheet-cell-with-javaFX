@@ -1,13 +1,13 @@
 package expression.impl;
-import expression.Expression;
+import expression.NumericExpression;
 
-public abstract class BinaryExpression implements Expression {
+public abstract class BinaryExpression implements NumericExpression {
 
-    private Expression left;
-    private Expression right;
+    private NumericExpression left;
+    private NumericExpression right;
 
-    public BinaryExpression() {};
-    public BinaryExpression(Expression left, Expression right) {
+    public BinaryExpression() {}
+    public BinaryExpression(NumericExpression left, NumericExpression right) {
         this.left = left;
         this.right = right;
     }

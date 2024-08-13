@@ -1,12 +1,13 @@
 package expression.impl;
 
 import expression.Expression;
+import expression.NumericExpression;
 
 public class Pow extends BinaryExpression{
 
     public Pow(){}
 
-    public Pow(Expression left, Expression right){
+    public Pow(NumericExpression left, NumericExpression right){
         super(left, right);
     }
 

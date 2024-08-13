@@ -1,8 +1,7 @@
 package expression.impl;
+import expression.NumericExpression;
 
-import expression.Expression;
-
-public class Number implements Expression {
+public class Number implements NumericExpression {
 
     private double value;
 
@@ -11,6 +10,7 @@ public class Number implements Expression {
     public Number(double value) {
         this.value = value;
     }
+
     @Override
     public double evaluate() {
         return value;
@@ -20,4 +20,5 @@ public class Number implements Expression {
     public String getOperationSign() {
         return "";
     }
+
 }

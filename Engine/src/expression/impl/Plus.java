@@ -1,12 +1,13 @@
 package expression.impl;
 
 import expression.Expression;
+import expression.NumericExpression;
 
 public class Plus extends BinaryExpression{
 
     public Plus() {}
 
-    public Plus(Expression left, Expression right) {
+    public Plus(NumericExpression left, NumericExpression right) {
         super(left, right);
     }
 

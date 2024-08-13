@@ -1,12 +1,13 @@
 package expression.impl;
 
 import expression.Expression;
+import expression.NumericExpression;
 
 public class Minus extends BinaryExpression{
 
     public Minus(){}
 
-    public Minus(Expression left, Expression right) {
+    public Minus(NumericExpression left, NumericExpression right) {
         super(left, right);
     }
 
