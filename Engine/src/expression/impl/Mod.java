@@ -3,15 +3,16 @@ package expression.impl;
 import expression.Expression;
 import expression.NumericExpression;
 
-public class Mod extends BinaryExpression{
+public class Mod extends BinaryExpression<Double> implements NumericExpression{
 
     public Mod(){}
 
-    public Mod(NumericExpression left, NumericExpression right) {
+    public Mod(Expression<Double> left, Expression<Double> right) {
         super(left, right);
     }
+
     @Override
-    public double dynamicEvaluate(double left, double right) {
+    protected Double dynamicEvaluate(Double left, Double right) {
         return left % right;
     }
 

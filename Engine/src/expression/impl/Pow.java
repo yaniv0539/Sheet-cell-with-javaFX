@@ -3,16 +3,16 @@ package expression.impl;
 import expression.Expression;
 import expression.NumericExpression;
 
-public class Pow extends BinaryExpression{
+public class Pow extends BinaryExpression<Double> implements NumericExpression{
 
     public Pow(){}
 
-    public Pow(NumericExpression left, NumericExpression right){
+    public Pow(Expression<Double> left, Expression<Double> right){
         super(left, right);
     }
 
     @Override
-    public double dynamicEvaluate(double left, double right) {
+    protected Double dynamicEvaluate(Double left, Double right) {
         return Math.pow(left, right);
     }
 

@@ -3,16 +3,16 @@ package expression.impl;
 import expression.Expression;
 import expression.NumericExpression;
 
-public class Plus extends BinaryExpression{
+public class Plus extends BinaryExpression<Double> implements NumericExpression {
 
     public Plus() {}
 
-    public Plus(NumericExpression left, NumericExpression right) {
+    public Plus(Expression<Double> left, Expression<Double> right) {
         super(left, right);
     }
 
     @Override
-    protected double dynamicEvaluate(double left, double right) {
+    protected Double dynamicEvaluate(Double left, Double right) {
         return left + right;
     }
 
