@@ -21,4 +21,8 @@ public class RawString implements Expression<String>,StringExpression {
         return "";
     }
 
+    @Override
+    public String toString() {
+        return value;
+    }
 }

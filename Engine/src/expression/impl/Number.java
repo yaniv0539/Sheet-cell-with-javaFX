@@ -12,6 +12,10 @@ public class Number implements Expression<Double>,NumericExpression {
         this.value = value;
     }
 
+    public double getValue() {
+        return value;
+    }
+
     @Override
     public Double evaluate() {
         return value;

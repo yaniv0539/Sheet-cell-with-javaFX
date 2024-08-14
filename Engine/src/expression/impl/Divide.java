@@ -14,7 +14,7 @@ public class Divide extends BinaryExpression<Double> implements NumericExpressio
     @Override
     public Double dynamicEvaluate(Double left, Double right) {
 
-        return left / right;
+        return right == 0 ? Double.NaN : left / right;
     }
 
     @Override
