@@ -3,12 +3,17 @@ package expression.impl;
 import expression.Expression;
 import expression.NumericExpression;
 
-public class Minus extends BinaryExpression{
+public class Minus extends BinaryExpression<Double> implements NumericExpression{
 
     public Minus(){}
 
-    public Minus(NumericExpression left, NumericExpression right) {
+    public Minus(Expression<Double> left, Expression<Double> right) {
         super(left, right);
+    }
+
+    @Override
+    protected Double dynamicEvaluate(Double left, Double right) {
+        return left - right;
     }
 
     @Override
@@ -16,8 +21,4 @@ public class Minus extends BinaryExpression{
         return "-";
     }
 
-    @Override
-    protected double dynamicEvaluate(double left, double right) {
-        return left - right;
-    }
 }

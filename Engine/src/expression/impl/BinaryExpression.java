@@ -1,19 +1,20 @@
 package expression.impl;
+import expression.Expression;
 import expression.NumericExpression;
 
-public abstract class BinaryExpression implements NumericExpression {
+public abstract class BinaryExpression<T> implements Expression<T> {
 
-    private NumericExpression left;
-    private NumericExpression right;
+    private Expression<T> left;
+    private Expression<T> right;
 
     public BinaryExpression() {}
-    public BinaryExpression(NumericExpression left, NumericExpression right) {
+    public BinaryExpression(Expression<T> left, Expression<T> right) {
         this.left = left;
         this.right = right;
     }
 
     @Override
-    public double evaluate() {
+    public T evaluate() {
         return dynamicEvaluate(left.evaluate(), right.evaluate());
     }
 
@@ -23,5 +24,5 @@ public abstract class BinaryExpression implements NumericExpression {
         return "(" + left.toString() + getOperationSign() + right.toString() +")";
     }
 
-    protected abstract double dynamicEvaluate(double left, double right);
+    protected abstract T dynamicEvaluate(T left, T right);
 }

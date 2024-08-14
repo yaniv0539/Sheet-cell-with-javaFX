@@ -1,6 +1,5 @@
 package expression;
 
-public interface StringExpression extends Expression {
+public interface StringExpression {
 
-    String evaluate();
 }
