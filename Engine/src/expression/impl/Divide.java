@@ -1,24 +1,28 @@
 package expression.impl;
 
-import expression.Expression;
-import expression.NumericExpression;
+import expression.api.Data;
+import expression.api.DataType;
+import expression.api.Expression;
+import expression.api.NumericExpression;
 
-public class Divide extends BinaryExpression<Double> implements NumericExpression{
+public class Divide extends BinaryExpression implements NumericExpression{
 
     public Divide(){}
 
-    public Divide(Expression<Double> left, Expression<Double> right) {
+    public Divide(NumericExpression left, NumericExpression right) {
 
         super(left, right);
     }
-    @Override
-    public Double dynamicEvaluate(Double left, Double right) {
-
-        return right == 0 ? Double.NaN : left / right;
-    }
 
     @Override
-    public String getOperationSign() {
-        return "/";
+    public Data dynamicEvaluate(Data left, Data right) {
+
+        return (double)right.getValue() == 0 ? new DataImpl(DataType.NUMERIC,Double.NaN) :
+                new DataImpl(DataType.NUMERIC,(double)left.getValue() / (double)right.getValue());
     }
+
+//    @Override
+//    public String getOperationSign() {
+//        return "/";
+//    }
 }
