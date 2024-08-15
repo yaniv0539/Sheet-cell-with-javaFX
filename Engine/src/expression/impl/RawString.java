@@ -1,8 +1,10 @@
 package expression.impl;
-import expression.Expression;
-import expression.StringExpression;
+import expression.api.Data;
+import expression.api.DataType;
+import expression.api.Expression;
+import expression.api.StringExpression;
 
-public class RawString implements Expression<String>,StringExpression {
+public class RawString implements Expression,StringExpression {
 
     private String value;
 
@@ -12,17 +14,18 @@ public class RawString implements Expression<String>,StringExpression {
     }
 
     @Override
-    public String evaluate() {
-        return this.value;
+    public Data evaluate() {
+
+        return new DataImpl(DataType.STRING, (String)this.value);
     }
 
-    @Override
-    public String getOperationSign() {
-        return "";
-    }
-
-    @Override
-    public String toString() {
-        return value;
-    }
+//    @Override
+//    public String getOperationSign() {
+//        return "";
+//    }
+//
+//    @Override
+//    public String toString() {
+//        return value;
+//    }
 }

@@ -1,8 +1,10 @@
 package expression.impl;
-import expression.Expression;
-import expression.NumericExpression;
+import expression.api.Data;
+import expression.api.DataType;
+import expression.api.Expression;
+import expression.api.NumericExpression;
 
-public class Number implements Expression<Double>,NumericExpression {
+public class Number implements Expression,NumericExpression {
 
     private double value;
 
@@ -17,14 +19,14 @@ public class Number implements Expression<Double>,NumericExpression {
     }
 
     @Override
-    public Double evaluate() {
-        return value;
+    public Data evaluate() {
+        return new DataImpl(DataType.NUMERIC, value);
     }
 
-    @Override
-    public String getOperationSign() {
-        return "";
-    }
+//    @Override
+//    public String getOperationSign() {
+//        return "";
+//    }
 
     @Override
     public String toString() {

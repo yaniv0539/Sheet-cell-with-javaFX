@@ -1,21 +1,27 @@
 package expression.impl;
 
-import expression.Expression;
-import expression.StringExpression;
+import expression.api.Data;
+import expression.api.DataType;
+import expression.api.Expression;
+import expression.api.StringExpression;
 
-public class Concat extends BinaryExpression<String> implements StringExpression {
+public class Concat extends BinaryExpression implements StringExpression {
 
-    public Concat(Expression<String> left, Expression<String> right) {
+
+
+    public Concat(StringExpression left, StringExpression right) {
         super(left, right);
-    }
+     }
 
     @Override
-    protected String dynamicEvaluate(String left, String right) {
-        return String.join("", left, right);
-    }
+    protected Data dynamicEvaluate(Data left, Data right) {
 
-    @Override
-    public String getOperationSign() {
-        return "+";
+        String result = String.join("",(String) left.getValue(), (String) right.getValue());
+
+        return new DataImpl(DataType.STRING, result);
     }
 }
+
+
+
+

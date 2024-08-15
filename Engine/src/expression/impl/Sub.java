@@ -1,32 +1,35 @@
 package expression.impl;
 
-import expression.Expression;
-import expression.NumericExpression;
+import expression.api.*;
 
-public class Sub implements Expression<String> {
-    private Expression<String> source;
-    private Expression<Double> left;
-    private Expression<Double> right;
+public class Sub implements Expression, StringExpression {
+    private Expression source;
+    private Expression left;
+    private Expression right;
 
-    public Sub(Expression<String> source, Expression<Double> left, Expression<Double> right) {
+    public Sub(StringExpression source, NumericExpression left, NumericExpression right) {
         this.source = source;
         this.left = left;
         this.right = right;
     }
 
-    @Override
-    public java.lang.String getOperationSign() {
-        return "-";
-    }
+//    @Override
+//    public java.lang.String getOperationSign() {
+//        return "-";
+//    }
 
     @Override
-    public String evaluate() {
+    public Data evaluate() {
 
-        return source.evaluate().substring(left.evaluate().intValue(), right.evaluate().intValue());
+        String str = (String)source.evaluate().getValue();
+        int first = (int)left.evaluate().getValue();
+        int last = (int)right.evaluate().getValue();
+
+        return new DataImpl(DataType.STRING,str.substring(first, last));
     }
 
-    @Override
-    public java.lang.String toString() {
-        return  "(" + source.toString() + " " + left.toString() + getOperationSign() + right.toString() + ")";
-    }
+//    @Override
+//    public java.lang.String toString() {
+//        return  "(" + source.toString() + " " + left.toString() + getOperationSign() + right.toString() + ")";
+//    }
 }

@@ -1,22 +1,23 @@
 package expression.impl;
-import expression.Expression;
+import expression.api.Data;
+import expression.api.Expression;
 
-public abstract class UnaryExpression<T> implements Expression<T> {
+public abstract class UnaryExpression implements Expression {
 
-    private Expression<T> input;
+    private Expression input;
 
     public  UnaryExpression(){}
 
-    public UnaryExpression(Expression<T> input) {
+    public UnaryExpression(Expression input) {
         this.input = input;
     }
-    public Expression<T> getInput() {
+    public Expression getInput() {
         return input;
     }
     @Override
-    public T evaluate() {
+    public Data evaluate() {
         return dynamicEvaluate(input.evaluate());
     }
 
-    protected abstract T dynamicEvaluate(T input);
+    protected abstract Data dynamicEvaluate(Data input);
 }
