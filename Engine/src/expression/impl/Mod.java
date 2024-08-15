@@ -1,22 +1,26 @@
 package expression.impl;
 
-import expression.Expression;
-import expression.NumericExpression;
+import expression.api.Data;
+import expression.api.DataType;
+import expression.api.Expression;
+import expression.api.NumericExpression;
 
-public class Mod extends BinaryExpression{
+public class Mod extends BinaryExpression implements NumericExpression{
 
     public Mod(){}
 
     public Mod(NumericExpression left, NumericExpression right) {
         super(left, right);
     }
-    @Override
-    public double dynamicEvaluate(double left, double right) {
-        return left % right;
-    }
 
     @Override
-    public String getOperationSign() {
-        return "%";
+    protected Data dynamicEvaluate(Data left, Data right) {
+
+        return new DataImpl(DataType.NUMERIC,(double)left.getValue() % (double)right.getValue() );
     }
+
+//    @Override
+//    public String getOperationSign() {
+//        return "%";
+//    }
 }

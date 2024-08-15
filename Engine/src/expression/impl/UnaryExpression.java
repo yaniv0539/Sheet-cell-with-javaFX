@@ -1,0 +1,23 @@
+package expression.impl;
+import expression.api.Data;
+import expression.api.Expression;
+
+public abstract class UnaryExpression implements Expression {
+
+    private Expression input;
+
+    public  UnaryExpression(){}
+
+    public UnaryExpression(Expression input) {
+        this.input = input;
+    }
+    public Expression getInput() {
+        return input;
+    }
+    @Override
+    public Data evaluate() {
+        return dynamicEvaluate(input.evaluate());
+    }
+
+    protected abstract Data dynamicEvaluate(Data input);
+}

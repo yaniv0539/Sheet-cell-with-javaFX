@@ -1,6 +1,4 @@
-package expression;
+package expression.api;
 
 public interface NumericExpression extends Expression {
-
-    double evaluate();
 }

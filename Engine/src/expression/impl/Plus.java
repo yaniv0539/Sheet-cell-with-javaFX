@@ -1,9 +1,11 @@
 package expression.impl;
 
-import expression.Expression;
-import expression.NumericExpression;
+import expression.api.Data;
+import expression.api.DataType;
+import expression.api.Expression;
+import expression.api.NumericExpression;
 
-public class Plus extends BinaryExpression{
+public class Plus extends BinaryExpression implements NumericExpression {
 
     public Plus() {}
 
@@ -12,12 +14,12 @@ public class Plus extends BinaryExpression{
     }
 
     @Override
-    protected double dynamicEvaluate(double left, double right) {
-        return left + right;
+    protected Data dynamicEvaluate(Data left, Data right) {
+        return new DataImpl(DataType.NUMERIC, (double)left.getValue() + (double)right.getValue());
     }
 
-    @Override
-    public String getOperationSign() {
-        return "+";
-    }
+//    @Override
+//    public String getOperationSign() {
+//        return "+";
+//    }
 }

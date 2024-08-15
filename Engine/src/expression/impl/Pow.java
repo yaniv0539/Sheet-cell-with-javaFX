@@ -1,9 +1,11 @@
 package expression.impl;
 
-import expression.Expression;
-import expression.NumericExpression;
+import expression.api.Data;
+import expression.api.DataType;
+import expression.api.Expression;
+import expression.api.NumericExpression;
 
-public class Pow extends BinaryExpression{
+public class Pow extends BinaryExpression implements NumericExpression{
 
     public Pow(){}
 
@@ -12,12 +14,12 @@ public class Pow extends BinaryExpression{
     }
 
     @Override
-    public double dynamicEvaluate(double left, double right) {
-        return Math.pow(left, right);
+    protected Data dynamicEvaluate(Data left, Data right) {
+        return new DataImpl(DataType.NUMERIC, Math.pow((double)left.getValue(), (double)right.getValue()));
     }
 
-    @Override
-    public String getOperationSign() {
-        return "^";
-    }
+//    @Override
+//    public String getOperationSign() {
+//        return "^";
+//    }
 }

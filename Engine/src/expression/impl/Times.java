@@ -1,22 +1,24 @@
 package expression.impl;
+import expression.api.Data;
+import expression.api.DataType;
+import expression.api.Expression;
+import expression.api.NumericExpression;
 
-import expression.Expression;
-import expression.NumericExpression;
-
-public class Times extends BinaryExpression {
+public class Times extends BinaryExpression implements NumericExpression {
 
     public Times(){}
 
     public Times(NumericExpression left, NumericExpression right) {
         super(left, right);
     }
-    @Override
-    public double dynamicEvaluate(double left, double right) {
-        return left * right;
-    }
 
     @Override
-    public String getOperationSign() {
-        return "*";
+    protected Data dynamicEvaluate(Data left, Data right) {
+        return new DataImpl(DataType.STRING, (double)left.getValue() * (double)right.getValue());
     }
+
+//    @Override
+//    public String getOperationSign() {
+//        return "*";
+//    }
 }
