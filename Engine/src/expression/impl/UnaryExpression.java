@@ -2,8 +2,10 @@ package expression.impl;
 import expression.api.Data;
 import expression.api.Expression;
 
+
 public abstract class UnaryExpression implements Expression {
 
+    public static final int numberOfArgs  = 1;
     private Expression input;
 
     public  UnaryExpression(){}

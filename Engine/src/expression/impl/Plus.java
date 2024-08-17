@@ -13,6 +13,7 @@ public class Plus extends BinaryExpression implements NumericExpression {
         super(left, right);
     }
 
+
     @Override
     protected Data dynamicEvaluate(Data left, Data right) {
         return new DataImpl(DataType.NUMERIC, (double)left.getValue() + (double)right.getValue());
