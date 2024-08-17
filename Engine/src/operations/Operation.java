@@ -3,11 +3,8 @@ package operations;
 import expression.api.Expression;
 import expression.impl.*;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
-import java.util.Optional;
-import java.util.function.Supplier;
 
 public enum Operation {
 
@@ -17,7 +14,6 @@ public enum Operation {
             @Override
            public Expression create(Object... args)
             {
-
                 return (Expression) createInstance(Plus.class, getNumberOfArguments(),args);
             }
         },

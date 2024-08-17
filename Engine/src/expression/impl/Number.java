@@ -1,17 +1,14 @@
 package expression.impl;
-import expression.api.Data;
-import expression.api.DataType;
-import expression.api.Expression;
-import expression.api.NumericExpression;
+import expression.api.*;
 
-public class Number implements Expression,NumericExpression {
+public class Number extends ExpressionImpl {
 
     private double value;
 
-    public Number() {}
-
     public Number(double value) {
         this.value = value;
+        setDataType(DataType.NUMERIC);
+        isValidArgs(value);
     }
 
     public double getValue() {
@@ -23,7 +20,11 @@ public class Number implements Expression,NumericExpression {
         return new DataImpl(DataType.NUMERIC, value);
     }
 
-//    @Override
+    @Override
+    public boolean isValidArgs(Object... args) {
+        return false;
+    }
+    //    @Override
 //    public String getOperationSign() {
 //        return "";
 //    }

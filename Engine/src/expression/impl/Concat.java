@@ -3,14 +3,14 @@ package expression.impl;
 import expression.api.Data;
 import expression.api.DataType;
 import expression.api.Expression;
-import expression.api.StringExpression;
 
 
-public class Concat extends BinaryExpression implements StringExpression {
+public class Concat extends BinaryExpression {
 
-    public Concat() {}
-    private Concat(StringExpression left, StringExpression right) {
+    private Concat(Expression left, Expression right) {
         super(left, right);
+        setDataType(DataType.STRING);
+        isValidArgs(left, right);
      }
 
     @Override
@@ -19,6 +19,10 @@ public class Concat extends BinaryExpression implements StringExpression {
         String result = String.join("",(String) left.getValue(), (String) right.getValue());
 
         return new DataImpl(DataType.STRING, result);
+    }
+    @Override
+    public boolean isValidArgs(Object... args) {
+        return false;
     }
 }
 

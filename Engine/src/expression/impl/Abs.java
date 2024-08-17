@@ -3,14 +3,14 @@ package expression.impl;
 import expression.api.Data;
 import expression.api.DataType;
 import expression.api.Expression;
-import expression.api.NumericExpression;
 
-public class Abs extends UnaryExpression implements NumericExpression {
+public class Abs extends UnaryExpression {
 
-    public Abs(){}
+    public Abs(Expression input) {
 
-    public Abs(NumericExpression input) {
         super(input);
+        setDataType(DataType.NUMERIC);
+        isValidArgs(input);
     }
 
     @Override
@@ -19,13 +19,9 @@ public class Abs extends UnaryExpression implements NumericExpression {
         return new DataImpl(DataType.NUMERIC, Math.abs((double)input.getValue()));
     }
 
-//    @Override
-//    public String getOperationSign() {
-//        return "| |";
-//    }
-//
-//    @Override
-//    public String toString() {
-//        return "|" + getInput().toString() + "|";
-//    }
+    @Override
+    public boolean isValidArgs(Object... args) {
+        return false;
+    }
+
 }

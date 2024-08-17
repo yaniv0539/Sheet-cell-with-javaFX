@@ -3,14 +3,13 @@ package expression.impl;
 import expression.api.Data;
 import expression.api.DataType;
 import expression.api.Expression;
-import expression.api.NumericExpression;
 
-public class Minus extends BinaryExpression implements NumericExpression{
+public class Minus extends BinaryExpression  {
 
-    public Minus(){}
-
-    public Minus(NumericExpression left, NumericExpression right) {
+    public Minus(Expression left, Expression right) {
         super(left, right);
+        setDataType(DataType.NUMERIC);
+        isValidArgs(left, right);
     }
 
     @Override
@@ -18,7 +17,12 @@ public class Minus extends BinaryExpression implements NumericExpression{
         return new DataImpl(DataType.NUMERIC,(double)left.getValue() - (double)right.getValue() );
     }
 
-//    @Override
+    @Override
+    public boolean isValidArgs(Object... args) {
+        return false;
+    }
+
+    //    @Override
 //    public String getOperationSign() {
 //        return "-";
 //    }

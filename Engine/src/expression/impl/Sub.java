@@ -2,21 +2,19 @@ package expression.impl;
 
 import expression.api.*;
 
-public class Sub implements Expression, StringExpression {
+public class Sub extends ExpressionImpl {
     private Expression source;
     private Expression left;
     private Expression right;
 
-    public Sub(StringExpression source, NumericExpression left, NumericExpression right) {
+    public Sub(Expression source, Expression left, Expression right) {
+
         this.source = source;
         this.left = left;
         this.right = right;
+        setDataType(DataType.STRING);
+        isValidArgs(source, left, right);
     }
-
-//    @Override
-//    public java.lang.String getOperationSign() {
-//        return "-";
-//    }
 
     @Override
     public Data evaluate() {
@@ -28,8 +26,8 @@ public class Sub implements Expression, StringExpression {
         return new DataImpl(DataType.STRING,str.substring(first.intValue(), last.intValue()));
     }
 
-//    @Override
-//    public java.lang.String toString() {
-//        return  "(" + source.toString() + " " + left.toString() + getOperationSign() + right.toString() + ")";
-//    }
+    @Override
+    public boolean isValidArgs(Object... args) {
+        return false;
+    }
 }

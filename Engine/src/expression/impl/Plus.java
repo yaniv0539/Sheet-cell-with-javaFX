@@ -1,16 +1,16 @@
 package expression.impl;
 
-import expression.api.Data;
-import expression.api.DataType;
-import expression.api.Expression;
-import expression.api.NumericExpression;
+import expression.api.*;
 
-public class Plus extends BinaryExpression implements NumericExpression {
+import java.util.Arrays;
 
-    public Plus() {}
+public class Plus extends BinaryExpression {
 
-    public Plus(NumericExpression left, NumericExpression right) {
+    public Plus(Expression left, Expression right) {
+
         super(left, right);
+        this.isValidArgs(left, right);
+        isValidArgs(left, right);
     }
 
 
@@ -19,8 +19,17 @@ public class Plus extends BinaryExpression implements NumericExpression {
         return new DataImpl(DataType.NUMERIC, (double)left.getValue() + (double)right.getValue());
     }
 
+    @Override
+    public boolean isValidArgs(Object... args) {
+//         if (!Arrays.stream(args).allMatch(arg -> arg.getType() == DataType.NUMERIC))
+//            throw new IllegalArgumentException("itay");;
+            return true;
+    }
+
 //    @Override
 //    public String getOperationSign() {
 //        return "+";
 //    }
+
+
 }

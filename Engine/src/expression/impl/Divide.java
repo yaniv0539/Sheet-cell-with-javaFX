@@ -3,15 +3,14 @@ package expression.impl;
 import expression.api.Data;
 import expression.api.DataType;
 import expression.api.Expression;
-import expression.api.NumericExpression;
 
-public class Divide extends BinaryExpression implements NumericExpression{
+public class Divide extends BinaryExpression {
 
-    public Divide(){}
 
-    public Divide(NumericExpression left, NumericExpression right) {
-
+    public Divide(Expression left, Expression right) {
         super(left, right);
+        setDataType(DataType.NUMERIC);
+        isValidArgs(left, right);
     }
 
     @Override
@@ -21,7 +20,12 @@ public class Divide extends BinaryExpression implements NumericExpression{
                 new DataImpl(DataType.NUMERIC,(double)left.getValue() / (double)right.getValue());
     }
 
-//    @Override
+    @Override
+    public boolean isValidArgs(Object... args) {
+        return false;
+    }
+
+    //    @Override
 //    public String getOperationSign() {
 //        return "/";
 //    }

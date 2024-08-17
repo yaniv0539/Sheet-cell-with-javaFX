@@ -2,14 +2,14 @@ package expression.impl;
 import expression.api.Data;
 import expression.api.DataType;
 import expression.api.Expression;
-import expression.api.NumericExpression;
 
-public class Times extends BinaryExpression implements NumericExpression {
+public class Times extends BinaryExpression {
 
-    public Times(){}
+    public Times(Expression left, Expression right) {
 
-    public Times(NumericExpression left, NumericExpression right) {
         super(left, right);
+        setDataType(DataType.NUMERIC);
+        isValidArgs(left, right);
     }
 
     @Override
@@ -17,8 +17,8 @@ public class Times extends BinaryExpression implements NumericExpression {
         return new DataImpl(DataType.STRING, (double)left.getValue() * (double)right.getValue());
     }
 
-//    @Override
-//    public String getOperationSign() {
-//        return "*";
-//    }
+    @Override
+    public boolean isValidArgs(Object... args) {
+        return false;
+    }
 }
