@@ -22,10 +22,10 @@ public class Sub implements Expression, StringExpression {
     public Data evaluate() {
 
         String str = (String)source.evaluate().getValue();
-        int first = (int)left.evaluate().getValue();
-        int last = (int)right.evaluate().getValue();
+        Double first = (Double)left.evaluate().getValue();
+        Double last = (Double)right.evaluate().getValue();
 
-        return new DataImpl(DataType.STRING,str.substring(first, last));
+        return new DataImpl(DataType.STRING,str.substring(first.intValue(), last.intValue()));
     }
 
 //    @Override
