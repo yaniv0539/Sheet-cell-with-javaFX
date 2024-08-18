@@ -1,12 +1,30 @@
 package engine.impl;
 
-import engine.Engine;
+import engine.api.Engine;
+import engine.jaxb.generated.STLSheet;
+import engine.jaxb.parser.STLSheetToSheet;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Unmarshaller;
+import sheet.api.Sheet;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 
 public class EngineImpl implements Engine {
 
-    private EngineImpl() {
+    private final static String JAXB_XML_GENERATED_PACKAGE_NAME = "engine/jaxb/generated";
 
+    private Sheet sheet;
+
+    public static void main(String[] args) {
+        Engine engine = new EngineImpl();
+        engine.ReadXMLInitFile("src/engine/jaxb/resources/basic.xml");
     }
+
+    private EngineImpl() {}
 
     @Override
     public EngineImpl CreateEngine() {
@@ -15,7 +33,14 @@ public class EngineImpl implements Engine {
 
     @Override
     public void ReadXMLInitFile(String filename) {
-        //TODO
+        try {
+            InputStream inputStream = new FileInputStream(new File(filename));
+            STLSheet stlSheet = deserializeFrom(inputStream);
+            this.sheet = STLSheetToSheet.generate(stlSheet);
+            System.out.println();
+        } catch (JAXBException | FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -41,5 +66,11 @@ public class EngineImpl implements Engine {
     @Override
     public void ShowVersion(String version) {
 
+    }
+
+    private static STLSheet deserializeFrom(InputStream inputStream) throws JAXBException {
+        JAXBContext jc = JAXBContext.newInstance(JAXB_XML_GENERATED_PACKAGE_NAME);
+        Unmarshaller unmarshaller = jc.createUnmarshaller();
+        return (STLSheet) unmarshaller.unmarshal(inputStream);
     }
 }
