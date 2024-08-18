@@ -15,13 +15,15 @@ public class main
 
         Scanner sc = new Scanner(System.in);
         String str = sc.nextLine();
+        Expression e = new RawString("hello");
 
-        Operation oper = Operation.valueOf(str);
-        Expression exp = oper.create(new RawString("hello"), new RawString(" world"));
+        Operation operation = Operation.valueOf(str);
+        Expression exp = operation.create(e);
 
-        Operation mathOperation = Operation.valueOf("SUB");
-        Expression exp1 = mathOperation.create(exp, new Number(0), new Number(4));
-        Data data = exp1.evaluate();
+
+       // Operation mathOperation = Operation.valueOf("SUB");
+       // Expression exp1 = mathOperation.create(exp, new Number(0), new Number(4));
+        Data data = exp.evaluate();
 
         System.out.println(data.getType());
         System.out.println(data.getValue());

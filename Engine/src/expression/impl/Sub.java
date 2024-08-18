@@ -2,21 +2,22 @@ package expression.impl;
 
 import expression.api.*;
 
-public class Sub implements Expression, StringExpression {
+import java.util.Arrays;
+import java.util.stream.Stream;
+
+public class Sub extends ExpressionImpl {
     private Expression source;
     private Expression left;
     private Expression right;
 
-    public Sub(StringExpression source, NumericExpression left, NumericExpression right) {
+    public Sub(Expression source, Expression left, Expression right) {
+
         this.source = source;
         this.left = left;
         this.right = right;
+        setDataType(DataType.STRING);
+        isValidArgs(source, left, right);
     }
-
-//    @Override
-//    public java.lang.String getOperationSign() {
-//        return "-";
-//    }
 
     @Override
     public Data evaluate() {
@@ -28,8 +29,20 @@ public class Sub implements Expression, StringExpression {
         return new DataImpl(DataType.STRING,str.substring(first.intValue(), last.intValue()));
     }
 
-//    @Override
-//    public java.lang.String toString() {
-//        return  "(" + source.toString() + " " + left.toString() + getOperationSign() + right.toString() + ")";
-//    }
+    @Override
+    public boolean isValidArgs(Object... args) {
+        Stream<Object> argument = Arrays.stream(args);
+
+        boolean value = argument
+                .map(Expression.class::cast)
+                .skip(1)
+                .allMatch(arg -> arg.getType() == DataType.NUMERIC);
+
+        if (!value) {
+            //need to throw our own exception.
+            throw new IllegalArgumentException("arguments must be numeric in" + this.getClass().getSimpleName());
+        }
+
+        return true;
+    }
 }
