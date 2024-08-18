@@ -2,6 +2,9 @@ package expression.impl;
 
 import expression.api.*;
 
+import java.util.Arrays;
+import java.util.stream.Stream;
+
 public class Sub extends ExpressionImpl {
     private Expression source;
     private Expression left;
@@ -28,6 +31,18 @@ public class Sub extends ExpressionImpl {
 
     @Override
     public boolean isValidArgs(Object... args) {
-        return false;
+        Stream<Object> argument = Arrays.stream(args);
+
+        boolean value = argument
+                .map(Expression.class::cast)
+                .skip(1)
+                .allMatch(arg -> arg.getType() == DataType.NUMERIC);
+
+        if (!value) {
+            //need to throw our own exception.
+            throw new IllegalArgumentException("arguments must be numeric in" + this.getClass().getSimpleName());
+        }
+
+        return true;
     }
 }

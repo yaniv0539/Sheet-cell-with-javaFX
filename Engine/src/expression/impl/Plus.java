@@ -21,9 +21,18 @@ public class Plus extends BinaryExpression {
 
     @Override
     public boolean isValidArgs(Object... args) {
-//         if (!Arrays.stream(args).allMatch(arg -> arg.getType() == DataType.NUMERIC))
-//            throw new IllegalArgumentException("itay");;
-            return true;
+        boolean value = Arrays
+                .stream(args)
+                .map(Expression.class::cast)
+                .allMatch(arg -> arg.getType() == DataType.NUMERIC);
+
+        if (!value) {
+            //need to throw our own exception.
+            throw new IllegalArgumentException("arguments must be numeric in" + this.getClass().getSimpleName());
+        }
+
+        return true;
+
     }
 
 //    @Override

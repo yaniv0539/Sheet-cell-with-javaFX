@@ -4,6 +4,8 @@ import expression.api.Data;
 import expression.api.DataType;
 import expression.api.Expression;
 
+import java.util.Arrays;
+
 public class Pow extends BinaryExpression {
 
     public Pow(Expression left, Expression right) {
@@ -19,7 +21,17 @@ public class Pow extends BinaryExpression {
 
     @Override
     public boolean isValidArgs(Object... args) {
-        return false;
+        boolean value = Arrays
+                .stream(args)
+                .map(Expression.class::cast)
+                .allMatch(arg -> arg.getType() == DataType.NUMERIC);
+
+        if (!value) {
+            //need to throw our own exception.
+            throw new IllegalArgumentException("arguments must be numeric in" + this.getClass().getSimpleName());
+        }
+
+        return true;
     }
     //    @Override
 //    public String getOperationSign() {

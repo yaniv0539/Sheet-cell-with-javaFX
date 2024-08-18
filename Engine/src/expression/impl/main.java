@@ -17,8 +17,9 @@ public class main
         String str = sc.nextLine();
         Expression e = new RawString("hello");
 
-        Operation oper = Operation.valueOf(str);
-        Expression exp = oper.create(e, new Number(4));
+        Operation operation = Operation.valueOf(str);
+        Expression exp = operation.create(e);
+
 
        // Operation mathOperation = Operation.valueOf("SUB");
        // Expression exp1 = mathOperation.create(exp, new Number(0), new Number(4));
