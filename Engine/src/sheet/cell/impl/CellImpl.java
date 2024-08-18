@@ -1,5 +1,6 @@
 package sheet.cell.impl;
 
+import expression.api.Data;
 import sheet.cell.api.Cell;
 import sheet.coordinate.api.Coordinate;
 
@@ -11,7 +12,7 @@ public class CellImpl implements Cell{
     private final Coordinate coordinate;
     private int version;
     private String originalValue;
-    private EffectiveValue effectiveValue;
+    private Data effectiveValue;
     private final Set<Cell> dependentCells;
     private final Set<Cell> influencedCells;
 
@@ -44,7 +45,7 @@ public class CellImpl implements Cell{
     }
 
     @Override
-    public EffectiveValue getEffectiveValue() {
+    public Data getEffectiveValue() {
         return this.effectiveValue;
     }
 

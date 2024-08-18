@@ -2,11 +2,11 @@ package expression.impl;
 import expression.api.Data;
 import expression.api.Expression;
 
-public abstract class UnaryExpression implements Expression {
 
+public abstract class UnaryExpression extends ExpressionImpl{
+
+    public static final int numberOfArgs  = 1;
     private Expression input;
-
-    public  UnaryExpression(){}
 
     public UnaryExpression(Expression input) {
         this.input = input;
@@ -18,6 +18,7 @@ public abstract class UnaryExpression implements Expression {
     public Data evaluate() {
         return dynamicEvaluate(input.evaluate());
     }
+
 
     protected abstract Data dynamicEvaluate(Data input);
 }

@@ -1,37 +1,32 @@
 package expression.impl;
 
-
+import expression.api.Data;
 import expression.api.Expression;
+import operations.Operation;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Scanner;
 
 public class main
 {
+
     public static void main(String[] args) {
 
+        Scanner sc = new Scanner(System.in);
+        String str = sc.nextLine();
+        Expression e = new RawString("hello");
 
-        Expression exp = new Plus(new Number(4), new Number(3));
-        System.out.println(exp.evaluate().getValue());
-        System.out.println(exp.evaluate().getType());
-        exp = new Minus(new Number(4), new Number(3));
-        System.out.println(exp.evaluate().getValue());
-        System.out.println(exp.evaluate().getType());
-        exp = new Divide(new Number(4), new Number(3));
-        System.out.println(exp.evaluate().getValue());
-        System.out.println(exp.evaluate().getType());
-        exp = new Mod(new Number(4), new Number(3));
-        System.out.println(exp.evaluate().getValue());
-        System.out.println(exp.evaluate().getType());
+        Operation operation = Operation.valueOf(str);
+        Expression exp = operation.create(e);
 
-        exp = new Abs(new Minus(new Number(-4), new Number(3)));
-        System.out.println(exp.evaluate().getValue());
-        System.out.println(exp.evaluate().getType());
 
-        String str = "hello";
-        String str2 = " world";
-        String str3 = " good";
+       // Operation mathOperation = Operation.valueOf("SUB");
+       // Expression exp1 = mathOperation.create(exp, new Number(0), new Number(4));
+        Data data = exp.evaluate();
 
-        exp = new Concat(new Concat(new RawString(str), new RawString(str3)), new RawString(str2));
-        System.out.println(exp.evaluate().getValue());
-        System.out.println(exp.evaluate().getType());
+        System.out.println(data.getType());
+        System.out.println(data.getValue());
 
 
     }

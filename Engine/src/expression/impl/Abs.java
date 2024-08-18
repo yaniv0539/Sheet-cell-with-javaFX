@@ -3,14 +3,16 @@ package expression.impl;
 import expression.api.Data;
 import expression.api.DataType;
 import expression.api.Expression;
-import expression.api.NumericExpression;
 
-public class Abs extends UnaryExpression implements NumericExpression {
+import java.util.Arrays;
 
-    public Abs(){}
+public class Abs extends UnaryExpression {
 
-    public Abs(NumericExpression input) {
+    public Abs(Expression input) {
+
         super(input);
+        setDataType(DataType.NUMERIC);
+        isValidArgs(input);
     }
 
     @Override
@@ -19,13 +21,20 @@ public class Abs extends UnaryExpression implements NumericExpression {
         return new DataImpl(DataType.NUMERIC, Math.abs((double)input.getValue()));
     }
 
-//    @Override
-//    public String getOperationSign() {
-//        return "| |";
-//    }
-//
-//    @Override
-//    public String toString() {
-//        return "|" + getInput().toString() + "|";
-//    }
+    @Override
+    public boolean isValidArgs(Object... args) {
+
+        boolean value = Arrays
+                .stream(args)
+                .map(Expression.class::cast)
+                .allMatch(arg -> arg.getType() == DataType.NUMERIC);
+
+        if (!value) {
+            //need to throw our own exception.
+            throw new IllegalArgumentException("arguments must be numeric in" + this.getClass().getSimpleName());
+        }
+
+        return true;
+    }
+
 }
