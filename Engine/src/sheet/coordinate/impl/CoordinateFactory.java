@@ -15,7 +15,7 @@ public class CoordinateFactory {
         return Optional
                 .ofNullable(coordinateMap.get(key))
                 .orElseGet(() -> {
-            CoordinateImpl coordinate = new CoordinateImpl(row, col);
+            CoordinateImpl coordinate = CoordinateImpl.create(row, col);
             coordinateMap.put(key, coordinate);
             return coordinate;
         });

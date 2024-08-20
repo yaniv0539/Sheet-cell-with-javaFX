@@ -1,13 +1,15 @@
 package engine.api;
 
-import engine.impl.EngineImpl;
+import engine.dto.sheet.cell.api.DCell;
+import engine.dto.sheet.impl.DSheet;
+import engine.dto.version.api.DVersions;
 
 public interface Engine {
 
     void ReadXMLInitFile(String filename);
-    void ShowSheetStatus();
-    void ShowCellStatus(String cell);
-    void UpdateCellStatus(String cell, String status);
-    void ShowVersions();
-    void ShowVersion(String version);
+    DSheet ShowSheetStatus();
+    DCell ShowCellStatus(String cellName);
+    void UpdateCellStatus(String cellName, String value);
+    DVersions ShowVersions();
+    DSheet ShowVersion(int version);
 }
