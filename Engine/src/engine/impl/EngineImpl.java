@@ -15,19 +15,13 @@ import java.io.InputStream;
 
 public class EngineImpl implements Engine {
 
-    private final static String JAXB_XML_GENERATED_PACKAGE_NAME = "engine/jaxb/generated";
+    private final static String JAXB_XML_GENERATED_PACKAGE_NAME = "engine.jaxb.generated";
 
     private Sheet sheet;
 
-    public static void main(String[] args) {
-        Engine engine = new EngineImpl();
-        engine.ReadXMLInitFile("src/engine/jaxb/resources/basic.xml");
-    }
-
     private EngineImpl() {}
 
-    @Override
-    public EngineImpl CreateEngine() {
+    public static EngineImpl CreateEngine() {
         return new EngineImpl();
     }
 

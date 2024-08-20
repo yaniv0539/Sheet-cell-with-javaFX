@@ -20,6 +20,7 @@ public class Mod extends BinaryExpression {
 
     @Override
     public boolean isValidArgs(Object... args) {
+
         boolean value = Arrays
                 .stream(args)
                 .map(Expression.class::cast)
@@ -27,7 +28,7 @@ public class Mod extends BinaryExpression {
 
         if (!value) {
             //need to throw our own exception.
-            throw new IllegalArgumentException("arguments must be numeric in" + this.getClass().getSimpleName());
+            throw new IllegalArgumentException("arguments must be numeric in " + this.getClass().getSimpleName());
         }
 
         return true;
