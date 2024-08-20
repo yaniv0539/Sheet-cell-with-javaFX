@@ -2,6 +2,9 @@ package expression.impl;
 import expression.api.Data;
 import expression.api.DataType;
 import expression.api.Expression;
+import sheet.cell.api.Cell;
+
+import java.util.Arrays;
 
 public class RawString extends ExpressionImpl {
 
@@ -21,7 +24,16 @@ public class RawString extends ExpressionImpl {
 
     @Override
     public boolean isValidArgs(Object... args) {
-        return false;
+        try{
+            Arrays
+                    .stream(args)
+                    .map(String.class::cast);
+        }
+        catch(ClassCastException e) {
+            throw new IllegalArgumentException("arguments must be String in " + this.getClass().getSimpleName());
+        }
+
+        return true;
     }
     //    @Override
 //    public String getOperationSign() {

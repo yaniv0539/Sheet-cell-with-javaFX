@@ -31,16 +31,20 @@ public class Sub extends ExpressionImpl {
 
     @Override
     public boolean isValidArgs(Object... args) {
-        Stream<Object> argument = Arrays.stream(args);
 
-        boolean value = argument
+        boolean condition1 = Arrays.stream(args)
                 .map(Expression.class::cast)
-                .skip(1)
-                .allMatch(arg -> arg.getType() == DataType.NUMERIC);
+                .limit(1)
+                .allMatch(arg -> arg.getType() == DataType.STRING);
 
-        if (!value) {
+        boolean condition2 = Arrays.stream(args)
+                        .map(Expression.class::cast)
+                        .skip(1)
+                        .allMatch(arg -> arg.getType() == DataType.NUMERIC);
+
+        if (!(condition1 && condition2)) {
             //need to throw our own exception.
-            throw new IllegalArgumentException("arguments must be numeric in" + this.getClass().getSimpleName());
+            throw new IllegalArgumentException("first argument must be string and other numeric in " + this.getClass().getSimpleName());
         }
 
         return true;
