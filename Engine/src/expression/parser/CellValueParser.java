@@ -4,7 +4,7 @@ import expression.api.Expression;
 import expression.impl.BooleanExpression;
 import expression.impl.Number;
 import expression.impl.RawString;
-import operations.Operation;
+import operation.Operation;
 
 import java.util.ArrayList;
 import java.util.List;

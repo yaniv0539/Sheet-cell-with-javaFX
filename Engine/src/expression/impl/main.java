@@ -5,7 +5,7 @@ import engine.impl.EngineImpl;
 import expression.api.Data;
 import expression.api.Expression;
 import expression.parser.CellValueParser;
-import operations.Operation;
+import operation.Operation;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
