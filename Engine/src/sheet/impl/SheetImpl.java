@@ -1,10 +1,14 @@
 package sheet.impl;
 
+import expression.api.Data;
+import expression.impl.Ref;
+import sheet.api.CellLookupService;
 import sheet.api.Sheet;
 import sheet.cell.api.Cell;
 import sheet.cell.impl.CellImpl;
 import sheet.coordinate.api.Coordinate;
 import sheet.coordinate.impl.CoordinateFactory;
+import sheet.coordinate.impl.CoordinateImpl;
 import sheet.layout.api.Layout;
 
 import java.util.Collections;
@@ -12,7 +16,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-public class SheetImpl implements Sheet {
+public class SheetImpl implements Sheet, CellLookupService {
 
     private static int numberOfSheets = 1;
 
@@ -65,6 +69,14 @@ public class SheetImpl implements Sheet {
         return this.version;
     }
 
+
+    //for ref
+    @Override
+    public Data getCellData(String cellId) {
+
+        return activeCells.get(CoordinateImpl.toCoordinate(cellId)).getEffectiveValue();
+    }
+
     @Override
     public void setVersion(int version) {
 
@@ -97,6 +109,7 @@ public class SheetImpl implements Sheet {
     @Override
     public void setCell(int row, int column, String originalValue) {
 
+        Ref.sheetView = this;
         if (isRowInSheetBoundaries(row)) {
             throw new IndexOutOfBoundsException("Row out of bounds");
         }
@@ -104,14 +117,9 @@ public class SheetImpl implements Sheet {
         if (isColumnInSheetBoundaries(column)) {
             throw new IndexOutOfBoundsException("Column out of bounds");
         }
+        Coordinate i = CoordinateFactory.createCoordinate(row, column);
 
-        Optional
-                .ofNullable(getCell(row, column))
-                .ifPresentOrElse(cell -> cell.setOriginalValue(originalValue),
-                        () -> activeCells.put(CoordinateFactory.createCoordinate(row, column),
-                                CellImpl.create(CoordinateFactory.createCoordinate(row, column),
-                                        this.version,
-                                        originalValue)));
+        activeCells.put(i,CellImpl.create(i,version, originalValue));
     }
 
     private boolean isRowInSheetBoundaries(int row) {
