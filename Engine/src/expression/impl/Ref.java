@@ -1,9 +1,11 @@
 package expression.impl;
 
 import expression.api.Data;
+import expression.api.DataType;
 import expression.api.Expression;
 import sheet.cell.api.Cell;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 public class Ref extends ExpressionImpl {
@@ -22,6 +24,16 @@ public class Ref extends ExpressionImpl {
 
     @Override
     public boolean isValidArgs(Object... args) {
-        return false;
+
+        try{
+            Arrays
+                    .stream(args)
+                    .map(Cell.class::cast);
+        }
+        catch(ClassCastException e) {
+            throw new IllegalArgumentException("arguments must be cell-id in " + this.getClass().getSimpleName());
+        }
+
+        return true;
     }
 }

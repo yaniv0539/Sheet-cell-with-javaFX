@@ -31,7 +31,7 @@ public class Abs extends UnaryExpression {
 
         if (!value) {
             //need to throw our own exception.
-            throw new IllegalArgumentException("arguments must be numeric in" + this.getClass().getSimpleName());
+            throw new IllegalArgumentException("arguments must be numeric in " + this.getClass().getSimpleName());
         }
 
         return true;

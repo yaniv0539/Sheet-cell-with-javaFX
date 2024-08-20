@@ -1,5 +1,8 @@
 package expression.impl;
 import expression.api.*;
+import sheet.cell.api.Cell;
+
+import java.util.Arrays;
 
 public class Number extends ExpressionImpl {
 
@@ -22,7 +25,16 @@ public class Number extends ExpressionImpl {
 
     @Override
     public boolean isValidArgs(Object... args) {
-        return false;
+        try{
+            Arrays
+                    .stream(args)
+                    .map(double.class::cast);
+        }
+        catch(ClassCastException e) {
+            throw new IllegalArgumentException("arguments must be number in " + this.getClass().getSimpleName());
+        }
+
+        return true;
     }
     //    @Override
 //    public String getOperationSign() {

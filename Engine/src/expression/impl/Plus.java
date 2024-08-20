@@ -9,7 +9,7 @@ public class Plus extends BinaryExpression {
     public Plus(Expression left, Expression right) {
 
         super(left, right);
-        this.isValidArgs(left, right);
+        setDataType(DataType.NUMERIC);
         isValidArgs(left, right);
     }
 
@@ -28,7 +28,7 @@ public class Plus extends BinaryExpression {
 
         if (!value) {
             //need to throw our own exception.
-            throw new IllegalArgumentException("arguments must be numeric in" + this.getClass().getSimpleName());
+            throw new IllegalArgumentException("arguments must be numeric in " + this.getClass().getSimpleName());
         }
 
         return true;
