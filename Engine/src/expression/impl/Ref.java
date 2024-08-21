@@ -22,7 +22,7 @@ public class Ref extends ExpressionImpl {
             setDataType(inCellData.getType());
         }
         else {
-            throw new IllegalArgumentException("Ref argument must be a cell id");
+            throw new IllegalArgumentException("Ref argument must be a cell-id");
         }
     }
     @Override

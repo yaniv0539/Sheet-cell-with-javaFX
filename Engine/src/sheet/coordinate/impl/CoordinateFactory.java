@@ -12,12 +12,13 @@ public class CoordinateFactory {
 
     public static Coordinate createCoordinate(int row, int col) {
         String key = row + "," + col;
-        return Optional
-                .ofNullable(coordinateMap.get(key))
-                .orElseGet(() -> {
-            CoordinateImpl coordinate = CoordinateImpl.create(row, col);
+
+        Coordinate coordinate = coordinateMap.get(key);
+
+        if (coordinate == null) {
+            coordinate = CoordinateImpl.create(row, col);
             coordinateMap.put(key, coordinate);
-            return coordinate;
-        });
+        }
+        return coordinate;
     }
 }

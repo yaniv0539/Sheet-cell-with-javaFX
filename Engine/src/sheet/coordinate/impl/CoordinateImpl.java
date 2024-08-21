@@ -61,6 +61,9 @@ public class CoordinateImpl implements Coordinate {
         return column >= 0;
     }
 
+
+
+
     public static Coordinate toCoordinate(String coordinateName) {
 
         if (!isValidCoordinateFormat(coordinateName))

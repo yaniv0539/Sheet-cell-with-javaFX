@@ -15,6 +15,7 @@ import sheet.cell.api.Cell;
 import sheet.cell.impl.CellImpl;
 import sheet.coordinate.api.Coordinate;
 import sheet.coordinate.impl.CoordinateFactory;
+import sheet.coordinate.impl.CoordinateImpl;
 import sheet.impl.SheetImpl;
 import sheet.layout.api.Layout;
 import sheet.layout.impl.LayoutImpl;
@@ -31,7 +32,6 @@ import java.util.stream.Collectors;
 
 public class main
 {
-
     public static void main(String[] args) {
 
         int width = 5;
@@ -43,24 +43,33 @@ public class main
         int row = 5;
 
         Layout layout = LayoutImpl.create(size, column, row);
-
         String name = "Yaniv";
 
-        Map<Coordinate, Cell> cells = Map.of(
-                CoordinateFactory.createCoordinate(1,1), CellImpl.create(CoordinateFactory.createCoordinate(1,1),1,"4"),
-                CoordinateFactory.createCoordinate(1,2), CellImpl.create(CoordinateFactory.createCoordinate(1,2),1,"5"),
-                CoordinateFactory.createCoordinate(1,3), CellImpl.create(CoordinateFactory.createCoordinate(1,3),1,"{PLUS,{REF, B1},{REF,A1}")
-        );
+        Sheet sh =SheetImpl.create(name, layout);
+        sh.setCell(CoordinateImpl.toCoordinate("A1"),"5");
+        sh.setCell(CoordinateImpl.toCoordinate("A2"),"5");
+        sh.setCell(CoordinateImpl.toCoordinate("A3"),"{PLUS,{REF, A2},{REF,A1}}");
 
-        Sheet sh =SheetImpl.create(name, layout, 1, cells);
-        sh.setCell(1, 4,"{PLUS,{REF, B1},{REF,A1}" );
-        Cell c = sh.getCell(1, 4);
+        Expression expOfA3 = CellValueParser.toExpression("{PLUS,{REF, A2},{REF,    A1}}");
+
+       // Cell c = sh.getCell(2, 0);
+
+        System.out.println(expOfA3.evaluate().getType());
+        System.out.println(expOfA3.evaluate().getValue());
+        System.out.println("after change:");
+
+        sh.setCell(CoordinateImpl.toCoordinate("A1"),"10");
+        sh.setCell(CoordinateImpl.toCoordinate("A5"),"hello");
+        System.out.println(expOfA3.evaluate().getType());
+        System.out.println(expOfA3.evaluate().getValue());
+        System.out.println(expOfA3.evaluate().getValue());
+
+        //System.out.println(c.getEffectiveValue().getValue());
+//        sh.setCell(1, 4,"{PLUS,{REF, B1},{REF,A1}" );
+
        // Expression e3 = CellValueParser.toExpression("{DIVIDE, {PLUS, {PLUS, 5, 7}, {PLUS, 5, 7}}, {PLUS, {PLUS, 5, 7}, {PLUS, -5, -7}}}");
        // Operation mathOperation = Operation.valueOf("SUB");
        // Expression exp1 = mathOperation.create(exp, new Number(0), new Number(4));
-
-        System.out.println(c.getEffectiveValue().getType());
-        System.out.println(c.getEffectiveValue().getValue());
 
 //        Engine engine = EngineImpl.CreateEngine();
 //        engine.ReadXMLInitFile("Engine/src/engine/jaxb/resources/basic.xml");

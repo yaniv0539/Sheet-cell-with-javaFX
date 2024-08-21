@@ -47,6 +47,6 @@ public class STLSheetToSheet {
                         stlCell -> CellImpl.create(CoordinateFactory.createCoordinate(stlCell.getRow(), Integer.parseInt(stlCell.getColumn()) - 'A' + 1), 1, stlCell.getSTLOriginalValue())
                 ));
 
-        return SheetImpl.create(name, layout, 1, coordinateCellMap);
+        return SheetImpl.create(name, layout);
     }
 }
