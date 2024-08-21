@@ -9,9 +9,11 @@ import operation.Operation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-public class CellValueParser {
+public class OrignalValueUtilis {
 
 
     private static boolean isBoolean(String value) {
@@ -83,6 +85,22 @@ public class CellValueParser {
             return primitiveParseToExpression(input);
         }
 
+    }
+
+    public static void findInfluenceFrom(String value)
+    {
+
+        // Define the regex pattern to match the structure and capture the value after the comma
+        Pattern pattern = Pattern.compile("\\{REF,\\s*([A-Z]\\d+)\\}");
+
+        // Create a matcher for the input string
+        Matcher matcher = pattern.matcher(value);
+
+        // Find all matches in the string
+        while (matcher.find()) {
+            String extractedValue = matcher.group(1);  // Get the first capturing group
+            System.out.println("Extracted Value: " + extractedValue);
+        }
     }
 
 }
