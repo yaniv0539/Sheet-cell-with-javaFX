@@ -1,6 +1,8 @@
 package sheet.cell.impl;
 
 import expression.api.Data;
+import expression.api.Expression;
+import expression.parser.CellValueParser;
 import sheet.cell.api.Cell;
 import sheet.coordinate.api.Coordinate;
 
@@ -68,12 +70,13 @@ public class CellImpl implements Cell {
     @Override
     public void setOriginalValue(String originalValue) {
 
+        Expression exp = CellValueParser.toExpression(originalValue);
 
-        if (!isValidOriginalValue(originalValue)) {
-            throw new IllegalArgumentException("Invalid original value");
-        }
+//        if (!isValidOriginalValue(originalValue)) {
+//            throw new IllegalArgumentException("Invalid original value");
+//        }
 
-        Data effectiveValue = calcEffectiveValue(originalValue);
+        Data effectiveValue = exp.evaluate();
 
         this.originalValue = originalValue;
         setEffectiveValue(effectiveValue);

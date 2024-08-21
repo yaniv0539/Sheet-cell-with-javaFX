@@ -3,6 +3,7 @@ package expression.impl;
 import expression.api.Data;
 import expression.api.DataType;
 import expression.api.Expression;
+import sheet.api.CellLookupService;
 import sheet.cell.api.Cell;
 
 import java.util.Arrays;
@@ -10,16 +11,23 @@ import java.util.Optional;
 
 public class Ref extends ExpressionImpl {
 
-    Cell cellToRefer;
+    private Expression cellId;
+    public static CellLookupService sheetView;
 
-    public Ref(Cell cell) {
-        this.cellToRefer = cell;
-        setDataType(cellToRefer.getEffectiveValue().getType());
-        isValidArgs(cell);
+    public Ref(Expression cellId) {
+
+        if (cellId.getClass() == RawString.class) {
+            this.cellId = cellId;
+            Data inCellData = sheetView.getCellData((String)cellId.evaluate().getValue());
+            setDataType(inCellData.getType());
+        }
+        else {
+            throw new IllegalArgumentException("Ref argument must be a cell-id");
+        }
     }
     @Override
     public Data evaluate() {
-        return cellToRefer.getEffectiveValue();
+        return sheetView.getCellData((String)cellId.evaluate().getValue());
     }
 
     @Override

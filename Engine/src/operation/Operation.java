@@ -69,6 +69,12 @@ public enum Operation {
         public Expression create(Object... args) {
             return (Expression) createInstance(Abs.class, getNumberOfArguments(),args);
         }
+    },
+    REF(UnaryExpression.numberOfArgs){
+        @Override
+        public Expression create(Object... args) {
+            return (Expression) createInstance(Ref.class, getNumberOfArguments(),args);
+        }
     };
 
     private int numberOfArguments;
