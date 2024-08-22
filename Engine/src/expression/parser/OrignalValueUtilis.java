@@ -5,13 +5,17 @@ import expression.impl.BooleanExpression;
 import expression.impl.Number;
 import expression.impl.RawString;
 import operation.Operation;
+import sheet.cell.api.Cell;
+import sheet.coordinate.api.Coordinate;
+import sheet.coordinate.impl.CoordinateFactory;
+import sheet.coordinate.impl.CoordinateImpl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-public class CellValueParser {
+public class OrignalValueUtilis {
 
 
     private static boolean isBoolean(String value) {
@@ -83,6 +87,24 @@ public class CellValueParser {
             return primitiveParseToExpression(input);
         }
 
+    }
+
+    public static Set<String> findInfluenceFrom(String value)
+    {
+        Set<String> cellDependence = new HashSet<>();
+
+        // Define the regex pattern to match the structure and capture the value after the comma
+        Pattern pattern = Pattern.compile("\\{REF,\\s*([A-Z]\\d+)\\}");
+
+        // Create a matcher for the input string
+        Matcher matcher = pattern.matcher(value);
+
+        // Find all matches in the string
+        while (matcher.find()) {
+            String extractedValue = matcher.group(1);
+            cellDependence.add(extractedValue);
+        }
+        return cellDependence;
     }
 
 }

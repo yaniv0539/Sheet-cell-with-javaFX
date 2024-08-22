@@ -62,8 +62,6 @@ public class CoordinateImpl implements Coordinate {
     }
 
 
-
-
     public static Coordinate toCoordinate(String coordinateName) {
 
         if (!isValidCoordinateFormat(coordinateName))
@@ -84,7 +82,7 @@ public class CoordinateImpl implements Coordinate {
         return coordinateName.matches("^[A-Z]+[0-9]+$");
     }
 
-    private static int extractRow(String coordinateName) {
+    public static int extractRow(String coordinateName) {
 
         int index = 0;
 
@@ -95,7 +93,7 @@ public class CoordinateImpl implements Coordinate {
         return Integer.parseInt(coordinateName.substring(index));
     }
 
-    private static String extractColumn(String coordinateName) {
+   public static String extractColumn(String coordinateName) {
 
         int index = 0;
         while (index < coordinateName.length() && !Character.isDigit(coordinateName.charAt(index))) {
@@ -105,7 +103,7 @@ public class CoordinateImpl implements Coordinate {
         return coordinateName.substring(0, index);
     }
 
-    private static int parseColumnToInt(String column) {
+    public static int parseColumnToInt(String column) {
         int result = 0;
         int length = column.length();
 
