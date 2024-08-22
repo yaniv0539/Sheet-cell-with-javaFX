@@ -26,23 +26,25 @@ public class main
         String name = "Yaniv";
 
         Sheet sh =SheetImpl.create(name, layout);
-        sh.setCell(CoordinateImpl.toCoordinate("A1"),"5");
-        sh.setCell(CoordinateImpl.toCoordinate("A2"),"5");
-        sh.setCell(CoordinateImpl.toCoordinate("A3"),"{PLUS,{REF, A2},{REF,A1}}");
+        sh.setCell("A1","5");
+        sh.setCell("A2","{REF,A1}");
+        sh.setCell("A3","{REF, A2}");
 
-        Expression expOfA3 = OrignalValueUtilis.toExpression("{PLUS,{REF, A2},{REF,    A1}}");
+        sh.setCell("A1","{REF,A3}");
+
+
 
        // Cell c = sh.getCell(2, 0);
 
-        System.out.println(expOfA3.evaluate().getType());
-        System.out.println(expOfA3.evaluate().getValue());
-        System.out.println("after change:");
-
-        sh.setCell(CoordinateImpl.toCoordinate("A1"),"10");
-        sh.setCell(CoordinateImpl.toCoordinate("A5"),"hello");
-        System.out.println(expOfA3.evaluate().getType());
-        System.out.println(expOfA3.evaluate().getValue());
-        System.out.println(expOfA3.evaluate().getValue());
+//        System.out.println(expOfA3.evaluate().getType());
+//        System.out.println(expOfA3.evaluate().getValue());
+//        System.out.println("after change:");
+//
+//        sh.setCell(CoordinateImpl.toCoordinate("A1"),"10");
+//        sh.setCell(CoordinateImpl.toCoordinate("A5"),"hello");
+//        System.out.println(expOfA3.evaluate().getType());
+//        System.out.println(expOfA3.evaluate().getValue());
+//        System.out.println(expOfA3.evaluate().getValue());
 
 
         String str = "{PLUS,{REF, A2},{REF, A1}}";

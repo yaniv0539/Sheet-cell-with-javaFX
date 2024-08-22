@@ -111,9 +111,50 @@ public class SheetImpl implements Sheet, CellLookupService {
 
 
     @Override
-    public void setCell(Coordinate coordinate, String originalValue) {
+    public void setCell(String cellName, String originalValue) {
         Ref.sheetView = this;
-        activeCells.put(coordinate,CellImpl.create(coordinate, version++, originalValue));
+        //validation on Coordinate by format and  on sheet layout
+        Coordinate target = CoordinateImpl.toCoordinate(cellName);
+
+        if(!isRowInSheetBoundaries(target.getRow()) || !isColumnInSheetBoundaries(target.getCol())) {
+            throw new IllegalArgumentException("Row or column out of bounds !");
+        }
+        //coordinate is valid
+
+        CellImpl updatedCell = CellImpl.create(target, version++, originalValue);
+        updatedCell.setInfluenceFrom(CellIdToCell(OrignalValueUtilis.findInfluenceFrom(originalValue)));
+
+        if(isCircle(updatedCell)) {
+            //throw somthing
+            throw  new IllegalArgumentException("circle");
+        }
+        //check for circle
+        //handle error
+
+        Cell previousCell = activeCells.put(target,updatedCell);
+        //pass this line inout i valid only localy on cell.
+
+        //if it is a new cell there is no influenceOn, if exist he may have influenced on other cells.
+        if(previousCell != null) {
+            updatedCell.setInfluenceOn(previousCell.getInfluenceOn());
+            try
+            {
+                recalculationRouteFrom(updatedCell);
+            }
+            catch(Exception someException)
+            {
+                //doing rollback to previous sheet.
+                activeCells.put(target,previousCell);
+                recalculationRouteFrom(previousCell);
+                throw  new IllegalArgumentException("re-compute didnt work");
+            }
+
+        }
+        else {
+            for(Cell cell : updatedCell.getInfluenceFrom()) {
+                cell.addInfluenceOn(updatedCell);
+            }
+        }
     }
 
     private boolean isRowInSheetBoundaries(int row) {
@@ -131,7 +172,7 @@ public class SheetImpl implements Sheet, CellLookupService {
     //function for cell update including rollback
     public boolean recalculationRouteFrom(Cell targetToStart){
         if(targetToStart.getInfluenceOn().isEmpty()){
-            setCell(targetToStart.getCoordinate(), targetToStart.getOriginalValue());
+            targetToStart.computeEffectiveValue();
         }
 
         for (Cell cell : targetToStart.getInfluenceOn()) {
@@ -157,54 +198,6 @@ public class SheetImpl implements Sheet, CellLookupService {
         return Cells;
     }
 
-
-
     public void updateCell(String coordinateStr, String input) {
-
-        //validation on Coordinate by format and  on sheet layout
-        Coordinate target = CoordinateImpl.toCoordinate(coordinateStr);
-
-        if(!isRowInSheetBoundaries(target.getRow()) || !isColumnInSheetBoundaries(target.getCol())) {
-            throw new IllegalArgumentException("Row or column out of bounds !");
-        }
-        //coordinate is valid
-
-        CellImpl updatedCell = CellImpl.create(target, version++, input);
-        updatedCell.setInfluenceFrom(CellIdToCell(OrignalValueUtilis.findInfluenceFrom(input)));
-
-        if(isCircle(updatedCell)) {
-            //throw somthing
-            throw  new IllegalArgumentException("circle");
-        }
-        //check for circle
-        //handle error
-
-        Cell previousCell = activeCells.put(target,updatedCell);
-        //pass this line inout i valid only localy on cell.
-
-        //if it is a new cell there is no influenceOn, if exist he may have influenced on other cells.
-        if(previousCell != null) {
-
-
-            updatedCell.setInfluenceOn(previousCell.getInfluenceOn());
-            try
-            {
-                recalculationRouteFrom(updatedCell);
-            }
-            catch(Exception someException)
-            {
-                //doing rollback to previous sheet.
-                activeCells.put(target,previousCell);
-                recalculationRouteFrom(previousCell);
-                //throw exception for UI, WITH THE problem.
-            }
-
-        }
-        else {
-            for(Cell cell : updatedCell.getInfluenceFrom()) {
-                cell.addInfluenceOn(updatedCell);
-            }
-        }
-
     }
 }

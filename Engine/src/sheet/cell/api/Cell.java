@@ -9,6 +9,7 @@ public interface Cell {
     Coordinate getCoordinate();
     int getVersion();
     String getOriginalValue();
+    void computeEffectiveValue();
     void setOriginalValue(String originalValue);
     void setInfluenceOn(Set<Cell> influenceOn);
     void setInfluenceFrom(Set<Cell> influenceFrom);

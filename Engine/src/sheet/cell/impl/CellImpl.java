@@ -110,6 +110,11 @@ public class CellImpl implements Cell {
         this.version = version;
     }
 
+    @Override
+    public void computeEffectiveValue() {
+        setOriginalValue(this.originalValue);
+    }
+
     public boolean hasCircle()
     {
         return recHasCircle(this, new HashSet<Cell>());
