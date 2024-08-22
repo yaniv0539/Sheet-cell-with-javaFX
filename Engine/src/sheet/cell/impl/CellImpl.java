@@ -72,7 +72,7 @@ public class CellImpl implements Cell {
 
     @Override
     public void setInfluenceFrom(Set<Cell> influenceFrom) {
-        this.influenceFrom = influenceOn;
+        this.influenceFrom = influenceFrom;
     }
 
     @Override
@@ -117,28 +117,28 @@ public class CellImpl implements Cell {
 
     public boolean hasCircle()
     {
-        return recHasCircle(this, new HashSet<Cell>());
+        return recHasCircle(this, new HashSet<Coordinate>());
     }
 
-    private boolean recHasCircle(Cell current, Set<Cell> visited) {
+    private boolean recHasCircle(Cell current, Set<Coordinate> visited) {
         // If the current object is already visited, a cycle is detected
-        if (visited.contains(current)) {
+        if (visited.contains(current.getCoordinate())) {
             return true;
         }
 
         // Mark the current object as visited
-        visited.add(current);
+        visited.add(current.getCoordinate());
 
         // Recur for all the objects in the relatedObjects list
-        for (Cell neighbor : current.getInfluenceFrom()) {
+        for (Cell affectedBy : current.getInfluenceFrom()) {
             // If a cycle is detected in the recursion, return true
-            if (recHasCircle(neighbor, visited)) {
+            if (recHasCircle(affectedBy, visited)) {
                 return true;
             }
         }
 
         // Remove the current object from the visited set (backtracking)
-        visited.remove(current);
+        visited.remove(current.getCoordinate());
 
         // If no cycle was found, return false
         return false;

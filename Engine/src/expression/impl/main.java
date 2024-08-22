@@ -3,6 +3,8 @@ package expression.impl;
 import expression.api.Expression;
 import expression.parser.OrignalValueUtilis;
 import sheet.api.Sheet;
+import sheet.cell.api.Cell;
+import sheet.coordinate.impl.CoordinateFactory;
 import sheet.coordinate.impl.CoordinateImpl;
 import sheet.impl.SheetImpl;
 import sheet.layout.api.Layout;
@@ -10,8 +12,25 @@ import sheet.layout.impl.LayoutImpl;
 import sheet.layout.size.api.Size;
 import sheet.layout.size.impl.SizeImpl;
 
+import java.util.Map;
+
 public class main
 {
+    public static Integer  f = 1;
+
+    public static void print(Sheet sh)
+    {
+
+        System.out.println(f.toString() +  ":\n");
+        f++;
+        sh.getActiveCells().forEach((coordinate, cell) ->
+                System.out.println(cell.getCoordinate().toString() + ": "
+                        + "\"" + cell.getOriginalValue() + "\""+ " = "
+                        + cell.getEffectiveValue().getValue()));
+
+        System.out.println("\n");
+    }
+
     public static void main(String[] args) {
 
         int width = 5;
@@ -24,13 +43,31 @@ public class main
 
         Layout layout = LayoutImpl.create(size, column, row);
         String name = "Yaniv";
-
         Sheet sh =SheetImpl.create(name, layout);
-//        sh.setCell("A1","5");
-//        sh.setCell("A2","{REF,A1}");
-//        sh.setCell("A3","{REF, A2}");
-//
-//        sh.setCell("A1","{REF,A3}");
+        try
+        {
+            //init
+            sh.setCell(CoordinateImpl.toCoordinate("A1"),"5");
+            sh.setCell(CoordinateImpl.toCoordinate("A2"),"5");
+            sh.setCell(CoordinateImpl.toCoordinate("A3"),"{PLUS,{REF, A2},{REF,A1}}");
+            sh.setCell(CoordinateImpl.toCoordinate("A4"),"{REF, A2}");
+
+            print(sh);
+            sh.setCell(CoordinateImpl.toCoordinate("A2"),"20");
+            print(sh);
+            sh.setCell(CoordinateImpl.toCoordinate("A1"),"10");
+            print(sh);
+            sh.setCell(CoordinateImpl.toCoordinate("A4"),"F, A444}");
+            print(sh);
+            sh.setCell(CoordinateImpl.toCoordinate("A5"),"{CONCAT,{REF,A4},       HELLO }");
+        }
+        catch(Exception e)
+        {
+            System.out.println(e.getMessage());
+            print(sh);
+        }
+
+
 
 
 
@@ -47,9 +84,9 @@ public class main
 //        System.out.println(expOfA3.evaluate().getValue());
 
 
-        String str = "{PLUS,{REF, A2},{REF, A1}}";
+       // String str = "{PLUS,{REF, A2},{REF, A1}}";
 
-        OrignalValueUtilis.findInfluenceFrom(str);
+        //OrignalValueUtilis.findInfluenceFrom(str);
 
         //System.out.println(c.getEffectiveValue().getValue());
 //        sh.setCell(1, 4,"{PLUS,{REF, B1},{REF,A1}" );
