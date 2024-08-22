@@ -1,7 +1,6 @@
 package sheet.cell.impl;
 
 import expression.api.Data;
-import expression.api.Expression;
 import expression.parser.OrignalValueUtilis;
 import sheet.cell.api.Cell;
 import sheet.coordinate.api.Coordinate;
@@ -16,8 +15,8 @@ public class CellImpl implements Cell {
     private int version;
     private String originalValue;
     private Data effectiveValue;
-    private final Set<Cell> dependentCells;
-    private final Set<Cell> influencedCells;
+    private  Set<Cell> influenceFrom;
+    private  Set<Cell> influenceOn;
 
     private CellImpl(Coordinate coordinate, int version, String originalValue) {
 
@@ -28,10 +27,9 @@ public class CellImpl implements Cell {
         this.coordinate = coordinate;
         setVersion(version);
         setOriginalValue(originalValue);
-        this.dependentCells = new HashSet<>();
-        this.influencedCells = new HashSet<>();
+        this.influenceFrom = new HashSet<>();
+        this.influenceOn = new HashSet<>();
     }
-    // a2.addDepe
 
     public static CellImpl create(Coordinate coordinate, int version, String originalValue) {
         return new CellImpl(coordinate, version, originalValue);
@@ -58,25 +56,42 @@ public class CellImpl implements Cell {
     }
 
     @Override
-    public Set<Cell> getDependentCells() {
-        return Collections.unmodifiableSet(this.dependentCells);
+    public Set<Cell> getInfluenceFrom() {
+        return Collections.unmodifiableSet(this.influenceFrom);
     }
 
     @Override
-    public Set<Cell> getInfluencedCells() {
-        return Collections.unmodifiableSet(this.influencedCells);
+    public Set<Cell> getInfluenceOn() {
+        return Collections.unmodifiableSet(this.influenceOn);
+    }
+
+    @Override
+    public void setInfluenceOn(Set<Cell> influenceOn) {
+        this.influenceOn = influenceOn;
+    }
+
+    @Override
+    public void setInfluenceFrom(Set<Cell> influenceFrom) {
+        this.influenceFrom = influenceOn;
+    }
+
+    @Override
+    public void addInfluenceOn(Cell effectOn) {
+        influenceOn.add(effectOn);
+    }
+
+    @Override
+    public void addInfluenceFrom(Cell AffectedFrom) {
+        influenceFrom.add(AffectedFrom);
     }
 
     @Override
     public void setOriginalValue(String originalValue) {
 
-        Expression exp = OrignalValueUtilis.toExpression(originalValue);
-
-//        if (!isValidOriginalValue(originalValue)) {
-//            throw new IllegalArgumentException("Invalid original value");
-//        }
-
-        Data effectiveValue = exp.evaluate();
+        Data effectiveValue = OrignalValueUtilis.toExpression(originalValue).evaluate();
+        //getting data, if pass this line value is valid to this specific cell.
+        //the sheet need to check if this is ok for all cells that depend on this cell data.
+        //get the cell that "this" influence from
 
         this.originalValue = originalValue;
         setEffectiveValue(effectiveValue);
@@ -95,18 +110,37 @@ public class CellImpl implements Cell {
         this.version = version;
     }
 
+    public boolean hasCircle()
+    {
+        return recHasCircle(this, new HashSet<Cell>());
+    }
+
+    private boolean recHasCircle(Cell current, Set<Cell> visited) {
+        // If the current object is already visited, a cycle is detected
+        if (visited.contains(current)) {
+            return true;
+        }
+
+        // Mark the current object as visited
+        visited.add(current);
+
+        // Recur for all the objects in the relatedObjects list
+        for (Cell neighbor : current.getInfluenceFrom()) {
+            // If a cycle is detected in the recursion, return true
+            if (recHasCircle(neighbor, visited)) {
+                return true;
+            }
+        }
+
+        // Remove the current object from the visited set (backtracking)
+        visited.remove(current);
+
+        // If no cycle was found, return false
+        return false;
+    }
+
     private static boolean isValidVersion(int version) {
         return version >= 1;
     }
 
-    private static boolean isValidOriginalValue(String originalValue) {
-        // TODO: String originalValue validation.
-        return false;
-    }
-
-    private static Data calcEffectiveValue(String originalValue) {
-        // TODO: 1. Make OriginalValueTree from String cellOriginalValue
-        // Todo: 2. Make Data from OriginalValueTree.
-        return null;
-    }
 }

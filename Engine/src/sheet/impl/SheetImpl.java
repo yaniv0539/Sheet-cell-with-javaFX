@@ -2,6 +2,7 @@ package sheet.impl;
 
 import expression.api.Data;
 import expression.impl.Ref;
+import expression.parser.OrignalValueUtilis;
 import sheet.api.CellLookupService;
 import sheet.api.Sheet;
 import sheet.cell.api.Cell;
@@ -64,30 +65,6 @@ public class SheetImpl implements Sheet, CellLookupService {
         return this.version;
     }
 
-
-    // FOR INTERFACE lookupCellService
-    @Override
-    public Data getCellData(String cellId) {
-        Coordinate c = CoordinateImpl.toCoordinate(cellId);
-        Cell cell = activeCells.get(c);
-
-        if (cell == null) {
-            throw new IllegalArgumentException(cellId);
-        }
-
-        return cell.getEffectiveValue();
-    }
-
-    @Override
-    public void setVersion(int version) {
-
-        if (!isValidVersion(version)) {
-            throw new IllegalArgumentException("Version cannot be less than 1");
-        }
-
-        this.version = version;
-    }
-
     @Override
     public Cell getCell(int row, int column) {
 
@@ -107,20 +84,36 @@ public class SheetImpl implements Sheet, CellLookupService {
         return Collections.unmodifiableMap(this.activeCells);
     }
 
+    // FOR INTERFACE lookupCellService
+    @Override
+    public Data getCellData(String cellId) {
+        Coordinate c = CoordinateImpl.toCoordinate(cellId);
+        Cell cell = activeCells.get(c);
+
+        if (cell == null) {
+            throw new IllegalArgumentException(cellId + "is Empty, cannot get data");
+        }
+
+        return cell.getEffectiveValue();
+    }
+
+    @Override
+    public void setVersion(int version) {
+
+        if (!isValidVersion(version)) {
+            throw new IllegalArgumentException("Version cannot be less than 1");
+        }
+
+        this.version = version;
+    }
+
+
+
+
     @Override
     public void setCell(Coordinate coordinate, String originalValue) {
-
         Ref.sheetView = this;
-
-//        if (!isRowInSheetBoundaries(row)) {
-//            throw new IndexOutOfBoundsException("Row out of bounds");
-//        }
-//
-//        if (!isColumnInSheetBoundaries(column)) {
-//            throw new IndexOutOfBoundsException("Column out of bounds");
-//        }
-
-        activeCells.put(coordinate,CellImpl.create(coordinate, version, originalValue));
+        activeCells.put(coordinate,CellImpl.create(coordinate, version++, originalValue));
     }
 
     private boolean isRowInSheetBoundaries(int row) {
@@ -133,5 +126,85 @@ public class SheetImpl implements Sheet, CellLookupService {
 
     public static boolean isValidVersion(int version) {
         return version >= 1;
+    }
+
+    //function for cell update including rollback
+    public boolean recalculationRouteFrom(Cell targetToStart){
+        if(targetToStart.getInfluenceOn().isEmpty()){
+            setCell(targetToStart.getCoordinate(), targetToStart.getOriginalValue());
+        }
+
+        for (Cell cell : targetToStart.getInfluenceOn()) {
+            recalculationRouteFrom(cell);
+        }
+
+        return true;
+    }
+
+    private boolean isCircle(CellImpl cellToCheck)
+    {
+        return cellToCheck.hasCircle();
+    }
+
+    private Set<Cell> CellIdToCell(Set<String> newInfluenceCellsId) {
+        Set<Cell> Cells = new HashSet<>();
+
+        for (String cellId : newInfluenceCellsId) {
+            Coordinate c = CoordinateImpl.toCoordinate(cellId);
+            Cells.add(getCell(c.getRow(), c.getCol()));
+        }
+
+        return Cells;
+    }
+
+
+
+    public void updateCell(String coordinateStr, String input) {
+
+        //validation on Coordinate by format and  on sheet layout
+        Coordinate target = CoordinateImpl.toCoordinate(coordinateStr);
+
+        if(!isRowInSheetBoundaries(target.getRow()) || !isColumnInSheetBoundaries(target.getCol())) {
+            throw new IllegalArgumentException("Row or column out of bounds !");
+        }
+        //coordinate is valid
+
+        CellImpl updatedCell = CellImpl.create(target, version++, input);
+        updatedCell.setInfluenceFrom(CellIdToCell(OrignalValueUtilis.findInfluenceFrom(input)));
+
+        if(isCircle(updatedCell)) {
+            //throw somthing
+            throw  new IllegalArgumentException("circle");
+        }
+        //check for circle
+        //handle error
+
+        Cell previousCell = activeCells.put(target,updatedCell);
+        //pass this line inout i valid only localy on cell.
+
+        //if it is a new cell there is no influenceOn, if exist he may have influenced on other cells.
+        if(previousCell != null) {
+
+
+            updatedCell.setInfluenceOn(previousCell.getInfluenceOn());
+            try
+            {
+                recalculationRouteFrom(updatedCell);
+            }
+            catch(Exception someException)
+            {
+                //doing rollback to previous sheet.
+                activeCells.put(target,previousCell);
+                recalculationRouteFrom(previousCell);
+                //throw exception for UI, WITH THE problem.
+            }
+
+        }
+        else {
+            for(Cell cell : updatedCell.getInfluenceFrom()) {
+                cell.addInfluenceOn(updatedCell);
+            }
+        }
+
     }
 }

@@ -45,7 +45,7 @@ public class main
         System.out.println(expOfA3.evaluate().getValue());
 
 
-        String str = "{PLUS,{REF, A2},{REF,    A1}}";
+        String str = "{PLUS,{REF, A2},{REF, A1}}";
 
         OrignalValueUtilis.findInfluenceFrom(str);
 

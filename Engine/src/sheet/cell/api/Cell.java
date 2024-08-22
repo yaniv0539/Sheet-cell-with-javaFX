@@ -10,7 +10,11 @@ public interface Cell {
     int getVersion();
     String getOriginalValue();
     void setOriginalValue(String originalValue);
+    void setInfluenceOn(Set<Cell> influenceOn);
+    void setInfluenceFrom(Set<Cell> influenceFrom);
+    void addInfluenceOn(Cell influenceOn);
+    void addInfluenceFrom(Cell influenceFrom);
     Data getEffectiveValue();
-    Set<Cell> getDependentCells();
-    Set<Cell> getInfluencedCells();
+    Set<Cell> getInfluenceFrom();
+    Set<Cell> getInfluenceOn();
 }

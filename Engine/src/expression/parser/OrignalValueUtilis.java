@@ -5,10 +5,12 @@ import expression.impl.BooleanExpression;
 import expression.impl.Number;
 import expression.impl.RawString;
 import operation.Operation;
+import sheet.cell.api.Cell;
+import sheet.coordinate.api.Coordinate;
+import sheet.coordinate.impl.CoordinateFactory;
+import sheet.coordinate.impl.CoordinateImpl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -87,8 +89,9 @@ public class OrignalValueUtilis {
 
     }
 
-    public static void findInfluenceFrom(String value)
+    public static Set<String> findInfluenceFrom(String value)
     {
+        Set<String> cellDependence = new HashSet<>();
 
         // Define the regex pattern to match the structure and capture the value after the comma
         Pattern pattern = Pattern.compile("\\{REF,\\s*([A-Z]\\d+)\\}");
@@ -98,9 +101,10 @@ public class OrignalValueUtilis {
 
         // Find all matches in the string
         while (matcher.find()) {
-            String extractedValue = matcher.group(1);  // Get the first capturing group
-            System.out.println("Extracted Value: " + extractedValue);
+            String extractedValue = matcher.group(1);
+            cellDependence.add(extractedValue);
         }
+        return cellDependence;
     }
 
 }
