@@ -44,11 +44,12 @@ public class OrignalValueUtilis {
 
     }
 
-
+    //this function need to get trimmed expression already !!!!!
     public static Expression toExpression(String input) {
         List<String> parts = new ArrayList<>();
         StringBuilder buffer = new StringBuilder();
         Stack<Character> stack = new Stack<>();
+
 
         if (input.startsWith("{") && input.endsWith("}")) {
 
@@ -63,7 +64,7 @@ public class OrignalValueUtilis {
 
                 if (c == ',' && stack.isEmpty()) {
                     // If we are at a comma and the stack is empty, it's a separator for top-level parts
-                    parts.add(buffer.toString().trim());
+                    parts.add(buffer.toString());
                     buffer.setLength(0); // Clear the buffer for the next part
                 } else {
                     buffer.append(c);
@@ -72,7 +73,7 @@ public class OrignalValueUtilis {
 
             // Add the last part
             if (buffer.length() > 0) {
-                parts.add(buffer.toString().trim());
+                parts.add(buffer.toString());
             }
 
             String functionName = parts.get(0).trim().toUpperCase();

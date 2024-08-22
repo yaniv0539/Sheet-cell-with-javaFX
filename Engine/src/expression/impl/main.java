@@ -49,17 +49,17 @@ public class main
             //init
             sh.setCell(CoordinateImpl.toCoordinate("A1"),"5");
             sh.setCell(CoordinateImpl.toCoordinate("A2"),"5");
-            sh.setCell(CoordinateImpl.toCoordinate("A3"),"{PLUS,{REF, A2},{REF,A1}}");
-            sh.setCell(CoordinateImpl.toCoordinate("A4"),"{REF, A2}");
+            sh.setCell(CoordinateImpl.toCoordinate("A3"),"{PLUS,{REF,A2},{REF,A1}}");
+            sh.setCell(CoordinateImpl.toCoordinate("A4"),"{REF,A2}");
 
             print(sh);
             sh.setCell(CoordinateImpl.toCoordinate("A2"),"20");
             print(sh);
             sh.setCell(CoordinateImpl.toCoordinate("A1"),"10");
             print(sh);
-            sh.setCell(CoordinateImpl.toCoordinate("A4"),"F, A444}");
+            sh.setCell(CoordinateImpl.toCoordinate("A4"),"world");
             print(sh);
-            sh.setCell(CoordinateImpl.toCoordinate("A5"),"{CONCAT,{REF,A4},       HELLO }");
+            sh.setCell(CoordinateImpl.toCoordinate("A5"),"{CONCAT,HELLO ,{REF,A4}}");
         }
         catch(Exception e)
         {
