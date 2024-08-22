@@ -60,11 +60,13 @@ public class main
             sh.setCell(CoordinateImpl.toCoordinate("A4"),"world");
             print(sh);
             sh.setCell(CoordinateImpl.toCoordinate("A5"),"{CONCAT,HELLO ,{REF,A4}}");
+            print(sh);
+
         }
         catch(Exception e)
         {
             System.out.println(e.getMessage());
-            print(sh);
+            //print(sh);
         }
 
 

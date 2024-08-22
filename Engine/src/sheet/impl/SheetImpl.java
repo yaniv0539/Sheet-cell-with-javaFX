@@ -142,7 +142,10 @@ public class SheetImpl implements Sheet, CellLookupService {
 
         }
         else {
-            updatedCell.getInfluenceFrom().forEach(cell-> cell.addInfluenceOn(updatedCell));
+            for(Cell cell : updatedCell.getInfluenceFrom()){
+                cell.addInfluenceOn(updatedCell);
+            }
+            //updatedCell.getInfluenceFrom().forEach(cell-> cell.addInfluenceOn(updatedCell));
         }
     }
 
