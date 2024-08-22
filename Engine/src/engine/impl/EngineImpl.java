@@ -17,6 +17,7 @@ import java.io.InputStream;
 
 import engine.jaxb.generated.STLSheet;
 import sheet.cell.api.Cell;
+import sheet.coordinate.impl.CoordinateImpl;
 import sheet.layout.api.Layout;
 
 public class EngineImpl implements Engine {
@@ -115,7 +116,7 @@ public class EngineImpl implements Engine {
         int row = extractRow(cellName) - 1;
         int column = parseColumnToInt(extractColumn(cellName)) - 1;
 
-        return this.sheet.getCell(row, column);
+        return this.sheet.getCell(CoordinateImpl.toCoordinate(cellName));
     }
 
     private static boolean isValidCellFormat(String cellName) {
