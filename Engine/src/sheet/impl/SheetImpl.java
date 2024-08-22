@@ -8,7 +8,6 @@ import sheet.api.Sheet;
 import sheet.cell.api.Cell;
 import sheet.cell.impl.CellImpl;
 import sheet.coordinate.api.Coordinate;
-import sheet.coordinate.impl.CoordinateFactory;
 import sheet.coordinate.impl.CoordinateImpl;
 import sheet.layout.api.Layout;
 
@@ -66,17 +65,13 @@ public class SheetImpl implements Sheet, CellLookupService {
     }
 
     @Override
-    public Cell getCell(int row, int column) {
+    public Cell getCell(Coordinate coordinate) {
 
-        if (!isRowInSheetBoundaries(row)) {
-            throw new IndexOutOfBoundsException("Row out of bounds");
+        if (!isCoordinateInBoundaries(coordinate)) {
+            throw new IndexOutOfBoundsException(coordinate + "is not in boundaries");
         }
 
-        if (!isColumnInSheetBoundaries(column)) {
-            throw new IndexOutOfBoundsException("Column out of bounds");
-        }
-
-        return activeCells.get(CoordinateFactory.createCoordinate(row, column));
+        return activeCells.get(coordinate);
     }
 
     @Override
@@ -107,21 +102,18 @@ public class SheetImpl implements Sheet, CellLookupService {
         this.version = version;
     }
 
-
-
-
     @Override
-    public void setCell(String cellName, String originalValue) {
+    public void setCell(Coordinate coordinate, String originalValue) {
         Ref.sheetView = this;
         //validation on Coordinate by format and  on sheet layout
-        Coordinate target = CoordinateImpl.toCoordinate(cellName);
 
-        if(!isRowInSheetBoundaries(target.getRow()) || !isColumnInSheetBoundaries(target.getCol())) {
-            throw new IllegalArgumentException("Row or column out of bounds !");
+        if (!isCoordinateInBoundaries(coordinate)) {
+            throw new IndexOutOfBoundsException(coordinate + "is not in boundaries");
         }
+
         //coordinate is valid
 
-        CellImpl updatedCell = CellImpl.create(target, version++, originalValue);
+        CellImpl updatedCell = CellImpl.create(coordinate, version++, originalValue);
         updatedCell.setInfluenceFrom(CellIdToCell(OrignalValueUtilis.findInfluenceFrom(originalValue)));
 
         if(isCircle(updatedCell)) {
@@ -131,7 +123,7 @@ public class SheetImpl implements Sheet, CellLookupService {
         //check for circle
         //handle error
 
-        Cell previousCell = activeCells.put(target,updatedCell);
+        Cell previousCell = activeCells.put(coordinate, updatedCell);
         //pass this line inout i valid only localy on cell.
 
         //if it is a new cell there is no influenceOn, if exist he may have influenced on other cells.
@@ -144,7 +136,7 @@ public class SheetImpl implements Sheet, CellLookupService {
             catch(Exception someException)
             {
                 //doing rollback to previous sheet.
-                activeCells.put(target,previousCell);
+                activeCells.put(coordinate, previousCell);
                 recalculationRouteFrom(previousCell);
                 throw  new IllegalArgumentException("re-compute didnt work");
             }
@@ -157,12 +149,75 @@ public class SheetImpl implements Sheet, CellLookupService {
         }
     }
 
-    private boolean isRowInSheetBoundaries(int row) {
-        return !(row >= this.layout.GetRows());
+    @Override
+    public void setCells(Map<Coordinate, String> originalValues) {
+
+        Map<Coordinate, Boolean> flagMap = new HashMap<>();
+        Map<Coordinate, String> oldOriginalValueMap = new HashMap<>();
+        Stack<Coordinate> updatedCellsCoordinates = new Stack<>();
+
+        for (Coordinate coordinate : originalValues.keySet()) {
+            flagMap.put(coordinate, false);
+        }
+
+        try {
+            originalValues.forEach((coordinate, originalValue) -> setCellsHelper(originalValues, flagMap, oldOriginalValueMap, updatedCellsCoordinates, coordinate));
+        } catch (Exception exception) {
+            updatedCellsCoordinates.forEach(coordinate -> {
+                if (oldOriginalValueMap.containsKey(coordinate) && oldOriginalValueMap.get(coordinate).equals(originalValues.get(""))) {
+                    this.activeCells.remove(coordinate);
+                }
+                else {
+                    setCell(coordinate, oldOriginalValueMap.get(coordinate));
+                }
+            });
+        }
+
     }
 
-    private boolean isColumnInSheetBoundaries(int column) {
-        return !(column >= this.layout.GetColumns());
+    private void setCellsHelper(Map<Coordinate, String> newOriginalValuesMap,
+                                Map<Coordinate, Boolean> flageMap,
+                                Map<Coordinate, String> oldOriginalValueMap,
+                                Stack<Coordinate> updatedCellsCoordinates,
+                                Coordinate coordinate) {
+
+        if (flageMap.get(coordinate)) {
+            return;
+        }
+
+        flageMap.put(coordinate, true);
+
+        String newOriginalValue = newOriginalValuesMap.get(coordinate);
+
+        Set<Coordinate> refCoordinates = OrignalValueUtilis.findInfluenceFrom(newOriginalValue);
+
+        refCoordinates.forEach(refCoordinate -> {
+            if (this.activeCells.containsKey(refCoordinate)) {
+                setCellsHelper(newOriginalValuesMap, flageMap, oldOriginalValueMap, updatedCellsCoordinates, refCoordinate);
+            }
+            else if (newOriginalValuesMap.containsKey(refCoordinate)) {
+                // TODO
+            }
+            else {
+                throw new IndexOutOfBoundsException(refCoordinate + "is not in boundaries");
+            }
+        });
+
+        if (this.activeCells.containsKey(coordinate)) {
+            Cell cell = this.activeCells.get(coordinate);
+            oldOriginalValueMap.put(coordinate, cell.getOriginalValue());
+        }
+
+        else {
+            oldOriginalValueMap.put(coordinate, "");
+        }
+
+        setCell(coordinate, newOriginalValue);
+        updatedCellsCoordinates.push(coordinate);
+    }
+
+    private boolean isCoordinateInBoundaries(Coordinate coordinate) {
+        return coordinate != null && coordinate.getRow() <= this.layout.GetRows() && coordinate.getCol() <= this.layout.GetColumns();
     }
 
     public static boolean isValidVersion(int version) {
@@ -188,14 +243,14 @@ public class SheetImpl implements Sheet, CellLookupService {
     }
 
     private Set<Cell> CellIdToCell(Set<String> newInfluenceCellsId) {
-        Set<Cell> Cells = new HashSet<>();
+        Set<Cell> cells = new HashSet<>();
 
         for (String cellId : newInfluenceCellsId) {
-            Coordinate c = CoordinateImpl.toCoordinate(cellId);
-            Cells.add(getCell(c.getRow(), c.getCol()));
+            Coordinate coordinate = CoordinateImpl.toCoordinate(cellId);
+            cells.add(getCell(coordinate));
         }
 
-        return Cells;
+        return cells;
     }
 
     public void updateCell(String coordinateStr, String input) {

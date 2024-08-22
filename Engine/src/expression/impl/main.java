@@ -26,11 +26,11 @@ public class main
         String name = "Yaniv";
 
         Sheet sh =SheetImpl.create(name, layout);
-        sh.setCell("A1","5");
-        sh.setCell("A2","{REF,A1}");
-        sh.setCell("A3","{REF, A2}");
-
-        sh.setCell("A1","{REF,A3}");
+//        sh.setCell("A1","5");
+//        sh.setCell("A2","{REF,A1}");
+//        sh.setCell("A3","{REF, A2}");
+//
+//        sh.setCell("A1","{REF,A3}");
 
 
 
