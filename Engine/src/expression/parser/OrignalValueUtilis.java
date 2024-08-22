@@ -89,9 +89,9 @@ public class OrignalValueUtilis {
 
     }
 
-    public static Set<String> findInfluenceFrom(String value)
+    public static Set<Coordinate> findInfluenceFrom(String value)
     {
-        Set<String> cellDependence = new HashSet<>();
+        Set<Coordinate> cellDependence = new HashSet<>();
 
         // Define the regex pattern to match the structure and capture the value after the comma
         Pattern pattern = Pattern.compile("\\{REF,\\s*([A-Z]\\d+)\\}");
@@ -102,7 +102,7 @@ public class OrignalValueUtilis {
         // Find all matches in the string
         while (matcher.find()) {
             String extractedValue = matcher.group(1);
-            cellDependence.add(extractedValue);
+            cellDependence.add(CoordinateImpl.toCoordinate(extractedValue));
         }
         return cellDependence;
     }

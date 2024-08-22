@@ -10,8 +10,8 @@ public interface Sheet {
     String getName();
     Layout getLayout();
     int getVersion();
-    Cell getCell(int row, int column);
+    Cell getCell(Coordinate coordinate);
     Map<Coordinate, Cell> getActiveCells();
-    void setCell(String cellName, String value);
+    void setCell(Coordinate coordinate, String value);
     void setVersion(int version);
 }

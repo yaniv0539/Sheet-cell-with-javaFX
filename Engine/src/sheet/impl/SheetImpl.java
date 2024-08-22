@@ -8,7 +8,6 @@ import sheet.api.Sheet;
 import sheet.cell.api.Cell;
 import sheet.cell.impl.CellImpl;
 import sheet.coordinate.api.Coordinate;
-import sheet.coordinate.impl.CoordinateFactory;
 import sheet.coordinate.impl.CoordinateImpl;
 import sheet.layout.api.Layout;
 
@@ -66,19 +65,18 @@ public class SheetImpl implements Sheet, CellLookupService {
     }
 
     @Override
-    public Cell getCell(int row, int column) {
+    public Cell getCell(Coordinate coordinate) {
 
-        if (!isRowInSheetBoundaries(row)) {
+        if (!isRowInSheetBoundaries(coordinate.getRow())) {
             throw new IndexOutOfBoundsException("Row out of bounds");
         }
 
-        if (!isColumnInSheetBoundaries(column)) {
+        if (!isColumnInSheetBoundaries(coordinate.getCol())) {
             throw new IndexOutOfBoundsException("Column out of bounds");
         }
 
-        return activeCells.get(CoordinateFactory.createCoordinate(row, column));
+        return activeCells.get(coordinate);
     }
-
     @Override
     public Map<Coordinate, Cell> getActiveCells() {
         return Collections.unmodifiableMap(this.activeCells);
@@ -111,29 +109,22 @@ public class SheetImpl implements Sheet, CellLookupService {
 
 
     @Override
-    public void setCell(String cellName, String originalValue) {
+    public void setCell(Coordinate target, String originalValue) {
         Ref.sheetView = this;
-        //validation on Coordinate by format and  on sheet layout
-        Coordinate target = CoordinateImpl.toCoordinate(cellName);
 
         if(!isRowInSheetBoundaries(target.getRow()) || !isColumnInSheetBoundaries(target.getCol())) {
             throw new IllegalArgumentException("Row or column out of bounds !");
         }
-        //coordinate is valid
 
         CellImpl updatedCell = CellImpl.create(target, version++, originalValue);
-        updatedCell.setInfluenceFrom(CellIdToCell(OrignalValueUtilis.findInfluenceFrom(originalValue)));
+        updatedCell.setInfluenceFrom(CoordinateToCell(OrignalValueUtilis.findInfluenceFrom(originalValue)));
 
         if(isCircle(updatedCell)) {
             //throw somthing
             throw  new IllegalArgumentException("circle");
         }
-        //check for circle
-        //handle error
 
         Cell previousCell = activeCells.put(target,updatedCell);
-        //pass this line inout i valid only localy on cell.
-
         //if it is a new cell there is no influenceOn, if exist he may have influenced on other cells.
         if(previousCell != null) {
             updatedCell.setInfluenceOn(previousCell.getInfluenceOn());
@@ -146,14 +137,12 @@ public class SheetImpl implements Sheet, CellLookupService {
                 //doing rollback to previous sheet.
                 activeCells.put(target,previousCell);
                 recalculationRouteFrom(previousCell);
-                throw  new IllegalArgumentException("re-compute didnt work");
+                throw new IllegalArgumentException("re-compute didnt work");
             }
 
         }
         else {
-            for(Cell cell : updatedCell.getInfluenceFrom()) {
-                cell.addInfluenceOn(updatedCell);
-            }
+            updatedCell.getInfluenceFrom().forEach(cell-> cell.addInfluenceOn(updatedCell));
         }
     }
 
@@ -171,6 +160,7 @@ public class SheetImpl implements Sheet, CellLookupService {
 
     //function for cell update including rollback
     public boolean recalculationRouteFrom(Cell targetToStart){
+
         if(targetToStart.getInfluenceOn().isEmpty()){
             targetToStart.computeEffectiveValue();
         }
@@ -187,14 +177,12 @@ public class SheetImpl implements Sheet, CellLookupService {
         return cellToCheck.hasCircle();
     }
 
-    private Set<Cell> CellIdToCell(Set<String> newInfluenceCellsId) {
+    private Set<Cell> CoordinateToCell(Set<Coordinate> newInfluenceCellsId) {
         Set<Cell> Cells = new HashSet<>();
 
-        for (String cellId : newInfluenceCellsId) {
-            Coordinate c = CoordinateImpl.toCoordinate(cellId);
-            Cells.add(getCell(c.getRow(), c.getCol()));
+        for (Coordinate location : newInfluenceCellsId) {
+            Cells.add(getCell(location));
         }
-
         return Cells;
     }
 
