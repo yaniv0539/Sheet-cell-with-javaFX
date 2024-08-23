@@ -1,10 +1,8 @@
 package engine.impl;
 
-import engine.dto.sheet.cell.api.DCell;
-import engine.dto.sheet.impl.DSheet;
-import engine.dto.version.api.DVersions;
 import engine.api.Engine;
 import engine.jaxb.parser.STLSheetToSheet;
+import engine.version.manager.api.VersionManagerGetters;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
@@ -16,7 +14,10 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 import engine.jaxb.generated.STLSheet;
+import sheet.api.SheetGetters;
 import sheet.cell.api.Cell;
+import sheet.cell.api.CellGetters;
+import sheet.coordinate.impl.CoordinateFactory;
 import sheet.coordinate.impl.CoordinateImpl;
 import sheet.layout.api.Layout;
 
@@ -30,15 +31,13 @@ public class EngineImpl implements Engine {
 
     private EngineImpl() {}
 
-    public static EngineImpl CreateEngine() {
+    public static EngineImpl Create() {
         return new EngineImpl();
     }
 
     @Override
     public void ReadXMLInitFile(String filename) {
-        // TODO: Handle with exceptions...
         try {
-
             if (!filename.endsWith(".xml")) {
                 throw new FileNotFoundException("File name has to end with '.xml'");
             }
@@ -47,43 +46,33 @@ public class EngineImpl implements Engine {
             STLSheet stlSheet = deserializeFrom(inputStream);
             Sheet sheet = STLSheetToSheet.generate(stlSheet);
 
-            if (!isValidLayout(sheet.getLayout())) {
+            if (!isValidLayout(sheet.GetLayout())) {
                 throw new IndexOutOfBoundsException("Layout is invalid");
             }
 
             this.sheet = sheet;
         } catch (JAXBException | FileNotFoundException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Failed to read XML file", e);
         }
     }
 
     @Override
-    public DSheet ShowSheetStatus() {
-        // TODO: Make DSheet from sheet and return it.
-        return null;
-    }
+    public SheetGetters ShowSheetStatus() { return this.sheet; }
 
     @Override
-    public DCell ShowCellStatus(String cellName) {
-        Cell cell = getCell(cellName);
-        // TODO: Make DCell from cell and return it.
-        return null;
-    }
+    public CellGetters ShowCellStatus(String cellName) { return getCell(cellName); }
 
     @Override
-    public void UpdateCellStatus(String cellName, String value) {
-        Cell cell = getCell(cellName);
-        cell.setOriginalValue(value);
-    }
+    public void UpdateCellStatus(String cellName, String value) { this.sheet.SetCell(CoordinateFactory.toCoordinate(cellName), value); }
 
     @Override
-    public DVersions ShowVersions() {
+    public VersionManagerGetters ShowVersions() {
         // Todo: Make DVersions from Versions.
         return null;
     }
 
     @Override
-    public DSheet ShowVersion(int version) {
+    public SheetGetters ShowVersion(int version) {
 
         if (!isVersionExists(version)) {
             throw new IndexOutOfBoundsException("Version is invalid");
@@ -110,13 +99,11 @@ public class EngineImpl implements Engine {
 
     private Cell getCell(String cellName) {
 
-        if (!isValidCellFormat(cellName))
+        if (!isValidCellFormat(cellName)) {
             throw new IllegalArgumentException("Invalid cell name");
+        }
 
-        int row = extractRow(cellName) - 1;
-        int column = parseColumnToInt(extractColumn(cellName)) - 1;
-
-        return this.sheet.getCell(CoordinateImpl.toCoordinate(cellName));
+        return this.sheet.GetCell(CoordinateFactory.toCoordinate(cellName));
     }
 
     private static boolean isValidCellFormat(String cellName) {
@@ -128,38 +115,10 @@ public class EngineImpl implements Engine {
         return cellName.matches("^[A-Z]+[0-9]+$");
     }
 
-    private static int extractRow(String cellName) {
-
-        int index = 0;
-
-        while (index < cellName.length() && !Character.isDigit(cellName.charAt(index))) {
-            index++;
-        }
-
-        return Integer.parseInt(cellName.substring(index));
+    @Override
+    public String toString() {
+        return "EngineImpl{" +
+                "sheet=" + sheet +
+                '}';
     }
-
-    private static String extractColumn(String cellName) {
-
-        int index = 0;
-        while (index < cellName.length() && !Character.isDigit(cellName.charAt(index))) {
-            index++;
-        }
-
-        return cellName.substring(0, index);
-    }
-
-    private static int parseColumnToInt(String column) {
-        int result = 0;
-        int length = column.length();
-
-        for (int i = 0; i < length; i++) {
-            char c = column.charAt(i);
-            int value = c - 'A' + 1;
-            result = result * 26 + value;
-        }
-
-        return result;
-    }
-
 }

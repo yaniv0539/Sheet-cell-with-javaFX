@@ -44,14 +44,14 @@ public class LayoutImpl implements Layout {
     @Override
     public void SetRows(int rows) {
         if (!isValidRows(rows))
-            throw new IllegalArgumentException("Rows must be a positive integer");
+            throw new IllegalArgumentException(rows + " is not a valid rows, it must be a positive integer");
         this.rows = rows;
     }
 
     @Override
     public void SetColumns(int columns) {
         if (!isValidColumns(columns))
-            throw new IllegalArgumentException("Columns must be a positive integer");
+            throw new IllegalArgumentException(columns + " is not a valid columns, it must be a positive integer");
         this.columns = columns;
     }
 

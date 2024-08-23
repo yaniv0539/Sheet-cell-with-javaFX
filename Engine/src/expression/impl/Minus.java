@@ -16,7 +16,7 @@ public class Minus extends BinaryExpression  {
 
     @Override
     protected Data dynamicEvaluate(Data left, Data right) {
-        return new DataImpl(DataType.NUMERIC,(double)left.getValue() - (double)right.getValue() );
+        return new DataImpl(DataType.NUMERIC,(double)left.GetValue() - (double)right.GetValue() );
     }
 
     @Override
@@ -24,7 +24,7 @@ public class Minus extends BinaryExpression  {
         boolean value = Arrays
                 .stream(args)
                 .map(Expression.class::cast)
-                .allMatch(arg -> arg.getType() == DataType.NUMERIC);
+                .allMatch(arg -> arg.GetType() == DataType.NUMERIC);
 
         if (!value) {
             //need to throw our own exception.

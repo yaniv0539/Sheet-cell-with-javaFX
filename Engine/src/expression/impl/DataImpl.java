@@ -16,12 +16,12 @@ public class DataImpl implements Data {
     }
 
     @Override
-    public DataType getType() {
+    public DataType GetType() {
         return type;
     }
 
     @Override
-    public Object getValue() {
+    public Object GetValue() {
         return value;
     }
 }

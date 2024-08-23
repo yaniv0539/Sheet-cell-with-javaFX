@@ -17,7 +17,7 @@ public class RawString extends ExpressionImpl {
     }
 
     @Override
-    public Data evaluate() {
+    public Data Evaluate() {
 
         return new DataImpl(DataType.STRING, (String)this.value);
     }
@@ -35,13 +35,4 @@ public class RawString extends ExpressionImpl {
 
         return true;
     }
-    //    @Override
-//    public String getOperationSign() {
-//        return "";
-//    }
-//
-//    @Override
-//    public String toString() {
-//        return value;
-//    }
 }

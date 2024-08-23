@@ -1,6 +1,5 @@
 package sheet.coordinate.api;
 
-public interface Coordinate {
-    public int getRow();
-    public int getCol();
+public interface Coordinate extends CoordinateGetters, CoordinateSetters {
+
 }

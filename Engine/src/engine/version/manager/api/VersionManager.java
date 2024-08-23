@@ -1,5 +1,5 @@
 package engine.version.manager.api;
 
-public interface VersionManager {
+public interface VersionManager extends VersionManagerGetters, VersionManagerSetters {
 
 }

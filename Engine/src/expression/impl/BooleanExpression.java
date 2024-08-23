@@ -15,7 +15,7 @@ public class BooleanExpression extends ExpressionImpl {
 
 
     @Override
-    public Data evaluate() {
+    public Data Evaluate() {
         return new DataImpl(DataType.BOOLEAN, value);
     }
 

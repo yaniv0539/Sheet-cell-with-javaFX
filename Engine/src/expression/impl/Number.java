@@ -19,7 +19,7 @@ public class Number extends ExpressionImpl {
     }
 
     @Override
-    public Data evaluate() {
+    public Data Evaluate() {
         return new DataImpl(DataType.NUMERIC, value);
     }
 
@@ -36,13 +36,10 @@ public class Number extends ExpressionImpl {
 
         return true;
     }
-    //    @Override
-//    public String getOperationSign() {
-//        return "";
-//    }
 
     @Override
     public String toString() {
         return value >= 0 ? Double.toString(value): "(" + Double.toString(value) + ")";
     }
+
 }

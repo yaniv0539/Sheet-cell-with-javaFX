@@ -1,33 +1,31 @@
 package expression.impl;
 
 import expression.api.Data;
-import expression.api.DataType;
 import expression.api.Expression;
-import sheet.api.CellLookupService;
+import sheet.api.SheetGetters;
 import sheet.cell.api.Cell;
 
 import java.util.Arrays;
-import java.util.Optional;
 
 public class Ref extends ExpressionImpl {
 
     private Expression cellId;
-    public static CellLookupService sheetView;
+    public static SheetGetters sheetView;
 
     public Ref(Expression cellId) {
 
         if (cellId.getClass() == RawString.class) {
             this.cellId = cellId;
-            Data inCellData = sheetView.getCellData((String)cellId.evaluate().getValue());
-            setDataType(inCellData.getType());
+            Data inCellData = sheetView.GetCellData((String)cellId.Evaluate().GetValue());
+            setDataType(inCellData.GetType());
         }
         else {
             throw new IllegalArgumentException("Ref argument must be a cell-id");
         }
     }
     @Override
-    public Data evaluate() {
-        return sheetView.getCellData((String)cellId.evaluate().getValue());
+    public Data Evaluate() {
+        return sheetView.GetCellData((String)cellId.Evaluate().GetValue());
     }
 
     @Override

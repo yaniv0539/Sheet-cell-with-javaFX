@@ -2,7 +2,7 @@ package expression.api;
 
 public interface Expression {
 
-    Data evaluate();
+    Data Evaluate();
     boolean isValidArgs(Object...args);
-    DataType getType();
+    DataType GetType();
 }

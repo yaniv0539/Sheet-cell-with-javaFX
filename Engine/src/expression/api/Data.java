@@ -2,6 +2,6 @@ package expression.api;
 
 public interface Data {
 
-    DataType getType();
-    Object getValue();
+    DataType GetType();
+    Object GetValue();
 }

@@ -15,8 +15,8 @@ public abstract class BinaryExpression extends ExpressionImpl {
     }
 
     @Override
-    public Data evaluate() {
-        return dynamicEvaluate(left.evaluate(), right.evaluate());
+    public Data Evaluate() {
+        return dynamicEvaluate(left.Evaluate(), right.Evaluate());
     }
 
     protected abstract Data dynamicEvaluate(Data left, Data right);

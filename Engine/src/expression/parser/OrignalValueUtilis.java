@@ -102,7 +102,7 @@ public class OrignalValueUtilis {
         // Find all matches in the string
         while (matcher.find()) {
             String extractedValue = matcher.group(1);
-            cellDependence.add(CoordinateImpl.toCoordinate(extractedValue));
+            cellDependence.add(CoordinateFactory.toCoordinate(extractedValue));
         }
         return cellDependence;
     }

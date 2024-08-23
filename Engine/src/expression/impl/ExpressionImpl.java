@@ -10,8 +10,9 @@ public abstract class ExpressionImpl implements Expression {
     void setDataType(DataType type) {
         this.type = type;
     }
+
     @Override
-    public DataType getType() {
+    public DataType GetType() {
         return type;
     }
 }
