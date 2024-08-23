@@ -57,12 +57,12 @@ public class CellImpl implements Cell {
 
     @Override
     public Set<Cell> getInfluenceFrom() {
-        return Collections.unmodifiableSet(this.influenceFrom);
+        return this.influenceFrom;
     }
 
     @Override
     public Set<Cell> getInfluenceOn() {
-        return Collections.unmodifiableSet(this.influenceOn);
+        return this.influenceOn;
     }
 
     @Override

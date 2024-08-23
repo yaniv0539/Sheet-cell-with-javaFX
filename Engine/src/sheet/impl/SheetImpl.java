@@ -128,16 +128,19 @@ public class SheetImpl implements Sheet, CellLookupService {
         //if it is a new cell there is no influenceOn, if exist he may have influenced on other cells.
         if(previousCell != null) {
             updatedCell.setInfluenceOn(previousCell.getInfluenceOn());
+
             try
             {
-                recalculationRouteFrom(updatedCell);
+                Stack<Cell> stack = topologicalSortFrom(updatedCell);
+                recalculationRouteFrom(stack);
             }
             catch(Exception someException)
             {
                 //doing rollback to previous sheet.
                 activeCells.put(target,previousCell);
-                recalculationRouteFrom(previousCell);
-                throw new IllegalArgumentException("re-compute didnt work");
+                Stack<Cell> stack = topologicalSortFrom(previousCell);
+                recalculationRouteFrom(stack);
+                throw new IllegalArgumentException("recalculation didnt work");
             }
 
         }
@@ -162,14 +165,11 @@ public class SheetImpl implements Sheet, CellLookupService {
     }
 
     //function for cell update including rollback
-    public boolean recalculationRouteFrom(Cell targetToStart){
+    public boolean recalculationRouteFrom(Stack<Cell> cellStack) {
 
-        if(targetToStart.getInfluenceOn().isEmpty()){
-            targetToStart.computeEffectiveValue();
-        }
-
-        for (Cell cell : targetToStart.getInfluenceOn()) {
-            recalculationRouteFrom(cell);
+        // Print the contents of the stack which is the topological order
+        while (!cellStack.isEmpty()) {
+            cellStack.pop().computeEffectiveValue();
         }
 
         return true;
@@ -189,6 +189,36 @@ public class SheetImpl implements Sheet, CellLookupService {
         return Cells;
     }
 
-    public void updateCell(String coordinateStr, String input) {
+    private Stack<Cell> topologicalSortFrom(Cell cell) {
+
+        Stack<Cell> stack = new Stack<>();
+        Set<Coordinate> visited = new HashSet<>();
+
+        // Call the recursive helper function to store topological sort starting from all cells one by one
+        for (Cell neighbor : cell.getInfluenceOn()) {
+
+            if (!visited.contains(neighbor.getCoordinate())) {
+                dfs(neighbor, visited, stack);
+            }
+        }
+
+        return stack;
     }
+
+    private void dfs(Cell cell, Set<Coordinate> visited,Stack<Cell> stack)
+    {
+        visited.add(cell.getCoordinate());
+
+        // Visit all the adjacent vertices
+        for (Cell neighbor : cell.getInfluenceOn()) {
+
+            if (!visited.contains(neighbor.getCoordinate())) {
+                dfs(neighbor, visited, stack);
+            }
+        }
+
+        // Push current cell to stack which stores the result
+        stack.push(cell);
+    }
+
 }

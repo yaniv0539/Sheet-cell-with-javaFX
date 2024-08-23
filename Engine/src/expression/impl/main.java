@@ -44,62 +44,37 @@ public class main
         Layout layout = LayoutImpl.create(size, column, row);
         String name = "Yaniv";
         Sheet sh =SheetImpl.create(name, layout);
+
         try
         {
             //init
-            sh.setCell(CoordinateImpl.toCoordinate("A1"),"5");
-            sh.setCell(CoordinateImpl.toCoordinate("A2"),"5");
-            sh.setCell(CoordinateImpl.toCoordinate("A3"),"{PLUS,{REF,A2},{REF,A1}}");
-            sh.setCell(CoordinateImpl.toCoordinate("A4"),"{REF,A2}");
+            sh.setCell(CoordinateImpl.toCoordinate("A1"),"{DIVIDE,2,0}");
+           sh.setCell(CoordinateImpl.toCoordinate("A2"),"{REF,A1}");
+            sh.setCell(CoordinateImpl.toCoordinate("A3"),"{REF,A2}");
+            sh.setCell(CoordinateImpl.toCoordinate("A4"),"{REF,A3}");
+            sh.setCell(CoordinateImpl.toCoordinate("A5"),"{REF,A4}");
 
             print(sh);
-            sh.setCell(CoordinateImpl.toCoordinate("A2"),"20");
+            sh.setCell(CoordinateImpl.toCoordinate("A5"),"{MINUS,5,{REF,A2}}");
+             print(sh);
+           sh.setCell(CoordinateImpl.toCoordinate("A1"),"{DIVIDE,2,4}");
             print(sh);
-            sh.setCell(CoordinateImpl.toCoordinate("A1"),"10");
-            print(sh);
-            sh.setCell(CoordinateImpl.toCoordinate("A4"),"world");
-            print(sh);
-            sh.setCell(CoordinateImpl.toCoordinate("A5"),"{CONCAT,HELLO ,{REF,A4}}");
-            print(sh);
+//            sh.setCell(CoordinateImpl.toCoordinate("A3"),"{MINUS,{REF,A1},{PLUS,{REF,A2},{REF,A1}}}");
+//            print(sh);
+//            sh.setCell(CoordinateImpl.toCoordinate("A1"),"{REF,A2}");
+//            print(sh);
+//           sh.setCell(CoordinateImpl.toCoordinate("A4"),"hello world");
+//            print(sh);
+//            sh.setCell(CoordinateImpl.toCoordinate("A5"),"{CONCAT,Hello,{SUB,{REF,A4},{REF,A2},{REF,A1}}}");
+//             print(sh);
+//             sh.setCell(CoordinateImpl.toCoordinate("A6"),"hello world");
 
         }
         catch(Exception e)
         {
             System.out.println(e.getMessage());
-            //print(sh);
+            print(sh);
         }
-
-
-
-
-
-       // Cell c = sh.getCell(2, 0);
-
-//        System.out.println(expOfA3.evaluate().getType());
-//        System.out.println(expOfA3.evaluate().getValue());
-//        System.out.println("after change:");
-//
-//        sh.setCell(CoordinateImpl.toCoordinate("A1"),"10");
-//        sh.setCell(CoordinateImpl.toCoordinate("A5"),"hello");
-//        System.out.println(expOfA3.evaluate().getType());
-//        System.out.println(expOfA3.evaluate().getValue());
-//        System.out.println(expOfA3.evaluate().getValue());
-
-
-       // String str = "{PLUS,{REF, A2},{REF, A1}}";
-
-        //OrignalValueUtilis.findInfluenceFrom(str);
-
-        //System.out.println(c.getEffectiveValue().getValue());
-//        sh.setCell(1, 4,"{PLUS,{REF, B1},{REF,A1}" );
-
-       // Expression e3 = CellValueParser.toExpression("{DIVIDE, {PLUS, {PLUS, 5, 7}, {PLUS, 5, 7}}, {PLUS, {PLUS, 5, 7}, {PLUS, -5, -7}}}");
-       // Operation mathOperation = Operation.valueOf("SUB");
-       // Expression exp1 = mathOperation.create(exp, new Number(0), new Number(4));
-
-//        Engine engine = EngineImpl.CreateEngine();
-//        engine.ReadXMLInitFile("Engine/src/engine/jaxb/resources/basic.xml");
-
 
 
     }
