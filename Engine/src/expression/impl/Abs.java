@@ -4,6 +4,7 @@ import expression.api.Data;
 import expression.api.DataType;
 import expression.api.Expression;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 public class Abs extends UnaryExpression {
@@ -18,7 +19,7 @@ public class Abs extends UnaryExpression {
     @Override
     protected Data dynamicEvaluate(Data input) {
 
-        return new DataImpl(DataType.NUMERIC, Math.abs((double)input.GetValue()));
+        return new DataImpl(DataType.NUMERIC, Math.abs((double)input.getValue()));
     }
 
     @Override
@@ -27,7 +28,7 @@ public class Abs extends UnaryExpression {
         boolean value = Arrays
                 .stream(args)
                 .map(Expression.class::cast)
-                .allMatch(arg -> arg.GetType() == DataType.NUMERIC);
+                .allMatch(arg -> arg.getType() == DataType.NUMERIC);
 
         if (!value) {
             //need to throw our own exception.

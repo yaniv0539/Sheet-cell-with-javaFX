@@ -15,7 +15,7 @@ public class Mod extends BinaryExpression {
     @Override
     protected Data dynamicEvaluate(Data left, Data right) {
 
-        return new DataImpl(DataType.NUMERIC,(double)left.GetValue() % (double)right.GetValue() );
+        return new DataImpl(DataType.NUMERIC,(double)left.getValue() % (double)right.getValue() );
     }
 
     @Override
@@ -24,7 +24,7 @@ public class Mod extends BinaryExpression {
         boolean value = Arrays
                 .stream(args)
                 .map(Expression.class::cast)
-                .allMatch(arg -> arg.GetType() == DataType.NUMERIC);
+                .allMatch(arg -> arg.getType() == DataType.NUMERIC);
 
         if (!value) {
             //need to throw our own exception.

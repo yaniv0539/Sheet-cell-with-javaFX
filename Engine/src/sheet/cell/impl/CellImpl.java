@@ -5,11 +5,12 @@ import expression.parser.OrignalValueUtilis;
 import sheet.cell.api.Cell;
 import sheet.coordinate.api.Coordinate;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-public class CellImpl implements Cell {
+public class CellImpl implements Cell, Serializable {
 
     private final Coordinate coordinate;
     private int version;
@@ -26,7 +27,7 @@ public class CellImpl implements Cell {
 
         this.coordinate = coordinate;
         setVersion(version);
-        SetOriginalValue(originalValue);
+        setOriginalValue(originalValue);
         this.influenceFrom = new HashSet<>();
         this.influenceOn = new HashSet<>();
     }
@@ -36,55 +37,55 @@ public class CellImpl implements Cell {
     }
 
     @Override
-    public Coordinate GetCoordinate() {
+    public Coordinate getCoordinate() {
         return this.coordinate;
     }
 
     @Override
-    public int GetVersion() {
+    public int getVersion() {
         return this.version;
     }
 
     @Override
-    public String GetOriginalValue() {
+    public String getOriginalValue() {
         return this.originalValue;
     }
 
     @Override
-    public Data GetEffectiveValue() {
+    public Data getEffectiveValue() {
         return this.effectiveValue;
     }
 
     @Override
-    public Set<Cell> GetInfluenceFrom() { return Collections.unmodifiableSet(this.influenceFrom); }
+    public Set<Cell> getInfluenceFrom() { return Collections.unmodifiableSet(this.influenceFrom); }
 
     @Override
-    public Set<Cell> GetInfluenceOn() {
+    public Set<Cell> getInfluenceOn() {
         return Collections.unmodifiableSet(this.influenceOn);
     }
 
     @Override
-    public void SetInfluenceOn(Set<Cell> influenceOn) {
+    public void setInfluenceOn(Set<Cell> influenceOn) {
         this.influenceOn = influenceOn;
     }
 
     @Override
-    public void SetInfluenceFrom(Set<Cell> influenceFrom) {
+    public void setInfluenceFrom(Set<Cell> influenceFrom) {
         this.influenceFrom = influenceFrom;
     }
 
     @Override
-    public void AddInfluenceOn(Cell effectOn) {
+    public void addInfluenceOn(Cell effectOn) {
         influenceOn.add(effectOn);
     }
 
     @Override
-    public void AddInfluenceFrom(Cell AffectedFrom) { influenceFrom.add(AffectedFrom); }
+    public void addInfluenceFrom(Cell AffectedFrom) { influenceFrom.add(AffectedFrom); }
 
     @Override
-    public void SetOriginalValue(String originalValue) {
+    public void setOriginalValue(String originalValue) {
 
-        Data effectiveValue = OrignalValueUtilis.toExpression(originalValue).Evaluate();
+        Data effectiveValue = OrignalValueUtilis.toExpression(originalValue).evaluate();
         //getting data, if pass this line value is valid to this specific cell.
         //the sheet need to check if this is ok for all cells that depend on this cell data.
         //get the cell that "this" influence from
@@ -107,7 +108,7 @@ public class CellImpl implements Cell {
     }
 
     @Override
-    public void ComputeEffectiveValue() { SetOriginalValue(this.originalValue); }
+    public void computeEffectiveValue() { setOriginalValue(this.originalValue); }
 
     public boolean HasCircle()
     {
@@ -116,15 +117,15 @@ public class CellImpl implements Cell {
 
     private boolean recHasCircle(Cell current, Set<Coordinate> visited) {
         // If the current object is already visited, a cycle is detected
-        if (visited.contains(current.GetCoordinate())) {
+        if (visited.contains(current.getCoordinate())) {
             return true;
         }
 
         // Mark the current object as visited
-        visited.add(current.GetCoordinate());
+        visited.add(current.getCoordinate());
 
         // Recur for all the objects in the relatedObjects list
-        for (Cell affectedBy : current.GetInfluenceFrom()) {
+        for (Cell affectedBy : current.getInfluenceFrom()) {
             // If a cycle is detected in the recursion, return true
             if (recHasCircle(affectedBy, visited)) {
                 return true;
@@ -132,7 +133,7 @@ public class CellImpl implements Cell {
         }
 
         // Remove the current object from the visited set (backtracking)
-        visited.remove(current.GetCoordinate());
+        visited.remove(current.getCoordinate());
 
         // If no cycle was found, return false
         return false;

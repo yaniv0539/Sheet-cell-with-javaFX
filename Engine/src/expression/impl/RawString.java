@@ -17,7 +17,7 @@ public class RawString extends ExpressionImpl {
     }
 
     @Override
-    public Data Evaluate() {
+    public Data evaluate() {
 
         return new DataImpl(DataType.STRING, (String)this.value);
     }

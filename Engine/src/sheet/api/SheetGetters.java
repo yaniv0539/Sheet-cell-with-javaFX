@@ -10,10 +10,11 @@ import sheet.layout.api.Layout;
 import java.util.Map;
 
 public interface SheetGetters {
-    String GetName();
-    Layout GetLayout();
-    int GetVersion();
-    Cell GetCell(Coordinate coordinate);
-    Map<CoordinateGetters, CellGetters> GetActiveCells();
-    Data GetCellData(String cellId);
+    String getName();
+    Layout getLayout();
+    int getVersion();
+    Cell getCell(Coordinate coordinate);
+    Map<CoordinateGetters, CellGetters> getActiveCells();
+    int getNumberOfCellsThatChangedSinceCreated();
+    Data getCellData(String cellId);
 }

@@ -16,7 +16,7 @@ public class Concat extends BinaryExpression {
     @Override
     protected Data dynamicEvaluate(Data left, Data right) {
 
-        String result = String.join("",(String) left.GetValue(), (String) right.GetValue());
+        String result = String.join("",(String) left.getValue(), (String) right.getValue());
 
         return new DataImpl(DataType.STRING, result);
     }

@@ -3,15 +3,17 @@ package sheet.layout.impl;
 import sheet.layout.api.Layout;
 import sheet.layout.size.api.Size;
 
-public class LayoutImpl implements Layout {
+import java.io.Serializable;
+
+public class LayoutImpl implements Layout, Serializable {
     private Size size;
     private int rows;
     private int columns;
 
     private LayoutImpl(Size size, int rows, int columns) {
-        SetSize(size);
-        SetRows(rows);
-        SetColumns(columns);
+        setSize(size);
+        setRows(rows);
+        setColumns(columns);
     }
 
     public static LayoutImpl create(Size size, int row, int column) {
@@ -19,22 +21,22 @@ public class LayoutImpl implements Layout {
     }
 
     @Override
-    public Size GetSize() {
+    public Size getSize() {
         return this.size;
     }
 
     @Override
-    public int GetRows() {
+    public int getRows() {
         return this.rows;
     }
 
     @Override
-    public int GetColumns() {
+    public int getColumns() {
         return this.columns;
     }
 
     @Override
-    public void SetSize(Size size) {
+    public void setSize(Size size) {
         if (size == null) {
             throw new IllegalArgumentException("Size cannot be null");
         }
@@ -42,14 +44,14 @@ public class LayoutImpl implements Layout {
     }
 
     @Override
-    public void SetRows(int rows) {
+    public void setRows(int rows) {
         if (!isValidRows(rows))
             throw new IllegalArgumentException(rows + " is not a valid rows, it must be a positive integer");
         this.rows = rows;
     }
 
     @Override
-    public void SetColumns(int columns) {
+    public void setColumns(int columns) {
         if (!isValidColumns(columns))
             throw new IllegalArgumentException(columns + " is not a valid columns, it must be a positive integer");
         this.columns = columns;

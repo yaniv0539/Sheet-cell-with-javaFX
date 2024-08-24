@@ -19,11 +19,11 @@ public class Sub extends ExpressionImpl {
     }
 
     @Override
-    public Data Evaluate() {
+    public Data evaluate() {
 
-        String str = (String)source.Evaluate().GetValue();
-        Double first = (Double)left.Evaluate().GetValue();
-        Double last = (Double)right.Evaluate().GetValue();
+        String str = (String)source.evaluate().getValue();
+        Double first = (Double)left.evaluate().getValue();
+        Double last = (Double)right.evaluate().getValue();
 
         return new DataImpl(DataType.STRING,str.substring(first.intValue(), last.intValue()));
     }
@@ -34,12 +34,12 @@ public class Sub extends ExpressionImpl {
         boolean condition1 = Arrays.stream(args)
                 .map(Expression.class::cast)
                 .limit(1)
-                .allMatch(arg -> arg.GetType() == DataType.STRING);
+                .allMatch(arg -> arg.getType() == DataType.STRING);
 
         boolean condition2 = Arrays.stream(args)
                         .map(Expression.class::cast)
                         .skip(1)
-                        .allMatch(arg -> arg.GetType() == DataType.NUMERIC);
+                        .allMatch(arg -> arg.getType() == DataType.NUMERIC);
 
         if (!(condition1 && condition2)) {
             //need to throw our own exception.

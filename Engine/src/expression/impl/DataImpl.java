@@ -3,7 +3,9 @@ package expression.impl;
 import expression.api.Data;
 import expression.api.DataType;
 
-public class DataImpl implements Data {
+import java.io.Serializable;
+
+public class DataImpl implements Data, Serializable {
 
     private DataType type;
     private Object value;
@@ -16,12 +18,12 @@ public class DataImpl implements Data {
     }
 
     @Override
-    public DataType GetType() {
+    public DataType getType() {
         return type;
     }
 
     @Override
-    public Object GetValue() {
+    public Object getValue() {
         return value;
     }
 }

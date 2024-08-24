@@ -10,13 +10,13 @@ import sheet.cell.impl.CellImpl;
 import sheet.coordinate.api.Coordinate;
 import sheet.coordinate.api.CoordinateGetters;
 import sheet.coordinate.impl.CoordinateFactory;
-import sheet.coordinate.impl.CoordinateImpl;
 import sheet.layout.api.Layout;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class SheetImpl implements Sheet {
+public class SheetImpl implements Sheet, Serializable {
 
     private static int numberOfSheets = 1;
 
@@ -24,6 +24,7 @@ public class SheetImpl implements Sheet {
     private final Layout layout;
     private int version;
     private final Map<Coordinate, Cell> activeCells;
+    private int numberOfCellsThatChangedSinceCreated;
 
     private SheetImpl(String name, Layout layout) {
 
@@ -41,6 +42,7 @@ public class SheetImpl implements Sheet {
         this.layout = layout;
         this.version = 1;
         this.activeCells = new HashMap<>();
+        this.numberOfCellsThatChangedSinceCreated = 0;
     }
 
     public static SheetImpl create(String name, Layout layout) {
@@ -52,22 +54,22 @@ public class SheetImpl implements Sheet {
     }
 
     @Override
-    public String GetName() {
+    public String getName() {
         return this.name;
     }
 
     @Override
-    public Layout GetLayout() {
+    public Layout getLayout() {
         return this.layout;
     }
 
     @Override
-    public int GetVersion() {
+    public int getVersion() {
         return this.version;
     }
 
     @Override
-    public Cell GetCell(Coordinate coordinate) {
+    public Cell getCell(Coordinate coordinate) {
 
         if (!isCoordinateInBoundaries(coordinate)) {
             throw new IndexOutOfBoundsException("coordinate " + coordinate + " is not in sheet boundaries");
@@ -77,13 +79,18 @@ public class SheetImpl implements Sheet {
     }
 
     @Override
-    public Map<CoordinateGetters, CellGetters> GetActiveCells() {
+    public Map<CoordinateGetters, CellGetters> getActiveCells() {
         return Collections.unmodifiableMap(this.activeCells);
+    }
+
+    @Override
+    public int getNumberOfCellsThatChangedSinceCreated() {
+        return this.numberOfCellsThatChangedSinceCreated;
     }
 
     // FOR INTERFACE lookupCellService
     @Override
-    public Data GetCellData(String cellId) {
+    public Data getCellData(String cellId) {
         Coordinate coordinate = CoordinateFactory.toCoordinate(cellId);
         Cell cell = activeCells.get(coordinate);
 
@@ -91,11 +98,11 @@ public class SheetImpl implements Sheet {
             throw new IllegalArgumentException("cell" + cellId + "is empty. Cannot get data.");
         }
 
-        return cell.GetEffectiveValue();
+        return cell.getEffectiveValue();
     }
 
     @Override
-    public void SetVersion(int version) {
+    public void setVersion(int version) {
 
         if (!isValidVersion(version)) {
             throw new IllegalArgumentException("version cannot be less than 1");
@@ -105,7 +112,7 @@ public class SheetImpl implements Sheet {
     }
 
     @Override
-    public void SetCell(Coordinate coordinate, String originalValue) {
+    public void setCell(Coordinate coordinate, String originalValue) {
 
         // Gives "Ref" expression permissions to view some data from this sheet.
         Ref.sheetView = this;
@@ -120,8 +127,8 @@ public class SheetImpl implements Sheet {
 
         // Extracts the cells inside the Refs in the original value,
         // and updates the new cell with its new cells he depends on.
-        Set<Cell> cells = OrignalValueUtilis.findInfluenceFrom(originalValue).stream().map(this::GetCell).collect(Collectors.toSet());
-        updatedCell.SetInfluenceFrom(cells);
+        Set<Cell> cells = OrignalValueUtilis.findInfluenceFrom(originalValue).stream().map(this::getCell).collect(Collectors.toSet());
+        updatedCell.setInfluenceFrom(cells);
 
         // Validate if there is a circle.
         if (isCircle(updatedCell)) {
@@ -143,7 +150,7 @@ public class SheetImpl implements Sheet {
         // TODO: Why do we need to recalculate the route from our new cell?
 
         if (previousCell != null) {
-            updatedCell.SetInfluenceOn(previousCell.GetInfluenceOn());
+            updatedCell.setInfluenceOn(previousCell.getInfluenceOn());
             try
             {
                 RecalculationRouteFrom(updatedCell);
@@ -157,14 +164,17 @@ public class SheetImpl implements Sheet {
 
         }
         else {
-            for(Cell cell : updatedCell.GetInfluenceFrom()) {
-                cell.AddInfluenceOn(updatedCell);
+            for(Cell cell : updatedCell.getInfluenceFrom()) {
+                cell.addInfluenceOn(updatedCell);
             }
         }
+
+        // Cell updated successfully!
+        this.numberOfCellsThatChangedSinceCreated++;
     }
 
     @Override
-    public void SetCells(Map<Coordinate, String> originalValues) {
+    public void setCells(Map<Coordinate, String> originalValues) {
 
         // Preparing flags map so will be able to know if we've been already tried to set a specific cell.
         Map<Coordinate, Boolean> flagMap = new HashMap<>();
@@ -192,7 +202,7 @@ public class SheetImpl implements Sheet {
                     this.activeCells.remove(coordinate);
                 }
                 else {
-                    SetCell(coordinate, oldOriginalValueMap.get(coordinate));
+                    redoSetCell(coordinate, oldOriginalValueMap.get(coordinate));
                 }
             });
 
@@ -234,19 +244,25 @@ public class SheetImpl implements Sheet {
 
         if (this.activeCells.containsKey(coordinate)) {
             Cell cell = this.activeCells.get(coordinate);
-            oldOriginalValueMap.put(coordinate, cell.GetOriginalValue());
+            oldOriginalValueMap.put(coordinate, cell.getOriginalValue());
         }
 
         else {
             oldOriginalValueMap.put(coordinate, "");
         }
 
-        SetCell(coordinate, newOriginalValue);
+        setCell(coordinate, newOriginalValue);
         updatedCellsCoordinates.push(coordinate);
     }
 
+    private void redoSetCell(Coordinate coordinate, String originalValue)
+    {
+        this.numberOfCellsThatChangedSinceCreated -= 2;
+        setCell(coordinate, originalValue);
+    }
+
     private boolean isCoordinateInBoundaries(Coordinate coordinate) {
-        return !(coordinate == null || coordinate.GetRow() > this.layout.GetRows() || coordinate.GetCol() > this.layout.GetColumns());
+        return !(coordinate == null || coordinate.getRow() > this.layout.getRows() || coordinate.getCol() > this.layout.getColumns());
     }
 
     public static boolean isValidVersion(int version) {
@@ -255,11 +271,11 @@ public class SheetImpl implements Sheet {
 
     //function for cell update including rollback
     public boolean RecalculationRouteFrom(Cell targetToStart) {
-        if (targetToStart.GetInfluenceOn().isEmpty()) {
-            targetToStart.ComputeEffectiveValue();
+        if (targetToStart.getInfluenceOn().isEmpty()) {
+            targetToStart.computeEffectiveValue();
         }
 
-        for (Cell cell : targetToStart.GetInfluenceOn()) {
+        for (Cell cell : targetToStart.getInfluenceOn()) {
             RecalculationRouteFrom(cell);
         }
 

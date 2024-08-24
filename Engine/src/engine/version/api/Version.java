@@ -1,4 +1,4 @@
 package engine.version.api;
 
-public interface Version {
+public interface Version extends VersionGetters, VersionSetters {
 }

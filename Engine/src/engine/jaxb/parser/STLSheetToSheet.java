@@ -4,7 +4,6 @@ import engine.jaxb.generated.*;
 import sheet.api.Sheet;
 import sheet.coordinate.api.Coordinate;
 import sheet.coordinate.impl.CoordinateFactory;
-import sheet.coordinate.impl.CoordinateImpl;
 import sheet.impl.SheetImpl;
 import sheet.layout.api.Layout;
 import sheet.layout.impl.LayoutImpl;
@@ -48,7 +47,7 @@ public class STLSheetToSheet {
                         STLCell::getSTLOriginalValue
                 ));
 
-        sheet.SetCells(originalValuesMap);
+        sheet.setCells(originalValuesMap);
 
         return sheet;
     }

@@ -18,8 +18,8 @@ public class Divide extends BinaryExpression {
     @Override
     public Data dynamicEvaluate(Data left, Data right) {
 
-        return (double)right.GetValue() == 0 ? new DataImpl(DataType.NUMERIC,Double.NaN) :
-                new DataImpl(DataType.NUMERIC,(double)left.GetValue() / (double)right.GetValue());
+        return (double)right.getValue() == 0 ? new DataImpl(DataType.NUMERIC,Double.NaN) :
+                new DataImpl(DataType.NUMERIC,(double)left.getValue() / (double)right.getValue());
     }
 
     @Override
@@ -27,7 +27,7 @@ public class Divide extends BinaryExpression {
         boolean value = Arrays
                 .stream(args)
                 .map(Expression.class::cast)
-                .allMatch(arg -> arg.GetType() == DataType.NUMERIC);
+                .allMatch(arg -> arg.getType() == DataType.NUMERIC);
 
         if (!value) {
             //need to throw our own exception.

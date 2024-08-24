@@ -1,10 +1,10 @@
 package engine.version.manager.api;
 
-import sheet.api.Sheet;
+import engine.version.api.VersionGetters;
+import sheet.api.SheetGetters;
 
 import java.util.List;
 
 public interface VersionManagerGetters {
-    //List<VersionGetters> GetSheets();
-    Sheet GetSheetByVersion(int version);
+    List<VersionGetters> getVersions();
 }

@@ -6,10 +6,9 @@ import sheet.cell.api.CellGetters;
 
 public interface Engine {
 
-    void ReadXMLInitFile(String filename);
-    SheetGetters ShowSheetStatus();
-    CellGetters ShowCellStatus(String cellName);
-    void UpdateCellStatus(String cellName, String value);
-    VersionManagerGetters ShowVersions();
-    SheetGetters ShowVersion(int version);
+    void readXMLInitFile(String filename);
+    SheetGetters getSheetStatus();
+    CellGetters getCellStatus(String cellName);
+    void updateCellStatus(String cellName, String value);
+    VersionManagerGetters getVersionsManagerStatus();
 }

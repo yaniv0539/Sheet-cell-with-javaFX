@@ -3,6 +3,8 @@ package expression.impl;
 import expression.api.Data;
 import expression.api.DataType;
 
+import java.io.Serializable;
+
 public class BooleanExpression extends ExpressionImpl {
 
     boolean value;
@@ -15,7 +17,7 @@ public class BooleanExpression extends ExpressionImpl {
 
 
     @Override
-    public Data Evaluate() {
+    public Data evaluate() {
         return new DataImpl(DataType.BOOLEAN, value);
     }
 

@@ -1,11 +1,13 @@
 import engine.api.Engine;
 import engine.impl.EngineImpl;
+import engine.version.api.VersionGetters;
+import engine.version.impl.VersionImpl;
+import engine.version.manager.api.VersionManagerGetters;
 import sheet.api.Sheet;
 import sheet.api.SheetGetters;
 import sheet.cell.api.CellGetters;
 import sheet.coordinate.api.Coordinate;
 import sheet.coordinate.impl.CoordinateFactory;
-import sheet.coordinate.impl.CoordinateImpl;
 import sheet.impl.SheetImpl;
 import sheet.layout.api.Layout;
 import sheet.layout.impl.LayoutImpl;
@@ -39,10 +41,10 @@ public class main
 
         try
         {
-            sheet1.SetCell(CoordinateFactory.toCoordinate("A1"),"5");
-            sheet1.SetCell(CoordinateFactory.toCoordinate("A2"),"5");
-            sheet1.SetCell(CoordinateFactory.toCoordinate("A3"),"{PLUS,{REF, A2},{REF,A1}}");
-            sheet1.SetCell(CoordinateFactory.toCoordinate("A4"),"{REF, A2}");
+            sheet1.setCell(CoordinateFactory.toCoordinate("A1"),"5");
+            sheet1.setCell(CoordinateFactory.toCoordinate("A2"),"5");
+            sheet1.setCell(CoordinateFactory.toCoordinate("A3"),"{PLUS,{REF, A2},{REF,A1}}");
+            sheet1.setCell(CoordinateFactory.toCoordinate("A4"),"{REF, A2}");
 
             Map<Coordinate, String> comeOn = Map.of(
                     CoordinateFactory.toCoordinate("B1"),"5",
@@ -52,41 +54,42 @@ public class main
                     CoordinateFactory.toCoordinate("B5"),"{PLUS,{REF, B2}, 4}"
             );
 
-            sheet1.SetCells(comeOn);
+            sheet1.setCells(comeOn);
 
-            print(sheet1);
+            printSheet(sheet1);
 
-            Engine engine = EngineImpl.Create();
+            Engine engine = EngineImpl.create();
 
-            engine.ReadXMLInitFile(BASIC_XML_RESOURCE);
-            SheetGetters sheet2 = engine.ShowSheetStatus();
-            engine.UpdateCellStatus("A2", "3");
-            CellGetters cell2 = engine.ShowCellStatus("A2");
+            engine.readXMLInitFile(BASIC_XML_RESOURCE);
+            SheetGetters sheet2 = engine.getSheetStatus();
+            engine.updateCellStatus("A2", "3");
+            engine.updateCellStatus("A2", "4");
+            engine.updateCellStatus("A2", "5");
+            CellGetters cell2 = engine.getCellStatus("A2");
 
-            System.out.println(engine);
+            printSheet(sheet2);
+            printVersionManager(engine.getVersionsManagerStatus());
 
-            print(sheet2);
-
-//            engine.ReadXMLInitFile(ERROR2_XML_RESOURCE);
+//            engine.readXMLInitFile(ERROR2_XML_RESOURCE);
 //            SheetGetters sheet3 = engine.ShowSheetStatus();
 //            engine.UpdateCellStatus("A2", "3");
 //            CellGetters cell3 = engine.ShowCellStatus("A2");
 //
-//            print(sheet3);
-
-//            engine.ReadXMLInitFile(ERROR4_XML_RESOURCE);
-//            SheetGetters sheet4 = engine.ShowSheetStatus();
-//            engine.UpdateCellStatus("A2", "3");
-//            CellGetters cell4 = engine.ShowCellStatus("A2");
+//            printSheet(sheet3);
 //
-//            print(sheet4);
-
-            engine.ReadXMLInitFile(INSURANCE_XML_RESOURCE);
-            SheetGetters sheet5 = engine.ShowSheetStatus();
-            engine.UpdateCellStatus("A2", "3");
-            CellGetters cell5 = engine.ShowCellStatus("A2");
-
-            print(sheet5);
+//            engine.readXMLInitFile(ERROR4_XML_RESOURCE);
+//            SheetGetters sheet4 = engine.getSheetStatus();
+//            engine.updateCellStatus("A2", "3");
+//            CellGetters cell4 = engine.getCellStatus("A2");
+//
+//            printSheet(sheet4);
+//
+//            engine.readXMLInitFile(INSURANCE_XML_RESOURCE);
+//            SheetGetters sheet5 = engine.getSheetStatus();
+//            engine.updateCellStatus("A2", "3");
+//            CellGetters cell5 = engine.getCellStatus("A2");
+//
+//            printSheet(sheet5);
 
         } catch(Exception e) {
             System.out.println(e.getMessage());
@@ -94,14 +97,39 @@ public class main
         }
     }
 
-    public static void print(SheetGetters sheet)
+    public static void printSheet(SheetGetters sheet)
     {
-        System.out.println("Sheet name: " + sheet.GetName());
-        sheet.GetActiveCells().forEach((coordinate, cell) ->
+        System.out.println("Sheet name: " + sheet.getName());
+        sheet.getActiveCells().forEach((coordinate, cell) ->
             System.out.println(
-                    cell.GetCoordinate().toString()
-                    + ": " + "\"" + cell.GetOriginalValue() + "\""
-                    + " => " + cell.GetEffectiveValue().GetValue()));
+                    cell.getCoordinate().toString()
+                    + ": " + "\"" + cell.getOriginalValue() + "\""
+                    + " => " + cell.getEffectiveValue().getValue()));
+
+        System.out.println();
+    }
+
+    public static void printVersionManager(VersionManagerGetters versionManager) {
+        System.out.println("Version manager:");
+        int versionNumber = 1;
+        int previous = 0;
+
+        for (VersionGetters version : versionManager.getVersions()) {
+            int current = version.getSheet().getNumberOfCellsThatChangedSinceCreated();
+            String sheetName = version.getSheet().getName();
+            System.out.println(
+                    new StringBuilder()
+                            .append("[Version ")
+                            .append(versionNumber++)
+                            .append("] Sheet name: ")
+                            .append(sheetName)
+                            .append(" - ")
+                            .append("number of cells that changed since last version: ")
+                            .append(current - previous)
+                            .toString()
+            );
+            previous = current;
+        }
 
         System.out.println();
     }

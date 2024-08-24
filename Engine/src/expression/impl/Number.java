@@ -19,7 +19,7 @@ public class Number extends ExpressionImpl {
     }
 
     @Override
-    public Data Evaluate() {
+    public Data evaluate() {
         return new DataImpl(DataType.NUMERIC, value);
     }
 

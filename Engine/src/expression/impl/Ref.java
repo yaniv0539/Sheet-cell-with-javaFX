@@ -16,16 +16,16 @@ public class Ref extends ExpressionImpl {
 
         if (cellId.getClass() == RawString.class) {
             this.cellId = cellId;
-            Data inCellData = sheetView.GetCellData((String)cellId.Evaluate().GetValue());
-            setDataType(inCellData.GetType());
+            Data inCellData = sheetView.getCellData((String)cellId.evaluate().getValue());
+            setDataType(inCellData.getType());
         }
         else {
             throw new IllegalArgumentException("Ref argument must be a cell-id");
         }
     }
     @Override
-    public Data Evaluate() {
-        return sheetView.GetCellData((String)cellId.Evaluate().GetValue());
+    public Data evaluate() {
+        return sheetView.getCellData((String)cellId.evaluate().getValue());
     }
 
     @Override

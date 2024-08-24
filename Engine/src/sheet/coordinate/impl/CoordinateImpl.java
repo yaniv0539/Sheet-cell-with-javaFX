@@ -1,11 +1,11 @@
 package sheet.coordinate.impl;
 
-import sheet.cell.api.Cell;
 import sheet.coordinate.api.Coordinate;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class CoordinateImpl implements Coordinate {
+public class CoordinateImpl implements Coordinate, Serializable {
 
     private final int row;
     private final int column;
@@ -29,12 +29,12 @@ public class CoordinateImpl implements Coordinate {
     }
 
     @Override
-    public int GetRow() {
+    public int getRow() {
         return this.row;
     }
 
     @Override
-    public int GetCol() {
+    public int getCol() {
         return this.column;
     }
 

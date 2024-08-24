@@ -15,8 +15,8 @@ public abstract class UnaryExpression extends ExpressionImpl{
         return input;
     }
     @Override
-    public Data Evaluate() {
-        return dynamicEvaluate(input.Evaluate());
+    public Data evaluate() {
+        return dynamicEvaluate(input.evaluate());
     }
 
 
