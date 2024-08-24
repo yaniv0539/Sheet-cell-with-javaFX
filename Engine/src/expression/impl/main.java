@@ -48,17 +48,18 @@ public class main
         try
         {
             //init
-            sh.setCell(CoordinateImpl.toCoordinate("A1"),"{DIVIDE,2,0}");
+            sh.setCell(CoordinateImpl.toCoordinate("A1"),"{DIVIDE,2,4}");
            sh.setCell(CoordinateImpl.toCoordinate("A2"),"{REF,A1}");
-            sh.setCell(CoordinateImpl.toCoordinate("A3"),"{REF,A2}");
-            sh.setCell(CoordinateImpl.toCoordinate("A4"),"{REF,A3}");
-            sh.setCell(CoordinateImpl.toCoordinate("A5"),"{REF,A4}");
+            sh.setCell(CoordinateImpl.toCoordinate("A4"),"world");
+            sh.setCell(CoordinateImpl.toCoordinate("A5"),"hello ");
+            sh.setCell(CoordinateImpl.toCoordinate("A3"),"{CONCAT,{REF,A5},{REF,A4}}");
+            sh.setCell(CoordinateImpl.toCoordinate("B3"),"{REF,A3}");
 
             print(sh);
-            sh.setCell(CoordinateImpl.toCoordinate("A5"),"{MINUS,5,{REF,A2}}");
+            sh.setCell(CoordinateImpl.toCoordinate("A5"),"{REF,B3}");
              print(sh);
-           sh.setCell(CoordinateImpl.toCoordinate("A1"),"{DIVIDE,2,4}");
-            print(sh);
+         //  sh.setCell(CoordinateImpl.toCoordinate("A1"),"hello");
+          //  print(sh);
 //            sh.setCell(CoordinateImpl.toCoordinate("A3"),"{MINUS,{REF,A1},{PLUS,{REF,A2},{REF,A1}}}");
 //            print(sh);
 //            sh.setCell(CoordinateImpl.toCoordinate("A1"),"{REF,A2}");
