@@ -115,35 +115,6 @@ public class CellImpl implements Cell {
         setOriginalValue(this.originalValue);
     }
 
-    public boolean hasCircle()
-    {
-        return recHasCircle(this, new HashSet<Coordinate>());
-    }
-
-    private boolean recHasCircle(Cell current, Set<Coordinate> visited) {
-        // If the current object is already visited, a cycle is detected
-        if (visited.contains(current.getCoordinate())) {
-            return true;
-        }
-
-        // Mark the current object as visited
-        visited.add(current.getCoordinate());
-
-        // Recur for all the objects in the relatedObjects list
-        for (Cell affectedBy : current.getInfluenceFrom()) {
-            // If a cycle is detected in the recursion, return true
-            if (recHasCircle(affectedBy, visited)) {
-                return true;
-            }
-        }
-
-        // Remove the current object from the visited set (backtracking)
-        visited.remove(current.getCoordinate());
-
-        // If no cycle was found, return false
-        return false;
-    }
-
     private static boolean isValidVersion(int version) {
         return version >= 1;
     }

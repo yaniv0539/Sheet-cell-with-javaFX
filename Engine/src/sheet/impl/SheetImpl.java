@@ -105,54 +105,38 @@ public class SheetImpl implements Sheet, CellLookupService {
         this.version = version;
     }
 
-
-
-
     @Override
     public void setCell(Coordinate target, String originalValue) {
-        Ref.sheetView = this;
+
+         Ref.sheetView = this;
+
+         isCoordinateInSheetBoundaries(target);
+         Cell updatedCell = CellImpl.create(target, version++, originalValue);
+         Cell previousCell =  insertCellToSheet(updatedCell);
+
+         if (previousCell != null) {
+
+             try {
+                 recalculateSheetFrom(updatedCell);
+             }
+             catch(Exception someException)
+             {
+                    //doing rollback to previous sheet.
+                 insertCellToSheet(previousCell);
+                 recalculateSheetFrom(updatedCell);
+
+                 throw new IllegalArgumentException("recalculation didnt work");
+             }
+         }
+    }
+
+    private boolean isCoordinateInSheetBoundaries(Coordinate target) {
 
         if(!isRowInSheetBoundaries(target.getRow()) || !isColumnInSheetBoundaries(target.getCol())) {
             throw new IllegalArgumentException("Row or column out of bounds !");
         }
 
-        CellImpl updatedCell = CellImpl.create(target, version++, originalValue);
-        updatedCell.setInfluenceFrom(CoordinateToCell(OrignalValueUtilis.findInfluenceFrom(originalValue)));
-        //upted the cell that influence on me, and put me in their list
-        updatedCell.getInfluenceFrom().forEach(cell -> cell.getInfluenceOn().add(updatedCell));
-
-        Cell previousCell = activeCells.put(target,updatedCell);
-
-        //if it is a new cell there is no influenceOn, if exist he may have influenced on other cells.
-        if(previousCell != null) {
-            updatedCell.setInfluenceOn(previousCell.getInfluenceOn());
-            updatedCell.getInfluenceOn().forEach(cell -> cell.getInfluenceFrom().add(updatedCell));
-            //until here we get a new sheet now we just need to remove
-            previousCell.getInfluenceFrom().forEach(cell->cell.getInfluenceOn().remove(previousCell));
-            previousCell.getInfluenceOn().forEach(cell->cell.getInfluenceFrom().remove(previousCell));
-
-            try
-            {
-                isCircle(updatedCell);
-                Stack<Cell> stack = topologicalSortFrom(updatedCell);
-                recalculationRouteFrom(stack);
-            }
-            catch(Exception someException)
-            {
-                //doing rollback to previous sheet.
-                previousCell.getInfluenceFrom().forEach(cell -> cell.getInfluenceOn().add(previousCell));
-                previousCell.getInfluenceOn().forEach(cell -> cell.getInfluenceFrom().add(previousCell));
-
-                updatedCell.getInfluenceFrom().forEach(cell->cell.getInfluenceOn().remove(updatedCell));
-                updatedCell.getInfluenceOn().forEach(cell->cell.getInfluenceFrom().remove(updatedCell));
-
-                activeCells.put(target,previousCell);
-                Stack<Cell> stack = topologicalSortFrom(previousCell);
-                recalculationRouteFrom(stack);
-                throw new IllegalArgumentException("recalculation didnt work");
-            }
-
-        }
+        return true;
     }
 
     private boolean isRowInSheetBoundaries(int row) {
@@ -167,24 +151,39 @@ public class SheetImpl implements Sheet, CellLookupService {
         return version >= 1;
     }
 
-    //function for cell update including rollback
-    public boolean recalculationRouteFrom(Stack<Cell> cellStack) {
-
-        // Print the contents of the stack which is the topological order
-        while (!cellStack.isEmpty()) {
-            cellStack.pop().computeEffectiveValue();
-        }
-
-        return true;
-    }
-
-    //throw circle
-    private void isCircle(CellImpl cellToCheck)
-    {
-        if(cellToCheck.hasCircle()) {
+    private void circleFrom(Cell cellToCheck) {
+        if(hasCircle(cellToCheck)) {
             //throw somthing
             throw  new IllegalArgumentException("circle");
         }
+    }
+
+    private boolean hasCircle(Cell cellToCheck) {
+        return recHasCircle(cellToCheck, new HashSet<Coordinate>());
+    }
+
+    private boolean recHasCircle(Cell current, Set<Coordinate> visited) {
+        // If the current object is already visited, a cycle is detected
+        if (visited.contains(current.getCoordinate())) {
+            return true;
+        }
+
+        // Mark the current object as visited
+        visited.add(current.getCoordinate());
+
+        // Recur for all the objects in the relatedObjects list
+        for (Cell affectedBy : current.getInfluenceFrom()) {
+            // If a cycle is detected in the recursion, return true
+            if (recHasCircle(affectedBy, visited)) {
+                return true;
+            }
+        }
+
+        // Remove the current object from the visited set (backtracking)
+        visited.remove(current.getCoordinate());
+
+        // If no cycle was found, return false
+        return false;
     }
 
     private Set<Cell> CoordinateToCell(Set<Coordinate> newInfluenceCellsId) {
@@ -212,8 +211,7 @@ public class SheetImpl implements Sheet, CellLookupService {
         return stack;
     }
 
-    private void dfs(Cell cell, Set<Coordinate> visited,Stack<Cell> stack)
-    {
+    private void dfs(Cell cell, Set<Coordinate> visited,Stack<Cell> stack) {
         visited.add(cell.getCoordinate());
 
         // Visit all the adjacent vertices
@@ -226,6 +224,35 @@ public class SheetImpl implements Sheet, CellLookupService {
 
         // Push current cell to stack which stores the result
         stack.push(cell);
+    }
+
+    private Cell insertCellToSheet(Cell toInsert) {
+
+        Cell toReplace = activeCells.put(toInsert.getCoordinate(),toInsert);
+
+        toInsert.setInfluenceFrom(CoordinateToCell(OrignalValueUtilis.findInfluenceFrom(toInsert.getOriginalValue())));
+        toInsert.getInfluenceFrom().forEach(cell -> cell.getInfluenceOn().add(toInsert));
+
+        //if it is a new cell there is no influenceOn, if exist he may have influenced on other cells.
+        if(toReplace != null) {
+            toInsert.setInfluenceOn(toReplace.getInfluenceOn());
+            toInsert.getInfluenceOn().forEach(cell -> cell.getInfluenceFrom().add(toInsert));
+            //until here we get a new sheet now we just need to remove
+            toReplace.getInfluenceFrom().forEach(cell -> cell.getInfluenceOn().remove(toReplace));
+            toReplace.getInfluenceOn().forEach(cell -> cell.getInfluenceFrom().remove(toReplace));
+
+        }
+
+        return toReplace;
+    }
+
+    private void recalculateSheetFrom(Cell cell) {
+        circleFrom(cell);
+        Stack<Cell> cellStack = topologicalSortFrom(cell);
+        //compute
+        while (!cellStack.isEmpty()) {
+            cellStack.pop().computeEffectiveValue();
+        }
     }
 
 }

@@ -48,7 +48,7 @@ public class main
         try
         {
             //init
-            sh.setCell(CoordinateImpl.toCoordinate("A1"),"{DIVIDE,2,4}");
+            sh.setCell(CoordinateImpl.toCoordinate("A1"),"{POW,2,4}");
            sh.setCell(CoordinateImpl.toCoordinate("A2"),"{REF,A1}");
             sh.setCell(CoordinateImpl.toCoordinate("A4"),"world");
             sh.setCell(CoordinateImpl.toCoordinate("A5"),"hello ");
@@ -56,20 +56,63 @@ public class main
             sh.setCell(CoordinateImpl.toCoordinate("B3"),"{REF,A3}");
 
             print(sh);
-            sh.setCell(CoordinateImpl.toCoordinate("A5"),"{REF,B3}");
+            sh.setCell(CoordinateImpl.toCoordinate("A5"),"{MINUS,3,{REF,A1}}");
              print(sh);
-         //  sh.setCell(CoordinateImpl.toCoordinate("A1"),"hello");
-          //  print(sh);
-//            sh.setCell(CoordinateImpl.toCoordinate("A3"),"{MINUS,{REF,A1},{PLUS,{REF,A2},{REF,A1}}}");
-//            print(sh);
-//            sh.setCell(CoordinateImpl.toCoordinate("A1"),"{REF,A2}");
-//            print(sh);
-//           sh.setCell(CoordinateImpl.toCoordinate("A4"),"hello world");
-//            print(sh);
-//            sh.setCell(CoordinateImpl.toCoordinate("A5"),"{CONCAT,Hello,{SUB,{REF,A4},{REF,A2},{REF,A1}}}");
-//             print(sh);
-//             sh.setCell(CoordinateImpl.toCoordinate("A6"),"hello world");
 
+
+        }
+        catch(Exception e)
+        {
+            System.out.println(e.getMessage());
+            print(sh);
+        }
+
+            try{
+                sh.setCell(CoordinateImpl.toCoordinate("A1"),"hello");
+                print(sh);
+
+            }
+            catch(Exception e)
+            {
+                System.out.println(e.getMessage());
+                print(sh);
+            }
+        try{
+
+            sh.setCell(CoordinateImpl.toCoordinate("A3"),"{MINUS,{REF,A1},{PLUS,{REF,A2},{REF,A1}}}");
+            print(sh);
+
+        }
+        catch(Exception e)
+        {
+            System.out.println(e.getMessage());
+            print(sh);
+        }
+        try{
+            sh.setCell(CoordinateImpl.toCoordinate("A1"),"{REF,A2}");
+            print(sh);
+
+        }
+        catch(Exception e)
+        {
+            System.out.println(e.getMessage());
+            print(sh);
+        }
+        try{
+            sh.setCell(CoordinateImpl.toCoordinate("A4"),"hello world");
+            print(sh);
+
+        }
+        catch(Exception e)
+        {
+            System.out.println(e.getMessage());
+            print(sh);
+        }
+        try{
+            sh.setCell(CoordinateImpl.toCoordinate("A5"),"{CONCAT,Hello,{SUB,{REF,A4},{REF,A2},{REF,A1}}}");
+            print(sh);
+            sh.setCell(CoordinateImpl.toCoordinate("B6"),"hello world");
+            print(sh);
         }
         catch(Exception e)
         {
