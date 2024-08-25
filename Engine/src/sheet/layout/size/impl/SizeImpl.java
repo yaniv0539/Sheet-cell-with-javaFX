@@ -2,7 +2,9 @@ package sheet.layout.size.impl;
 
 import sheet.layout.size.api.Size;
 
-public class SizeImpl implements Size {
+import java.io.Serializable;
+
+public class SizeImpl implements Size, Serializable {
     private int width;
     private int height;
 
@@ -28,14 +30,14 @@ public class SizeImpl implements Size {
     @Override
     public void setWidth(int width) {
         if (!isValidWidth(width))
-            throw new IllegalArgumentException("Width cannot be negative");
+            throw new IllegalArgumentException(width + " is not a valid width, it must be a positive integer");
         this.width = width;
     }
 
     @Override
     public void setHeight(int height) {
         if (!isValidHeight(height))
-            throw new IllegalArgumentException("Height cannot be negative");
+            throw new IllegalArgumentException(height + " is not a valid width, it must be a positive number");
         this.height = height;
     }
 
@@ -46,5 +48,4 @@ public class SizeImpl implements Size {
     private static boolean isValidHeight(int height) {
         return height > 0;
     }
-
 }

@@ -3,7 +3,9 @@ package expression.impl;
 import expression.api.Data;
 import expression.api.DataType;
 
-public class DataImpl implements Data {
+import java.io.Serializable;
+
+public class DataImpl implements Data, Serializable {
 
     private DataType type;
     private Object value;

@@ -4,6 +4,7 @@ import expression.api.Data;
 import expression.api.DataType;
 import expression.api.Expression;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 public class Abs extends UnaryExpression {
@@ -36,5 +37,4 @@ public class Abs extends UnaryExpression {
 
         return true;
     }
-
 }

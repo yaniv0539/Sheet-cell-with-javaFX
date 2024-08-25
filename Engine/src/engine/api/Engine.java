@@ -1,15 +1,14 @@
 package engine.api;
 
-import engine.dto.sheet.cell.api.DCell;
-import engine.dto.sheet.impl.DSheet;
-import engine.dto.version.api.DVersions;
+import engine.version.manager.api.VersionManagerGetters;
+import sheet.api.SheetGetters;
+import sheet.cell.api.CellGetters;
 
 public interface Engine {
 
-    void ReadXMLInitFile(String filename);
-    DSheet ShowSheetStatus();
-    DCell ShowCellStatus(String cellName);
-    void UpdateCellStatus(String cellName, String value);
-    DVersions ShowVersions();
-    DSheet ShowVersion(int version);
+    void readXMLInitFile(String filename);
+    SheetGetters getSheetStatus();
+    CellGetters getCellStatus(String cellName);
+    void updateCellStatus(String cellName, String value);
+    VersionManagerGetters getVersionsManagerStatus();
 }

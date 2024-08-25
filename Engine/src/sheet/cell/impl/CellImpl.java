@@ -5,18 +5,19 @@ import expression.parser.OrignalValueUtilis;
 import sheet.cell.api.Cell;
 import sheet.coordinate.api.Coordinate;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-public class CellImpl implements Cell {
+public class CellImpl implements Cell, Serializable {
 
     private final Coordinate coordinate;
     private int version;
     private String originalValue;
     private Data effectiveValue;
-    private  Set<Cell> influenceFrom;
-    private  Set<Cell> influenceOn;
+    private Set<Cell> influenceFrom;
+    private Set<Cell> influenceOn;
 
     private CellImpl(Coordinate coordinate, int version, String originalValue) {
 
@@ -81,9 +82,7 @@ public class CellImpl implements Cell {
     }
 
     @Override
-    public void addInfluenceFrom(Cell AffectedFrom) {
-        influenceFrom.add(AffectedFrom);
-    }
+    public void addInfluenceFrom(Cell AffectedFrom) { influenceFrom.add(AffectedFrom); }
 
     @Override
     public void setOriginalValue(String originalValue) {
@@ -111,9 +110,7 @@ public class CellImpl implements Cell {
     }
 
     @Override
-    public void computeEffectiveValue() {
-        setOriginalValue(this.originalValue);
-    }
+    public void computeEffectiveValue() { setOriginalValue(this.originalValue); }
 
     private static boolean isValidVersion(int version) {
         return version >= 1;

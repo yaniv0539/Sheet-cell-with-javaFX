@@ -3,17 +3,20 @@ package sheet.impl;
 import expression.api.Data;
 import expression.impl.Ref;
 import expression.parser.OrignalValueUtilis;
-import sheet.api.CellLookupService;
 import sheet.api.Sheet;
 import sheet.cell.api.Cell;
+import sheet.cell.api.CellGetters;
 import sheet.cell.impl.CellImpl;
 import sheet.coordinate.api.Coordinate;
-import sheet.coordinate.impl.CoordinateImpl;
+import sheet.coordinate.api.CoordinateGetters;
+import sheet.coordinate.impl.CoordinateFactory;
 import sheet.layout.api.Layout;
 
+import java.io.Serializable;
 import java.util.*;
 
-public class SheetImpl implements Sheet, CellLookupService {
+
+public class SheetImpl implements Sheet, Serializable {
 
     private static int numberOfSheets = 1;
 
@@ -41,7 +44,6 @@ public class SheetImpl implements Sheet, CellLookupService {
     }
 
     public static SheetImpl create(String name, Layout layout) {
-
         return new SheetImpl(name, layout);
     }
 
@@ -67,26 +69,22 @@ public class SheetImpl implements Sheet, CellLookupService {
     @Override
     public Cell getCell(Coordinate coordinate) {
 
-        if (!isRowInSheetBoundaries(coordinate.getRow())) {
-            throw new IndexOutOfBoundsException("Row out of bounds");
-        }
-
-        if (!isColumnInSheetBoundaries(coordinate.getCol())) {
-            throw new IndexOutOfBoundsException("Column out of bounds");
+        if (!isCoordinateInBoundaries(coordinate)) {
+            throw new IndexOutOfBoundsException("coordinate " + coordinate + " is not in sheet boundaries");
         }
 
         return activeCells.get(coordinate);
     }
     @Override
-    public Map<Coordinate, Cell> getActiveCells() {
+    public Map<CoordinateGetters, CellGetters> getActiveCells() {
         return Collections.unmodifiableMap(this.activeCells);
     }
 
     // FOR INTERFACE lookupCellService
     @Override
     public Data getCellData(String cellId) {
-        Coordinate c = CoordinateImpl.toCoordinate(cellId);
-        Cell cell = activeCells.get(c);
+        Coordinate coordinate = CoordinateFactory.toCoordinate(cellId);
+        Cell cell = activeCells.get(coordinate);
 
         if (cell == null) {
             throw new IllegalArgumentException(cellId + "is Empty, cannot get data");
@@ -110,7 +108,7 @@ public class SheetImpl implements Sheet, CellLookupService {
 
          Ref.sheetView = this;
 
-         isCoordinateInSheetBoundaries(target);
+         isCoordinateInBoundaries(target);
          Cell updatedCell = CellImpl.create(target, version++, originalValue);
          Cell previousCell =  insertCellToSheet(updatedCell);
 
@@ -131,7 +129,89 @@ public class SheetImpl implements Sheet, CellLookupService {
 
     }
 
-    private boolean isCoordinateInSheetBoundaries(Coordinate target) {
+    @Override
+    public void setCells(Map<Coordinate, String> originalValues) {
+
+        // Preparing flags map so will be able to know if we've been already tried to set a specific cell.
+        Map<Coordinate, Boolean> flagMap = new HashMap<>();
+
+        // Preparing old original values map so if we'll have an exception while we'll try to set cells,
+        // we'll be able to roll back and redo the operation.
+        Map<Coordinate, String> oldOriginalValueMap = new HashMap<>();
+
+        // Preparing a stack of coordinates, so we'll be able to know who is the first and who is the last we updated.
+        // The stack will help us to redo if needed.
+        Stack<Coordinate> updatedCellsCoordinates = new Stack<>();
+
+        // Initialize the flags map with false values.
+        for (Coordinate coordinate : originalValues.keySet()) {
+            flagMap.put(coordinate, false);
+        }
+
+        try {
+            // Sending each original value to helper function.
+            originalValues.forEach((coordinate, originalValue) -> setCellsHelper(originalValues, flagMap, oldOriginalValueMap, updatedCellsCoordinates, coordinate));
+        } catch (Exception exception) {
+            // Undo the operation and move on the exception.
+            updatedCellsCoordinates.forEach(coordinate -> {
+                if (oldOriginalValueMap.containsKey(coordinate) && "".equals(oldOriginalValueMap.get(coordinate))) {
+                    this.activeCells.remove(coordinate);
+                }
+                else {
+                    setCell(coordinate, oldOriginalValueMap.get(coordinate));
+                }
+            });
+
+            throw exception;
+        }
+    }
+
+    private void setCellsHelper(Map<Coordinate, String> newOriginalValuesMap,
+                                Map<Coordinate, Boolean> flagMap,
+                                Map<Coordinate, String> oldOriginalValueMap,
+                                Stack<Coordinate> updatedCellsCoordinates,
+                                Coordinate coordinate) {
+
+        // If we touched the coordinate, go back.
+        if (flagMap.get(coordinate)) {
+            return;
+        }
+
+        // We touched the coordinate!
+        flagMap.put(coordinate, true);
+
+        String newOriginalValue = newOriginalValuesMap.get(coordinate);
+
+        Set<Coordinate> refCoordinates = OrignalValueUtilis.findInfluenceFrom(newOriginalValue);
+
+        // For each cell that we might be depended on, we'll do some checks:
+        // If the cell is inside 'newOriginalValuesMap', we'll do recursive operation with this cell.
+        // Else if the cell is not inside 'activeCells' map we'll throw exception because this cell is null.
+        // Else, it is inside 'activeCells' map, and we'll skip to next iteration.
+
+        refCoordinates.forEach(refCoordinate -> {
+            if (newOriginalValuesMap.containsKey(refCoordinate)) {
+                setCellsHelper(newOriginalValuesMap, flagMap, oldOriginalValueMap, updatedCellsCoordinates, refCoordinate);
+            }
+            else if (!this.activeCells.containsKey(refCoordinate)) {
+                throw new IndexOutOfBoundsException(refCoordinate + " is empty, cannot get data");
+            }
+        });
+
+        if (this.activeCells.containsKey(coordinate)) {
+            Cell cell = this.activeCells.get(coordinate);
+            oldOriginalValueMap.put(coordinate, cell.getOriginalValue());
+        }
+
+        else {
+            oldOriginalValueMap.put(coordinate, "");
+        }
+
+        setCell(coordinate, newOriginalValue);
+        updatedCellsCoordinates.push(coordinate);
+    }
+
+    private boolean isCoordinateInBoundaries(Coordinate target) {
 
         if(!isRowInSheetBoundaries(target.getRow()) || !isColumnInSheetBoundaries(target.getCol())) {
             throw new IllegalArgumentException("Row or column out of bounds !");
@@ -141,11 +221,11 @@ public class SheetImpl implements Sheet, CellLookupService {
     }
 
     private boolean isRowInSheetBoundaries(int row) {
-        return !(row >= this.layout.GetRows());
+        return !(row >= this.layout.getRows());
     }
 
     private boolean isColumnInSheetBoundaries(int column) {
-        return !(column >= this.layout.GetColumns());
+        return !(column >= this.layout.getColumns());
     }
 
     public static boolean isValidVersion(int version) {

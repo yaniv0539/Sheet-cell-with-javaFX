@@ -1,10 +1,12 @@
 package engine.impl;
 
-import engine.dto.sheet.cell.api.DCell;
-import engine.dto.sheet.impl.DSheet;
-import engine.dto.version.api.DVersions;
 import engine.api.Engine;
 import engine.jaxb.parser.STLSheetToSheet;
+import engine.version.api.Version;
+import engine.version.impl.VersionImpl;
+import engine.version.manager.api.VersionManager;
+import engine.version.manager.api.VersionManagerGetters;
+import engine.version.manager.impl.VersionManagerImpl;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
@@ -16,8 +18,10 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 import engine.jaxb.generated.STLSheet;
+import sheet.api.SheetGetters;
 import sheet.cell.api.Cell;
-import sheet.coordinate.impl.CoordinateImpl;
+import sheet.cell.api.CellGetters;
+import sheet.coordinate.impl.CoordinateFactory;
 import sheet.layout.api.Layout;
 
 public class EngineImpl implements Engine {
@@ -27,18 +31,19 @@ public class EngineImpl implements Engine {
     private final static int MAX_COLUMNS = 20;
 
     private Sheet sheet;
+    private final VersionManager versionManager;
 
-    private EngineImpl() {}
+    private EngineImpl() {
+        this.versionManager = VersionManagerImpl.create();
+    }
 
-    public static EngineImpl CreateEngine() {
+    public static EngineImpl create() {
         return new EngineImpl();
     }
 
     @Override
-    public void ReadXMLInitFile(String filename) {
-        // TODO: Handle with exceptions...
+    public void readXMLInitFile(String filename) {
         try {
-
             if (!filename.endsWith(".xml")) {
                 throw new FileNotFoundException("File name has to end with '.xml'");
             }
@@ -53,45 +58,24 @@ public class EngineImpl implements Engine {
 
             this.sheet = sheet;
         } catch (JAXBException | FileNotFoundException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Failed to read XML file", e);
         }
     }
 
     @Override
-    public DSheet ShowSheetStatus() {
-        // TODO: Make DSheet from sheet and return it.
-        return null;
+    public SheetGetters getSheetStatus() { return this.sheet; }
+
+    @Override
+    public CellGetters getCellStatus(String cellName) { return getCell(cellName); }
+
+    @Override
+    public void updateCellStatus(String cellName, String value) {
+        versionManager.addVersion(VersionImpl.create(this.sheet));
+        this.sheet.setCell(CoordinateFactory.toCoordinate(cellName), value);
     }
 
     @Override
-    public DCell ShowCellStatus(String cellName) {
-        Cell cell = getCell(cellName);
-        // TODO: Make DCell from cell and return it.
-        return null;
-    }
-
-    @Override
-    public void UpdateCellStatus(String cellName, String value) {
-        Cell cell = getCell(cellName);
-        cell.setOriginalValue(value);
-    }
-
-    @Override
-    public DVersions ShowVersions() {
-        // Todo: Make DVersions from Versions.
-        return null;
-    }
-
-    @Override
-    public DSheet ShowVersion(int version) {
-
-        if (!isVersionExists(version)) {
-            throw new IndexOutOfBoundsException("Version is invalid");
-        }
-
-        // Todo: Make DSheet from sheet.
-        return null;
-    }
+    public VersionManagerGetters getVersionsManagerStatus() { return this.versionManager; }
 
     private static STLSheet deserializeFrom(InputStream inputStream) throws JAXBException {
         JAXBContext jc = JAXBContext.newInstance(JAXB_XML_GENERATED_PACKAGE_NAME);
@@ -99,24 +83,17 @@ public class EngineImpl implements Engine {
         return (STLSheet) unmarshaller.unmarshal(inputStream);
     }
 
-    private boolean isVersionExists(int version) {
-        // TODO: version validation.
-        return false;
-    }
-
     private static boolean isValidLayout(Layout layout) {
-        return !(layout == null || layout.GetRows() > MAX_ROWS || layout.GetColumns() > MAX_COLUMNS);
+        return !(layout == null || layout.getRows() > MAX_ROWS || layout.getColumns() > MAX_COLUMNS);
     }
 
     private Cell getCell(String cellName) {
 
-        if (!isValidCellFormat(cellName))
-            throw new IllegalArgumentException("Invalid cell name");
+        if (!isValidCellFormat(cellName)) {
+            throw new IllegalArgumentException(cellName + "is not valid format");
+        }
 
-        int row = extractRow(cellName) - 1;
-        int column = parseColumnToInt(extractColumn(cellName)) - 1;
-
-        return this.sheet.getCell(CoordinateImpl.toCoordinate(cellName));
+        return this.sheet.getCell(CoordinateFactory.toCoordinate(cellName));
     }
 
     private static boolean isValidCellFormat(String cellName) {
@@ -127,39 +104,4 @@ public class EngineImpl implements Engine {
 
         return cellName.matches("^[A-Z]+[0-9]+$");
     }
-
-    private static int extractRow(String cellName) {
-
-        int index = 0;
-
-        while (index < cellName.length() && !Character.isDigit(cellName.charAt(index))) {
-            index++;
-        }
-
-        return Integer.parseInt(cellName.substring(index));
-    }
-
-    private static String extractColumn(String cellName) {
-
-        int index = 0;
-        while (index < cellName.length() && !Character.isDigit(cellName.charAt(index))) {
-            index++;
-        }
-
-        return cellName.substring(0, index);
-    }
-
-    private static int parseColumnToInt(String column) {
-        int result = 0;
-        int length = column.length();
-
-        for (int i = 0; i < length; i++) {
-            char c = column.charAt(i);
-            int value = c - 'A' + 1;
-            result = result * 26 + value;
-        }
-
-        return result;
-    }
-
 }

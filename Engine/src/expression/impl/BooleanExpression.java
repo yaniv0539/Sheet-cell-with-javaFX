@@ -3,6 +3,8 @@ package expression.impl;
 import expression.api.Data;
 import expression.api.DataType;
 
+import java.io.Serializable;
+
 public class BooleanExpression extends ExpressionImpl {
 
     boolean value;
