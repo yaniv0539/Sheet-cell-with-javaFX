@@ -41,17 +41,17 @@ public class main
 
         try
         {
-            sheet1.setCell(CoordinateFactory.toCoordinate("A1"),"5");
-            sheet1.setCell(CoordinateFactory.toCoordinate("A2"),"5");
-            sheet1.setCell(CoordinateFactory.toCoordinate("A3"),"{PLUS,{REF, A2},{REF,A1}}");
-            sheet1.setCell(CoordinateFactory.toCoordinate("A4"),"{REF, A2}");
+              sheet1.setCell(CoordinateFactory.toCoordinate("B1"),"5");
+//            sheet1.setCell(CoordinateFactory.toCoordinate("A2"),"5");
+//            sheet1.setCell(CoordinateFactory.toCoordinate("A3"),"{PLUS,{REF, A2},{REF,A1}}");
+//            sheet1.setCell(CoordinateFactory.toCoordinate("A4"),"{REF, A2}");
 
             Map<Coordinate, String> comeOn = Map.of(
-                    CoordinateFactory.toCoordinate("B1"),"5",
+                    CoordinateFactory.toCoordinate("B1"),"3",
                     CoordinateFactory.toCoordinate("B2"),"5",
                     CoordinateFactory.toCoordinate("B3"),"{PLUS,{REF, B2},{REF,B1}}",
-                    CoordinateFactory.toCoordinate("B4"),"{REF, B2}",
-                    CoordinateFactory.toCoordinate("B5"),"{PLUS,{REF, B2}, 4}"
+                    CoordinateFactory.toCoordinate("B4"),"{REF, B3}",
+                    CoordinateFactory.toCoordinate("B5"),"{PLUS,{REF, B2},{REF,B1}}"
             );
 
             sheet1.setCells(comeOn);
@@ -60,20 +60,20 @@ public class main
 
             Engine engine = EngineImpl.create();
 
-            engine.readXMLInitFile(BASIC_XML_RESOURCE);
-            SheetGetters sheet2 = engine.getSheetStatus();
-            engine.updateCellStatus("A2", "3");
-            engine.updateCellStatus("A2", "4");
-            engine.updateCellStatus("A2", "5");
-            CellGetters cell2 = engine.getCellStatus("A2");
-
-            printSheet(sheet2);
-            printVersionManager(engine.getVersionsManagerStatus());
+//            engine.readXMLInitFile(BASIC_XML_RESOURCE);
+//            SheetGetters sheet2 = engine.getSheetStatus();
+//            engine.updateCellStatus("A2", "3");
+//            engine.updateCellStatus("A2", "4");
+//            engine.updateCellStatus("A2", "5");
+//            CellGetters cell2 = engine.getCellStatus("A2");
+//
+//            printSheet(sheet2);
+//            printVersionManager(engine.getVersionsManagerStatus());
 
 //            engine.readXMLInitFile(ERROR2_XML_RESOURCE);
-//            SheetGetters sheet3 = engine.ShowSheetStatus();
-//            engine.UpdateCellStatus("A2", "3");
-//            CellGetters cell3 = engine.ShowCellStatus("A2");
+//            SheetGetters sheet3 = engine.getSheetStatus();
+//            engine.updateCellStatus("A2", "3");
+//            CellGetters cell3 = engine.getCellStatus("A2");
 //
 //            printSheet(sheet3);
 //
