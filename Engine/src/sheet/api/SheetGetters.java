@@ -15,6 +15,5 @@ public interface SheetGetters {
     int getVersion();
     Cell getCell(Coordinate coordinate);
     Map<CoordinateGetters, CellGetters> getActiveCells();
-    int getNumberOfCellsThatChangedSinceCreated();
     Data getCellData(String cellId);
 }

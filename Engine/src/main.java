@@ -41,24 +41,37 @@ public class main
 
         try
         {
-              sheet1.setCell(CoordinateFactory.toCoordinate("B1"),"5");
-//            sheet1.setCell(CoordinateFactory.toCoordinate("A2"),"5");
-//            sheet1.setCell(CoordinateFactory.toCoordinate("A3"),"{PLUS,{REF, A2},{REF,A1}}");
-//            sheet1.setCell(CoordinateFactory.toCoordinate("A4"),"{REF, A2}");
+              sheet1.setCell(CoordinateFactory.toCoordinate("A1"),"{DIVIDE,2,0}");
+            sheet1.setCell(CoordinateFactory.toCoordinate("A2"),"{REF,A1}");
+            sheet1.setCell(CoordinateFactory.toCoordinate("A3"),"{REF,A2}");
+            sheet1.setCell(CoordinateFactory.toCoordinate("A4"),"{PLUS,{REF,A2},{REF,A1}}");
+            printSheet(sheet1);
+
+            sheet1.setCell(CoordinateFactory.toCoordinate("A1"),"{DIVIDE,2,5}");
+            printSheet(sheet1);
+
+
+
 
             Map<Coordinate, String> comeOn = Map.of(
                     CoordinateFactory.toCoordinate("B1"),"3",
                     CoordinateFactory.toCoordinate("B2"),"5",
-                    CoordinateFactory.toCoordinate("B3"),"{PLUS,{REF, B2},{REF,B1}}",
-                    CoordinateFactory.toCoordinate("B4"),"{REF, B3}",
-                    CoordinateFactory.toCoordinate("B5"),"{PLUS,{REF, B2},{REF,B1}}"
+                    CoordinateFactory.toCoordinate("B3"),"{PLUS,{REF,B2},{REF,B1}}",
+                    CoordinateFactory.toCoordinate("B4"),"{REF,B3}",
+                    CoordinateFactory.toCoordinate("B5"),"{PLUS,{REF,B3},{REF,B3}}"
             );
 
             sheet1.setCells(comeOn);
 
-            printSheet(sheet1);
+            Map<Coordinate, String> comeOn2 = Map.of(
+                    CoordinateFactory.toCoordinate("B1"),"Hello"
+            );
 
-            Engine engine = EngineImpl.create();
+            sheet1.setCells(comeOn2);
+//
+            printSheet(sheet1);
+//
+//            Engine engine = EngineImpl.create();
 
 //            engine.readXMLInitFile(BASIC_XML_RESOURCE);
 //            SheetGetters sheet2 = engine.getSheetStatus();
@@ -93,7 +106,8 @@ public class main
 
         } catch(Exception e) {
             System.out.println(e.getMessage());
-            e.printStackTrace();
+            //e.printStackTrace();
+            printSheet(sheet1);
         }
     }
 
@@ -109,28 +123,28 @@ public class main
         System.out.println();
     }
 
-    public static void printVersionManager(VersionManagerGetters versionManager) {
-        System.out.println("Version manager:");
-        int versionNumber = 1;
-        int previous = 0;
-
-        for (VersionGetters version : versionManager.getVersions()) {
-            int current = version.getSheet().getNumberOfCellsThatChangedSinceCreated();
-            String sheetName = version.getSheet().getName();
-            System.out.println(
-                    new StringBuilder()
-                            .append("[Version ")
-                            .append(versionNumber++)
-                            .append("] Sheet name: ")
-                            .append(sheetName)
-                            .append(" - ")
-                            .append("number of cells that changed since last version: ")
-                            .append(current - previous)
-                            .toString()
-            );
-            previous = current;
-        }
-
-        System.out.println();
-    }
+//    public static void printVersionManager(VersionManagerGetters versionManager) {
+//        System.out.println("Version manager:");
+//        int versionNumber = 1;
+//        int previous = 0;
+//
+//        for (VersionGetters version : versionManager.getVersions()) {
+//            int current = version.getSheet().getNumberOfCellsThatChangedSinceCreated();
+//            String sheetName = version.getSheet().getName();
+//            System.out.println(
+//                    new StringBuilder()
+//                            .append("[Version ")
+//                            .append(versionNumber++)
+//                            .append("] Sheet name: ")
+//                            .append(sheetName)
+//                            .append(" - ")
+//                            .append("number of cells that changed since last version: ")
+//                            .append(current - previous)
+//                            .toString()
+//            );
+//            previous = current;
+//        }
+//
+//        System.out.println();
+//    }
 }

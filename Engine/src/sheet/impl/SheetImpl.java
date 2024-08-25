@@ -14,7 +14,7 @@ import sheet.layout.api.Layout;
 
 import java.io.Serializable;
 import java.util.*;
-import java.util.stream.Collectors;
+
 
 public class SheetImpl implements Sheet, Serializable {
 
@@ -108,7 +108,7 @@ public class SheetImpl implements Sheet, Serializable {
 
          Ref.sheetView = this;
 
-         isCoordinateInSheetBoundaries(target);
+         isCoordinateInBoundaries(target);
          Cell updatedCell = CellImpl.create(target, version++, originalValue);
          Cell previousCell =  insertCellToSheet(updatedCell);
 
@@ -158,7 +158,7 @@ public class SheetImpl implements Sheet, Serializable {
                     this.activeCells.remove(coordinate);
                 }
                 else {
-                    redoSetCell(coordinate, oldOriginalValueMap.get(coordinate));
+                    setCell(coordinate, oldOriginalValueMap.get(coordinate));
                 }
             });
 
@@ -211,13 +211,7 @@ public class SheetImpl implements Sheet, Serializable {
         updatedCellsCoordinates.push(coordinate);
     }
 
-    private void redoSetCell(Coordinate coordinate, String originalValue)
-    {
-        this.numberOfCellsThatChangedSinceCreated -= 2;
-        setCell(coordinate, originalValue);
-    }
-
-    private boolean isCoordinateInSheetBoundaries(Coordinate target) {
+    private boolean isCoordinateInBoundaries(Coordinate target) {
 
         if(!isRowInSheetBoundaries(target.getRow()) || !isColumnInSheetBoundaries(target.getCol())) {
             throw new IllegalArgumentException("Row or column out of bounds !");
@@ -227,11 +221,11 @@ public class SheetImpl implements Sheet, Serializable {
     }
 
     private boolean isRowInSheetBoundaries(int row) {
-        return !(row >= this.layout.GetRows());
+        return !(row >= this.layout.getRows());
     }
 
     private boolean isColumnInSheetBoundaries(int column) {
-        return !(column >= this.layout.GetColumns());
+        return !(column >= this.layout.getColumns());
     }
 
     public static boolean isValidVersion(int version) {
