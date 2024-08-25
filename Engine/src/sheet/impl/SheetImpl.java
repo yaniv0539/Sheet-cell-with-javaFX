@@ -123,11 +123,12 @@ public class SheetImpl implements Sheet, CellLookupService {
              {
                     //doing rollback to previous sheet.
                  insertCellToSheet(previousCell);
-                 recalculateSheetFrom(updatedCell);
+                 recalculateSheetFrom(previousCell);
 
                  throw new IllegalArgumentException("recalculation didnt work");
              }
          }
+
     }
 
     private boolean isCoordinateInSheetBoundaries(Coordinate target) {

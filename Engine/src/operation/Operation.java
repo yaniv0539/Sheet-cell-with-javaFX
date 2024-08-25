@@ -1,10 +1,12 @@
 package operation;
 
+import exception.InvalidFunctionArgument;
 import expression.api.Expression;
 import expression.impl.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
+import java.util.List;
 
 public enum Operation {
 
@@ -93,12 +95,15 @@ public enum Operation {
                         constructor.setAccessible(true);
                         return constructor.newInstance(args);
                     } catch (InstantiationException e) {
-                        //NEED TO CATCH ARGUMENT EXCEPTIO AND THROW PERSONAL EXCEPTION FOR UI.
-                        throw new RuntimeException(e);
+                        InvalidFunctionArgument funcError =  new InvalidFunctionArgument(valueOf(clazz.getSimpleName().toUpperCase()), List.of(args));
+                        funcError.initCause(e);
+                        throw funcError;
                     } catch (IllegalAccessException e) {
                         throw new RuntimeException(e);
                     } catch (InvocationTargetException e) {
-                        throw new RuntimeException(e);
+                        InvalidFunctionArgument funcError =  new InvalidFunctionArgument(valueOf(clazz.getSimpleName().toUpperCase()), List.of(args));
+                        funcError.initCause(e);
+                        throw funcError;
                     }
                 })
                 .get();

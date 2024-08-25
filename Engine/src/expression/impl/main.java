@@ -1,5 +1,6 @@
 package expression.impl;
 
+import exception.InvalidFunctionArgument;
 import expression.api.Expression;
 import expression.parser.OrignalValueUtilis;
 import sheet.api.Sheet;
@@ -44,6 +45,16 @@ public class main
         Layout layout = LayoutImpl.create(size, column, row);
         String name = "Yaniv";
         Sheet sh =SheetImpl.create(name, layout);
+
+        try{
+            sh.setCell(CoordinateImpl.toCoordinate("A1"),"hi");
+            sh.setCell(CoordinateImpl.toCoordinate("A2")," itay");
+            sh.setCell(CoordinateImpl.toCoordinate("A4"),"{CONCAT,5,{REF,A2}}");
+        }
+        catch(InvalidFunctionArgument e)
+        {
+            System.out.println(e.toString());
+        }
 
         try
         {
