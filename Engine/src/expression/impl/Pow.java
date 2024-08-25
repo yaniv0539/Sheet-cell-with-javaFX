@@ -16,7 +16,9 @@ public class Pow extends BinaryExpression {
 
     @Override
     protected Data dynamicEvaluate(Data left, Data right) {
-        return new DataImpl(DataType.NUMERIC, Math.pow((double)left.getValue(), (double)right.getValue()));
+
+        return ((double)left.getValue() == 0 && (double)right.getValue() == 0) ? new DataImpl(DataType.NUMERIC, Double.NaN) :
+        new DataImpl(DataType.NUMERIC, Math.pow((double)left.getValue(), (double)right.getValue()));
     }
 
     @Override
@@ -37,4 +39,6 @@ public class Pow extends BinaryExpression {
 //    public String getOperationSign() {
 //        return "^";
 //    }
+
+
 }

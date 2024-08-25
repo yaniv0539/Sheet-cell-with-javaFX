@@ -4,6 +4,8 @@ import expression.api.Data;
 import expression.api.DataType;
 import expression.api.Expression;
 
+import java.util.Arrays;
+
 
 public class Concat extends BinaryExpression {
 
@@ -22,7 +24,17 @@ public class Concat extends BinaryExpression {
     }
     @Override
     public boolean isValidArgs(Object... args) {
-        return false;
+        boolean value = Arrays
+                .stream(args)
+                .map(Expression.class::cast)
+                .allMatch(arg -> arg.getType() == DataType.STRING);
+//        in " + this.getClass().getSimpleName()
+        if (!value) {
+            //need to throw our own exception.
+            throw new IllegalArgumentException("arguments must be string !\n");
+        }
+
+        return true;
     }
 }
 
