@@ -23,17 +23,16 @@ public class SheetImpl implements Sheet, Serializable {
     private final String name;
     private final Layout layout;
     private int version;
-    private final Map<Coordinate, Cell> activeCells;
-    private int numberOfCellsThatChangedSinceCreated;
+    private Map<Coordinate, Cell> activeCells;
 
     private SheetImpl(String name, Layout layout) {
 
         if (name == null) {
-            throw new IllegalArgumentException("Sheet name cannot be null");
+            throw new IllegalArgumentException("Name cannot be null");
         }
 
         if (layout == null) {
-            throw new IllegalArgumentException("Sheet layout cannot be null");
+            throw new IllegalArgumentException("Layout cannot be null");
         }
 
         numberOfSheets++;
@@ -42,7 +41,6 @@ public class SheetImpl implements Sheet, Serializable {
         this.layout = layout;
         this.version = 1;
         this.activeCells = new HashMap<>();
-        this.numberOfCellsThatChangedSinceCreated = 0;
     }
 
     public static SheetImpl create(String name, Layout layout) {
@@ -77,15 +75,9 @@ public class SheetImpl implements Sheet, Serializable {
 
         return activeCells.get(coordinate);
     }
-
     @Override
     public Map<CoordinateGetters, CellGetters> getActiveCells() {
         return Collections.unmodifiableMap(this.activeCells);
-    }
-
-    @Override
-    public int getNumberOfCellsThatChangedSinceCreated() {
-        return this.numberOfCellsThatChangedSinceCreated;
     }
 
     // FOR INTERFACE lookupCellService
@@ -95,7 +87,7 @@ public class SheetImpl implements Sheet, Serializable {
         Cell cell = activeCells.get(coordinate);
 
         if (cell == null) {
-            throw new IllegalArgumentException("cell" + cellId + "is empty. Cannot get data.");
+            throw new IllegalArgumentException(cellId + "is Empty, cannot get data");
         }
 
         return cell.getEffectiveValue();
@@ -105,72 +97,36 @@ public class SheetImpl implements Sheet, Serializable {
     public void setVersion(int version) {
 
         if (!isValidVersion(version)) {
-            throw new IllegalArgumentException("version cannot be less than 1");
+            throw new IllegalArgumentException("Version cannot be less than 1");
         }
 
         this.version = version;
     }
 
     @Override
-    public void setCell(Coordinate coordinate, String originalValue) {
+    public void setCell(Coordinate target, String originalValue) {
 
-        // Gives "Ref" expression permissions to view some data from this sheet.
-        Ref.sheetView = this;
+         Ref.sheetView = this;
 
-        // Validate if the coordinate in sheet boundaries.
-        if (!isCoordinateInBoundaries(coordinate)) {
-            throw new IndexOutOfBoundsException(coordinate + "is not in boundaries");
-        }
+         isCoordinateInSheetBoundaries(target);
+         Cell updatedCell = CellImpl.create(target, version++, originalValue);
+         Cell previousCell =  insertCellToSheet(updatedCell);
 
-        // Creates new cell with its new original value.
-        CellImpl updatedCell = CellImpl.create(coordinate, version++, originalValue);
+         if (previousCell != null) {
 
-        // Extracts the cells inside the Refs in the original value,
-        // and updates the new cell with its new cells he depends on.
-        Set<Cell> cells = OrignalValueUtilis.findInfluenceFrom(originalValue).stream().map(this::getCell).collect(Collectors.toSet());
-        updatedCell.setInfluenceFrom(cells);
+             try {
+                 recalculateSheetFrom(updatedCell);
+             }
+             catch(Exception someException)
+             {
+                    //doing rollback to previous sheet.
+                 insertCellToSheet(previousCell);
+                 recalculateSheetFrom(previousCell);
 
-        // Validate if there is a circle.
-        if (isCircle(updatedCell)) {
-            throw new IllegalArgumentException("illegal cell update, there is a circle!");
-        }
+                 throw new IllegalArgumentException("recalculation didnt work");
+             }
+         }
 
-        // Adds the new cell and saves the previous cell.
-        Cell previousCell = activeCells.put(coordinate, updatedCell);
-
-        // TODO: What this line means? ->
-        //pass this line inout i valid only localy on cell.
-
-        // If the previous cell wasn't in 'activeCells' map, we can be sure that other cells were not influenced from it.
-        // So, if the previous cell was not exist (null), we'll just update the 'influenceOn' set in cells that it depends on that we are here.
-        // Else, we'll update the new cell 'influenceOn' Set with the previous cell 'influenceOn' Set.
-
-        // TODO: To Itay, shouldn't we update the cells that depend on that we are here also if the previous cell is not null?
-        // TODO: How can I know if the cells that depends on the new cell is OK with the change?
-        // TODO: Why do we need to recalculate the route from our new cell?
-
-        if (previousCell != null) {
-            updatedCell.setInfluenceOn(previousCell.getInfluenceOn());
-            try
-            {
-                RecalculationRouteFrom(updatedCell);
-            } catch (Exception someException)
-            {
-                // Rollback to previous sheet.
-                activeCells.put(coordinate, previousCell);
-                RecalculationRouteFrom(previousCell);
-                throw new IllegalArgumentException("illegal cell update, re-compute didn't work");
-            }
-
-        }
-        else {
-            for(Cell cell : updatedCell.getInfluenceFrom()) {
-                cell.addInfluenceOn(updatedCell);
-            }
-        }
-
-        // Cell updated successfully!
-        this.numberOfCellsThatChangedSinceCreated++;
     }
 
     @Override
@@ -261,34 +217,129 @@ public class SheetImpl implements Sheet, Serializable {
         setCell(coordinate, originalValue);
     }
 
-    private boolean isCoordinateInBoundaries(Coordinate coordinate) {
-        return !(coordinate == null || coordinate.getRow() > this.layout.getRows() || coordinate.getCol() > this.layout.getColumns());
+    private boolean isCoordinateInSheetBoundaries(Coordinate target) {
+
+        if(!isRowInSheetBoundaries(target.getRow()) || !isColumnInSheetBoundaries(target.getCol())) {
+            throw new IllegalArgumentException("Row or column out of bounds !");
+        }
+
+        return true;
+    }
+
+    private boolean isRowInSheetBoundaries(int row) {
+        return !(row >= this.layout.GetRows());
+    }
+
+    private boolean isColumnInSheetBoundaries(int column) {
+        return !(column >= this.layout.GetColumns());
     }
 
     public static boolean isValidVersion(int version) {
         return version >= 1;
     }
 
-    //function for cell update including rollback
-    public boolean RecalculationRouteFrom(Cell targetToStart) {
-        if (targetToStart.getInfluenceOn().isEmpty()) {
-            targetToStart.computeEffectiveValue();
+    private void circleFrom(Cell cellToCheck) {
+        if(hasCircle(cellToCheck)) {
+            //throw somthing
+            throw  new IllegalArgumentException("circle");
+        }
+    }
+
+    private boolean hasCircle(Cell cellToCheck) {
+        return recHasCircle(cellToCheck, new HashSet<Coordinate>());
+    }
+
+    private boolean recHasCircle(Cell current, Set<Coordinate> visited) {
+        // If the current object is already visited, a cycle is detected
+        if (visited.contains(current.getCoordinate())) {
+            return true;
         }
 
-        for (Cell cell : targetToStart.getInfluenceOn()) {
-            RecalculationRouteFrom(cell);
+        // Mark the current object as visited
+        visited.add(current.getCoordinate());
+
+        // Recur for all the objects in the relatedObjects list
+        for (Cell affectedBy : current.getInfluenceFrom()) {
+            // If a cycle is detected in the recursion, return true
+            if (recHasCircle(affectedBy, visited)) {
+                return true;
+            }
         }
 
-        return true;
+        // Remove the current object from the visited set (backtracking)
+        visited.remove(current.getCoordinate());
+
+        // If no cycle was found, return false
+        return false;
     }
 
-    private boolean isCircle(CellImpl cellToCheck)
-    {
-        return cellToCheck.HasCircle();
+    private Set<Cell> CoordinateToCell(Set<Coordinate> newInfluenceCellsId) {
+        Set<Cell> Cells = new HashSet<>();
+
+        for (Coordinate location : newInfluenceCellsId) {
+            Cells.add(getCell(location));
+        }
+        return Cells;
     }
 
-    @Override
-    public String toString() {
-        return this.name;
+    private Stack<Cell> topologicalSortFrom(Cell cell) {
+
+        Stack<Cell> stack = new Stack<>();
+        Set<Coordinate> visited = new HashSet<>();
+
+        // Call the recursive helper function to store topological sort starting from all cells one by one
+        for (Cell neighbor : cell.getInfluenceOn()) {
+
+            if (!visited.contains(neighbor.getCoordinate())) {
+                dfs(neighbor, visited, stack);
+            }
+        }
+
+        return stack;
     }
+
+    private void dfs(Cell cell, Set<Coordinate> visited,Stack<Cell> stack) {
+        visited.add(cell.getCoordinate());
+
+        // Visit all the adjacent vertices
+        for (Cell neighbor : cell.getInfluenceOn()) {
+
+            if (!visited.contains(neighbor.getCoordinate())) {
+                dfs(neighbor, visited, stack);
+            }
+        }
+
+        // Push current cell to stack which stores the result
+        stack.push(cell);
+    }
+
+    private Cell insertCellToSheet(Cell toInsert) {
+
+        Cell toReplace = activeCells.put(toInsert.getCoordinate(),toInsert);
+
+        toInsert.setInfluenceFrom(CoordinateToCell(OrignalValueUtilis.findInfluenceFrom(toInsert.getOriginalValue())));
+        toInsert.getInfluenceFrom().forEach(cell -> cell.getInfluenceOn().add(toInsert));
+
+        //if it is a new cell there is no influenceOn, if exist he may have influenced on other cells.
+        if(toReplace != null) {
+            toInsert.setInfluenceOn(toReplace.getInfluenceOn());
+            toInsert.getInfluenceOn().forEach(cell -> cell.getInfluenceFrom().add(toInsert));
+            //until here we get a new sheet now we just need to remove
+            toReplace.getInfluenceFrom().forEach(cell -> cell.getInfluenceOn().remove(toReplace));
+            toReplace.getInfluenceOn().forEach(cell -> cell.getInfluenceFrom().remove(toReplace));
+
+        }
+
+        return toReplace;
+    }
+
+    private void recalculateSheetFrom(Cell cell) {
+        circleFrom(cell);
+        Stack<Cell> cellStack = topologicalSortFrom(cell);
+        //compute
+        while (!cellStack.isEmpty()) {
+            cellStack.pop().computeEffectiveValue();
+        }
+    }
+
 }

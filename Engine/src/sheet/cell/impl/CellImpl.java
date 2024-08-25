@@ -57,11 +57,13 @@ public class CellImpl implements Cell, Serializable {
     }
 
     @Override
-    public Set<Cell> getInfluenceFrom() { return Collections.unmodifiableSet(this.influenceFrom); }
+    public Set<Cell> getInfluenceFrom() {
+        return this.influenceFrom;
+    }
 
     @Override
     public Set<Cell> getInfluenceOn() {
-        return Collections.unmodifiableSet(this.influenceOn);
+        return this.influenceOn;
     }
 
     @Override
@@ -110,41 +112,8 @@ public class CellImpl implements Cell, Serializable {
     @Override
     public void computeEffectiveValue() { setOriginalValue(this.originalValue); }
 
-    public boolean HasCircle()
-    {
-        return recHasCircle(this, new HashSet<Coordinate>());
-    }
-
-    private boolean recHasCircle(Cell current, Set<Coordinate> visited) {
-        // If the current object is already visited, a cycle is detected
-        if (visited.contains(current.getCoordinate())) {
-            return true;
-        }
-
-        // Mark the current object as visited
-        visited.add(current.getCoordinate());
-
-        // Recur for all the objects in the relatedObjects list
-        for (Cell affectedBy : current.getInfluenceFrom()) {
-            // If a cycle is detected in the recursion, return true
-            if (recHasCircle(affectedBy, visited)) {
-                return true;
-            }
-        }
-
-        // Remove the current object from the visited set (backtracking)
-        visited.remove(current.getCoordinate());
-
-        // If no cycle was found, return false
-        return false;
-    }
-
     private static boolean isValidVersion(int version) {
         return version >= 1;
     }
 
-    @Override
-    public String toString() {
-        return this.coordinate.toString();
-    }
 }
