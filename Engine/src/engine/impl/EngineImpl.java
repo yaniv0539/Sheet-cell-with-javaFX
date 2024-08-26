@@ -2,8 +2,6 @@ package engine.impl;
 
 import engine.api.Engine;
 import engine.jaxb.parser.STLSheetToSheet;
-import engine.version.api.Version;
-import engine.version.impl.VersionImpl;
 import engine.version.manager.api.VersionManager;
 import engine.version.manager.api.VersionManagerGetters;
 import engine.version.manager.impl.VersionManagerImpl;
@@ -57,6 +55,9 @@ public class EngineImpl implements Engine {
             }
 
             this.sheet = sheet;
+            versionManager.clearVersions();
+            versionManager.addVersion(this.sheet);
+
         } catch (JAXBException | FileNotFoundException e) {
             throw new RuntimeException("Failed to read XML file", e);
         }
@@ -70,8 +71,8 @@ public class EngineImpl implements Engine {
 
     @Override
     public void updateCellStatus(String cellName, String value) {
-        versionManager.addVersion(VersionImpl.create(this.sheet));
         this.sheet.setCell(CoordinateFactory.toCoordinate(cellName), value);
+        versionManager.addVersion(this.sheet);
     }
 
     @Override
