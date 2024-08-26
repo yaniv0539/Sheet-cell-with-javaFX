@@ -1,6 +1,7 @@
 package sheet.impl;
 
 import expression.api.Data;
+import expression.impl.DataImpl;
 import expression.impl.Ref;
 import expression.parser.OrignalValueUtilis;
 import sheet.api.Sheet;
@@ -110,22 +111,17 @@ public class SheetImpl implements Sheet, Serializable {
          Ref.sheetView = this;
 
          isCoordinateInBoundaries(target);
-         Cell updatedCell = CellImpl.create(target, version++, originalValue);
+         Cell updatedCell = CellImpl.create(target, version, originalValue);
          Cell previousCell =  insertCellToSheet(updatedCell);
 
-         if (previousCell != null) {
-
-             try {
-                 recalculateSheetFrom(updatedCell);
-             }
-             catch(Exception someException)
-             {
-                    //doing rollback to previous sheet.
-                 insertCellToSheet(previousCell);
-                 recalculateSheetFrom(previousCell);
-
-                 throw new IllegalArgumentException("recalculation didnt work");
-             }
+         if(!circleFrom(updatedCell))
+         {
+             updatedCell.computeEffectiveValue();
+             recalculateSheetFrom(updatedCell);
+         }
+         else {
+             insertCellToSheet(previousCell);
+             throw new RuntimeException("circle");
          }
 
     }
@@ -233,11 +229,8 @@ public class SheetImpl implements Sheet, Serializable {
         return version >= 1;
     }
 
-    private void circleFrom(Cell cellToCheck) {
-        if(hasCircle(cellToCheck)) {
-            //throw somthing
-            throw  new IllegalArgumentException("circle");
-        }
+    private boolean circleFrom(Cell cellToCheck) {
+        return hasCircle(cellToCheck);
     }
 
     private boolean hasCircle(Cell cellToCheck) {
@@ -311,6 +304,14 @@ public class SheetImpl implements Sheet, Serializable {
     private Cell insertCellToSheet(Cell toInsert) {
 
         Cell toReplace = activeCells.put(toInsert.getCoordinate(),toInsert);
+        OrignalValueUtilis.findInfluenceFrom(toInsert.getOriginalValue()).forEach(coord ->
+        {
+            if(!activeCells.containsKey(coord)) {
+                Cell c = CellImpl.create(coord,version++, DataImpl.empty);
+                c.computeEffectiveValue();
+                activeCells.put(coord,c);
+            }
+        });
 
         toInsert.setInfluenceFrom(CoordinateToCell(OrignalValueUtilis.findInfluenceFrom(toInsert.getOriginalValue())));
         toInsert.getInfluenceFrom().forEach(cell -> cell.getInfluenceOn().add(toInsert));
@@ -329,11 +330,15 @@ public class SheetImpl implements Sheet, Serializable {
     }
 
     private void recalculateSheetFrom(Cell cell) {
-        circleFrom(cell);
+
         Stack<Cell> cellStack = topologicalSortFrom(cell);
         //compute
+
         while (!cellStack.isEmpty()) {
-            cellStack.pop().computeEffectiveValue();
+            Cell c = cellStack.pop();
+            c.computeEffectiveValue();
+            c.setVersion(version);
+
         }
     }
 

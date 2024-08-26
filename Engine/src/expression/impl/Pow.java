@@ -17,8 +17,9 @@ public class Pow extends BinaryExpression {
     @Override
     protected Data dynamicEvaluate(Data left, Data right) {
 
-        return ((double)left.getValue() == 0 && (double)right.getValue() == 0) ? new DataImpl(DataType.NUMERIC, Double.NaN) :
-        new DataImpl(DataType.NUMERIC, Math.pow((double)left.getValue(), (double)right.getValue()));
+        return left.getType() == DataType.NUMERIC && right.getType() == DataType.NUMERIC ?
+                new DataImpl(DataType.NUMERIC,Math.pow((double)left.getValue(),(double)right.getValue()))
+                : new DataImpl(DataType.UNKNOWN,Double.NaN);
     }
 
     @Override
@@ -26,7 +27,7 @@ public class Pow extends BinaryExpression {
         boolean value = Arrays
                 .stream(args)
                 .map(Expression.class::cast)
-                .allMatch(arg -> arg.getType() == DataType.NUMERIC);
+                .allMatch(arg -> arg.getType() == DataType.NUMERIC || arg.getType() == DataType.UNKNOWN);
 
         if (!value) {
             //need to throw our own exception.

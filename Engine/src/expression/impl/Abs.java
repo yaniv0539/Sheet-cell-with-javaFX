@@ -19,7 +19,8 @@ public class Abs extends UnaryExpression {
     @Override
     protected Data dynamicEvaluate(Data input) {
 
-        return new DataImpl(DataType.NUMERIC, Math.abs((double)input.getValue()));
+        return input.getType() == DataType.NUMERIC ? new DataImpl(DataType.NUMERIC, Math.abs((double)input.getValue()))
+                : new DataImpl(DataType.UNKNOWN, Double.NaN);
     }
 
     @Override
@@ -28,7 +29,7 @@ public class Abs extends UnaryExpression {
         boolean value = Arrays
                 .stream(args)
                 .map(Expression.class::cast)
-                .allMatch(arg -> arg.getType() == DataType.NUMERIC);
+                .allMatch(arg -> arg.getType() == DataType.NUMERIC || arg.getType() == DataType.UNKNOWN);
 
         if (!value) {
             //need to throw our own exception.

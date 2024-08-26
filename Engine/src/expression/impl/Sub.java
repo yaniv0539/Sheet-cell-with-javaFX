@@ -21,11 +21,10 @@ public class Sub extends ExpressionImpl {
     @Override
     public Data evaluate() {
 
-        String str = (String)source.evaluate().getValue();
-        Double first = (Double)left.evaluate().getValue();
-        Double last = (Double)right.evaluate().getValue();
-
-        return new DataImpl(DataType.STRING,str.substring(first.intValue(), last.intValue()));
+        return source.evaluate().getType() == DataType.STRING && left.evaluate().getType() == DataType.NUMERIC && right.evaluate().getType() == DataType.NUMERIC ?
+                new DataImpl(DataType.STRING,((String)source.evaluate().getValue()).substring
+                        ((int)((double)left.evaluate().getValue()),(int)((double)right.evaluate().getValue())))
+                : new DataImpl(DataType.UNKNOWN,DataImpl.undefiled);
     }
 
     @Override
@@ -34,12 +33,12 @@ public class Sub extends ExpressionImpl {
         boolean condition1 = Arrays.stream(args)
                 .map(Expression.class::cast)
                 .limit(1)
-                .allMatch(arg -> arg.getType() == DataType.STRING);
+                .allMatch(arg -> arg.getType() == DataType.STRING || arg.getType() == DataType.UNKNOWN);
 
         boolean condition2 = Arrays.stream(args)
                         .map(Expression.class::cast)
                         .skip(1)
-                        .allMatch(arg -> arg.getType() == DataType.NUMERIC);
+                        .allMatch(arg -> arg.getType() == DataType.NUMERIC || arg.getType() == DataType.UNKNOWN);
 
         if (!(condition1 && condition2)) {
             //need to throw our own exception.
