@@ -17,9 +17,21 @@ public class Divide extends BinaryExpression {
 
     @Override
     public Data dynamicEvaluate(Data left, Data right) {
+        Data d;
 
-        return (double)right.getValue() == 0 ? new DataImpl(DataType.NUMERIC,Double.NaN) :
-                new DataImpl(DataType.NUMERIC,(double)left.getValue() / (double)right.getValue());
+        if(left.getType() == DataType.NUMERIC && right.getType() == DataType.NUMERIC) {
+            if((double) right.getValue() == 0) {
+               d = new DataImpl(DataType.UNKNOWN, Double.NaN);
+            }
+            else {
+                d = new DataImpl(DataType.NUMERIC, (double) left.getValue() /(double) right.getValue());
+            }
+        }
+        else {
+            d = new DataImpl(DataType.UNKNOWN, Double.NaN);
+        }
+
+        return d;
     }
 
     @Override
@@ -27,7 +39,7 @@ public class Divide extends BinaryExpression {
         boolean value = Arrays
                 .stream(args)
                 .map(Expression.class::cast)
-                .allMatch(arg -> arg.getType() == DataType.NUMERIC);
+                .allMatch(arg -> arg.getType() == DataType.NUMERIC || arg.getType() == DataType.UNKNOWN);
 
         if (!value) {
             //need to throw our own exception.

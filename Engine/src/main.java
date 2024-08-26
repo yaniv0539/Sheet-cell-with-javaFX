@@ -21,6 +21,7 @@ public class main
 
     public static void main(String[] args) {
 
+
         int width = 5;
         int height = 5;
 
@@ -36,35 +37,52 @@ public class main
 
         try
         {
-              sheet1.setCell(CoordinateFactory.toCoordinate("A1"),"{DIVIDE,2,0}");
-            sheet1.setCell(CoordinateFactory.toCoordinate("A2"),"{REF,A1}");
-            sheet1.setCell(CoordinateFactory.toCoordinate("A3"),"{REF,A2}");
-            sheet1.setCell(CoordinateFactory.toCoordinate("A4"),"{PLUS,{REF,A2},{REF,A1}}");
+            sheet1.setCell(CoordinateFactory.toCoordinate("B2"),"{REF,B4}");
+            sheet1.setCell(CoordinateFactory.toCoordinate("B1"),"{PLUS,{REF,B2},{REF,B5}}");
+            printSheet(sheet1);
+            sheet1.setCell(CoordinateFactory.toCoordinate("B4"),"1");
+            sheet1.setCell(CoordinateFactory.toCoordinate("B5"),"3");
+
+//            sheet1.setCell(CoordinateFactory.toCoordinate("A1"),"{DIVIDE,2,0}");
+//            sheet1.setCell(CoordinateFactory.toCoordinate("A2"),"{REF,A1}");
+//            sheet1.setCell(CoordinateFactory.toCoordinate("A3"),"{REF,A2}");
+//            sheet1.setCell(CoordinateFactory.toCoordinate("A4"),"{PLUS,{REF,A2},{REF,A1}}");
             printSheet(sheet1);
 
-            sheet1.setCell(CoordinateFactory.toCoordinate("A1"),"{DIVIDE,2,5}");
+            sheet1.setCell(CoordinateFactory.toCoordinate("B2"),"{SUB,hello,{REF,B4},{REF,B5}}");
+            printSheet(sheet1);
+            sheet1.setCell(CoordinateFactory.toCoordinate("B2"),"{REF,B5}");
+            printSheet(sheet1);
+
+            sheet1.setCell(CoordinateFactory.toCoordinate("B5"),"hello");
+            printSheet(sheet1);
+
+            sheet1.setCell(CoordinateFactory.toCoordinate("A4"),"IT IS WORKING");
+            printSheet(sheet1);
+
+            sheet1.setCell(CoordinateFactory.toCoordinate("B5"),"{REF,B1}");
             printSheet(sheet1);
 
 
 
 
-            Map<Coordinate, String> comeOn = Map.of(
-                    CoordinateFactory.toCoordinate("B1"),"3",
-                    CoordinateFactory.toCoordinate("B2"),"5",
-                    CoordinateFactory.toCoordinate("B3"),"{PLUS,{REF,B2},{REF,B1}}",
-                    CoordinateFactory.toCoordinate("B4"),"{REF,B3}",
-                    CoordinateFactory.toCoordinate("B5"),"{PLUS,{REF,B3},{REF,B3}}"
-            );
-
-            sheet1.setCells(comeOn);
-
-            Map<Coordinate, String> comeOn2 = Map.of(
-                    CoordinateFactory.toCoordinate("B1"),"Hello"
-            );
-
-            sheet1.setCells(comeOn2);
+//            Map<Coordinate, String> comeOn = Map.of(
+//                    CoordinateFactory.toCoordinate("B1"),"3",
+//                    CoordinateFactory.toCoordinate("B2"),"5",
+//                    CoordinateFactory.toCoordinate("B3"),"{PLUS,{REF,B2},{REF,B1}}",
+//                    CoordinateFactory.toCoordinate("B4"),"{REF,B3}",
+//                    CoordinateFactory.toCoordinate("B5"),"{PLUS,{REF,B3},{REF,B3}}"
+//            );
 //
-            printSheet(sheet1);
+//            sheet1.setCells(comeOn);
+//
+//            Map<Coordinate, String> comeOn2 = Map.of(
+//                    CoordinateFactory.toCoordinate("B1"),"Hello"
+//            );
+//
+//            sheet1.setCells(comeOn2);
+//
+//            printSheet(sheet1);
 //
 //            Engine engine = EngineImpl.create();
 

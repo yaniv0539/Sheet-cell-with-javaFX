@@ -2,6 +2,7 @@ package expression.parser;
 
 import expression.api.Expression;
 import expression.impl.BooleanExpression;
+import expression.impl.NonValueExpression;
 import expression.impl.Number;
 import expression.impl.RawString;
 import operation.Operation;
@@ -50,6 +51,10 @@ public class OrignalValueUtilis {
         StringBuilder buffer = new StringBuilder();
         Stack<Character> stack = new Stack<>();
 
+        if(input.isEmpty())
+        {
+            return new NonValueExpression();
+        }
 
         if (input.startsWith("{") && input.endsWith("}")) {
 

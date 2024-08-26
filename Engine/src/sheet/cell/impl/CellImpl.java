@@ -1,6 +1,7 @@
 package sheet.cell.impl;
 
 import expression.api.Data;
+import expression.api.Expression;
 import expression.parser.OrignalValueUtilis;
 import sheet.cell.api.Cell;
 import sheet.coordinate.api.Coordinate;
@@ -15,6 +16,7 @@ public class CellImpl implements Cell, Serializable {
     private final Coordinate coordinate;
     private int version;
     private String originalValue;
+    private Expression expression;
     private Data effectiveValue;
     private Set<Cell> influenceFrom;
     private Set<Cell> influenceOn;
@@ -87,30 +89,33 @@ public class CellImpl implements Cell, Serializable {
     @Override
     public void setOriginalValue(String originalValue) {
 
-        Data effectiveValue = OrignalValueUtilis.toExpression(originalValue).evaluate();
+//        Data effectiveValue = OrignalValueUtilis.toExpression(originalValue).evaluate();
         //getting data, if pass this line value is valid to this specific cell.
         //the sheet need to check if this is ok for all cells that depend on this cell data.
         //get the cell that "this" influence from
 
+//        this.originalValue = originalValue;
+//        setEffectiveValue(effectiveValue);
+
+       expression = OrignalValueUtilis.toExpression(originalValue);
         this.originalValue = originalValue;
-        setEffectiveValue(effectiveValue);
     }
 
     private void setEffectiveValue(Data effectiveValue) {
         this.effectiveValue = effectiveValue;
     }
 
-    private void setVersion(int version) {
-
-        if (!isValidVersion(version)) {
-            throw new IllegalArgumentException("Version cannot be less than 1");
-        }
-
-        this.version = version;
+    @Override
+    public void setVersion(int changeInVersion) {
+        version = changeInVersion;
     }
 
     @Override
-    public void computeEffectiveValue() { setOriginalValue(this.originalValue); }
+    public void computeEffectiveValue() {
+       // setOriginalValue(this.originalValue);
+        version++;
+        setEffectiveValue(expression.evaluate());
+    }
 
     private static boolean isValidVersion(int version) {
         return version >= 1;
