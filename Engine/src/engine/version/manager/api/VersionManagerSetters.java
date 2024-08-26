@@ -1,7 +1,9 @@
 package engine.version.manager.api;
 
-import engine.version.api.Version;
+import sheet.api.Sheet;
+import sheet.api.SheetGetters;
 
 public interface VersionManagerSetters {
-    void addVersion(Version version);
+    void addVersion(Sheet sheet);
+    void clearVersions();
 }

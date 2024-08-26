@@ -1,11 +1,6 @@
-import engine.api.Engine;
-import engine.impl.EngineImpl;
-import engine.version.api.VersionGetters;
-import engine.version.impl.VersionImpl;
 import engine.version.manager.api.VersionManagerGetters;
 import sheet.api.Sheet;
 import sheet.api.SheetGetters;
-import sheet.cell.api.CellGetters;
 import sheet.coordinate.api.Coordinate;
 import sheet.coordinate.impl.CoordinateFactory;
 import sheet.impl.SheetImpl;
@@ -123,28 +118,28 @@ public class main
         System.out.println();
     }
 
-//    public static void printVersionManager(VersionManagerGetters versionManager) {
-//        System.out.println("Version manager:");
-//        int versionNumber = 1;
-//        int previous = 0;
-//
-//        for (VersionGetters version : versionManager.getVersions()) {
-//            int current = version.getSheet().getNumberOfCellsThatChangedSinceCreated();
-//            String sheetName = version.getSheet().getName();
-//            System.out.println(
-//                    new StringBuilder()
-//                            .append("[Version ")
-//                            .append(versionNumber++)
-//                            .append("] Sheet name: ")
-//                            .append(sheetName)
-//                            .append(" - ")
-//                            .append("number of cells that changed since last version: ")
-//                            .append(current - previous)
-//                            .toString()
-//            );
-//            previous = current;
-//        }
-//
-//        System.out.println();
-//    }
+    public static void printVersionManager(VersionManagerGetters versionManager) {
+        System.out.println("Version manager:");
+        int versionNumber = 1;
+        int previous = 0;
+
+        for (SheetGetters sheet : versionManager.getVersions()) {
+            int current = sheet.getVersion();
+            String sheetName = sheet.getName();
+            System.out.println(
+                    new StringBuilder()
+                            .append("[Version ")
+                            .append(versionNumber++)
+                            .append("] Sheet name: ")
+                            .append(sheetName)
+                            .append(" - ")
+                            .append("number of cells that changed since last version: ")
+                            .append(current - previous)
+                            .toString()
+            );
+            previous = current;
+        }
+
+        System.out.println();
+    }
 }

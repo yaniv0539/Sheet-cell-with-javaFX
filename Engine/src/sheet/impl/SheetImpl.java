@@ -24,6 +24,7 @@ public class SheetImpl implements Sheet, Serializable {
     private final Layout layout;
     private int version;
     private Map<Coordinate, Cell> activeCells;
+    private int numberOfCellsThatChangedSinceLastVersion;
 
     private SheetImpl(String name, Layout layout) {
 
