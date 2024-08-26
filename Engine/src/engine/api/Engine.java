@@ -11,4 +11,5 @@ public interface Engine {
     CellGetters getCellStatus(String cellName);
     void updateCellStatus(String cellName, String value);
     VersionManagerGetters getVersionsManagerStatus();
+    void exit();
 }

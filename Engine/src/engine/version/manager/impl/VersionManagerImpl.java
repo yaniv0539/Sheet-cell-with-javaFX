@@ -26,6 +26,18 @@ public class VersionManagerImpl implements VersionManager {
         return Collections.unmodifiableList(this.versions);
     }
 
+    @Override
+    public SheetGetters getVersion(int version) {
+        
+        for (SheetGetters sheetGetters : this.versions) {
+            if (sheetGetters.getVersion() == version) {
+                return sheetGetters;
+            }
+        }
+
+        throw new IllegalArgumentException("Version " + version + " not found");
+    }
+
     public static int getCurrentVersion() {
         return currentVersion;
     }
