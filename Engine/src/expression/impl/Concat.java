@@ -18,17 +18,18 @@ public class Concat extends BinaryExpression {
     @Override
     protected Data dynamicEvaluate(Data left, Data right) {
 
-        String result = String.join("",(String) left.getValue(), (String) right.getValue());
+        return left.getType() == DataType.STRING && right.getType() == DataType.STRING ?
+                new DataImpl(DataType.STRING, String.join("",(String) left.getValue(), (String) right.getValue()))
+                : new DataImpl(DataType.UNKNOWN,DataImpl.undefiled);
 
-        return new DataImpl(DataType.STRING, result);
     }
     @Override
     public boolean isValidArgs(Object... args) {
         boolean value = Arrays
                 .stream(args)
                 .map(Expression.class::cast)
-                .allMatch(arg -> arg.getType() == DataType.STRING);
-//        in " + this.getClass().getSimpleName()
+                .allMatch(arg -> arg.getType() == DataType.STRING || arg.getType() == DataType.UNKNOWN);
+
         if (!value) {
             //need to throw our own exception.
             throw new IllegalArgumentException("arguments must be string !\n");
