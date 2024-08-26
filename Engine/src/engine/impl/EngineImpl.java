@@ -78,6 +78,9 @@ public class EngineImpl implements Engine {
     @Override
     public VersionManagerGetters getVersionsManagerStatus() { return this.versionManager; }
 
+    @Override
+    public void exit() {}
+
     private static STLSheet deserializeFrom(InputStream inputStream) throws JAXBException {
         JAXBContext jc = JAXBContext.newInstance(JAXB_XML_GENERATED_PACKAGE_NAME);
         Unmarshaller unmarshaller = jc.createUnmarshaller();
@@ -91,7 +94,7 @@ public class EngineImpl implements Engine {
     private Cell getCell(String cellName) {
 
         if (!isValidCellFormat(cellName)) {
-            throw new IllegalArgumentException(cellName + "is not valid format");
+            throw new IllegalArgumentException(cellName + "is not valid cell format");
         }
 
         return this.sheet.getCell(CoordinateFactory.toCoordinate(cellName));

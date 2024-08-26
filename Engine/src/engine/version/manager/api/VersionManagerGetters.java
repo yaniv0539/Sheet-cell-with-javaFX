@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface VersionManagerGetters {
     List<SheetGetters> getVersions();
+    SheetGetters getVersion(int version);
 }

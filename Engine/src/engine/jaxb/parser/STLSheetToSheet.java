@@ -31,7 +31,7 @@ public class STLSheetToSheet {
         int column = stlLayout.getColumns();
         int row = stlLayout.getRows();
 
-        Layout layout = LayoutImpl.create(size, column, row);
+        Layout layout = LayoutImpl.create(size, row, column);
 
         String name = stlSheet.getName();
 
