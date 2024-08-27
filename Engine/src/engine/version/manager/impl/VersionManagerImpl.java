@@ -12,9 +12,7 @@ import java.util.List;
 
 public class VersionManagerImpl implements VersionManager {
 
-    public static int firstInit = 1;
-
-    private static int currentVersion = 1;
+    private int currentVersion = 0;
 
     private final List<SheetGetters> versions;
 
@@ -42,19 +40,19 @@ public class VersionManagerImpl implements VersionManager {
         throw new IllegalArgumentException("Version " + version + " not found");
     }
 
-    public static int getCurrentVersion() {
+    public int getCurrentVersion() {
         return currentVersion;
     }
 
     @Override
     public void addVersion(Sheet sheet) {
-        this.versions.add(copySheet(sheet));
         sheet.setVersion(++currentVersion);
+        this.versions.add(copySheet(sheet));
     }
 
     @Override
     public void clearVersions() {
-        currentVersion = 1;
+        currentVersion = 0;
         this.versions.clear();
     }
 

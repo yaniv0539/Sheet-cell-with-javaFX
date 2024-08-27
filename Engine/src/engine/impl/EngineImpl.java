@@ -57,7 +57,7 @@ public class EngineImpl implements Engine {
 
             this.sheet = sheet;
             versionManager.clearVersions();
-            // versionManager.addVersion(this.sheet);
+            versionManager.addVersion(this.sheet);
 
         } catch (JAXBException | FileNotFoundException e) {
             throw new RuntimeException("Failed to read XML file", e);
@@ -68,7 +68,7 @@ public class EngineImpl implements Engine {
     public SheetGetters getSheetStatus() { return this.sheet; }
 
     @Override
-    public CellGetters getCellStatus(String cellName) { return getCell(cellName); }
+    public CellGetters getCellStatus(String cellName) { return getCell(cellName.toUpperCase()); }
 
     @Override
     public CellGetters getCellStatus(int row, int col) {
@@ -77,8 +77,8 @@ public class EngineImpl implements Engine {
 
     @Override
     public void updateCellStatus(String cellName, String value) {
+        this.sheet.setCell(CoordinateFactory.toCoordinate(cellName.toUpperCase()), value);
         versionManager.addVersion(this.sheet);
-        this.sheet.setCell(CoordinateFactory.toCoordinate(cellName), value);
     }
 
     @Override
@@ -98,20 +98,6 @@ public class EngineImpl implements Engine {
     }
 
     private Cell getCell(String cellName) {
-
-        if (!isValidCellFormat(cellName)) {
-            throw new IllegalArgumentException(cellName + "is not valid cell format");
-        }
-
-        return this.sheet.getCell(CoordinateFactory.toCoordinate(cellName));
-    }
-
-    private static boolean isValidCellFormat(String cellName) {
-
-        if (cellName == null || cellName.isEmpty()) {
-            return false;
-        }
-
-        return cellName.matches("^[A-Z]+[0-9]+$");
+        return this.sheet.getCell(CoordinateFactory.toCoordinate(cellName.toUpperCase()));
     }
 }

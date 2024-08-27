@@ -8,6 +8,7 @@ import sheet.layout.api.LayoutGetters;
 import sheet.layout.size.api.SizeGetters;
 
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Scanner;
 
 public enum UI {
@@ -68,7 +69,7 @@ public enum UI {
             }
             }
     },
-    UPDATE_CELL("Update cell", SECOND_MENU) {
+    UPDATE_CELL("Update Cell", SECOND_MENU) {
         @Override
         void execute(Engine engine) {
             Scanner scanner = new Scanner(System.in);
@@ -301,5 +302,27 @@ public enum UI {
 
     private static void printVersionsTable(VersionManagerGetters versionsManagerStatus) {
 
+        List<SheetGetters> versions = versionsManagerStatus.getVersions();
+
+        StringBuilder sb = new StringBuilder();
+
+        // Table Header
+        sb.append("|  Version  |  Cells Changed  |\n");
+        sb.append("|-----------|-----------------|\n");
+
+        // Table Rows
+        for (int i = 0; i < versions.size(); i++) {
+            sb.append("|").append(centerText(String.valueOf(versions.get(i).getVersion()), 11))
+                    .append("|").append(centerText(String.valueOf(versions.get(i).getNumberOfCellsThatChanged()), 17)).append("|\n");
+        }
+
+        // Output the final table
+        System.out.println(sb.toString());
+    }
+
+    private static String centerText(String text, int width) {
+        int paddingLeft = (width - text.length()) / 2;
+        int paddingRight = width - text.length() - paddingLeft;
+        return " ".repeat(Math.max(0, paddingLeft)) + text + " ".repeat(Math.max(0, paddingRight));
     }
 }
