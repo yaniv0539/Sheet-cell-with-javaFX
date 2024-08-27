@@ -9,6 +9,7 @@ import java.util.Arrays;
 
 public class Concat extends BinaryExpression {
 
+
     private Concat(Expression left, Expression right) {
         super(left, right);
         setDataType(DataType.STRING);

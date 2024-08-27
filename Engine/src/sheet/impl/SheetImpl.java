@@ -249,7 +249,7 @@ public class SheetImpl implements Sheet, Serializable {
             for (Cell affectedBy : current.getInfluenceFrom()) {
                 // If a cycle is detected in the recursion, return true
                 if (recHasCircle(affectedBy, visited)) {
-                    throw new IllegalArgumentException(affectedBy.getCoordinate().toString());
+                    throw new IllegalArgumentException("Circular voting: " + affectedBy.getCoordinate().toString());
                 }
             }
 
