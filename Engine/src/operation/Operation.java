@@ -95,15 +95,11 @@ public enum Operation {
                         constructor.setAccessible(true);
                         return constructor.newInstance(args);
                     } catch (InstantiationException e) {
-                        InvalidFunctionArgument funcError =  new InvalidFunctionArgument(valueOf(clazz.getSimpleName().toUpperCase()), List.of(args));
-                        funcError.initCause(e);
-                        throw funcError;
+                        throw new RuntimeException(e);
                     } catch (IllegalAccessException e) {
                         throw new RuntimeException(e);
                     } catch (InvocationTargetException e) {
-                        InvalidFunctionArgument funcError =  new InvalidFunctionArgument(valueOf(clazz.getSimpleName().toUpperCase()), List.of(args));
-                        funcError.initCause(e);
-                        throw funcError;
+                        throw new RuntimeException(e);
                     }
                 })
                 .get();
