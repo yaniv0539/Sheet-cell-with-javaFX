@@ -48,6 +48,7 @@ public class EngineImpl implements Engine {
 
             InputStream inputStream = new FileInputStream(new File(filename));
             STLSheet stlSheet = deserializeFrom(inputStream);
+            //versionManager.clearVersions();
             Sheet sheet = STLSheetToSheet.generate(stlSheet);
 
             if (!isValidLayout(sheet.getLayout())) {
@@ -56,7 +57,7 @@ public class EngineImpl implements Engine {
 
             this.sheet = sheet;
             versionManager.clearVersions();
-            versionManager.addVersion(this.sheet);
+            // versionManager.addVersion(this.sheet);
 
         } catch (JAXBException | FileNotFoundException e) {
             throw new RuntimeException("Failed to read XML file", e);
@@ -71,8 +72,8 @@ public class EngineImpl implements Engine {
 
     @Override
     public void updateCellStatus(String cellName, String value) {
-        this.sheet.setCell(CoordinateFactory.toCoordinate(cellName), value);
         versionManager.addVersion(this.sheet);
+        this.sheet.setCell(CoordinateFactory.toCoordinate(cellName), value);
     }
 
     @Override
