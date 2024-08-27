@@ -38,7 +38,7 @@ public class SheetImpl implements Sheet, Serializable {
 
         this.name = name;
         this.layout = layout;
-        this.version = 0;
+        this.version = 1;
         this.activeCells = new HashMap<>();
     }
 

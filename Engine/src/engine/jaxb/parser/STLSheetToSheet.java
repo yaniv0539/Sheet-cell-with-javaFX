@@ -38,7 +38,7 @@ public class STLSheetToSheet {
 
         Sheet sheet = SheetImpl.create(name, layout);
 
-        sheet.setVersion(VersionManagerImpl.firstInit);
+//        sheet.setVersion(VersionManagerImpl.firstInit);
 
         STLCells stlCells = stlSheet.getSTLCells();
 
