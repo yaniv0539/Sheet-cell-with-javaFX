@@ -10,7 +10,7 @@ public class InvalidFunctionArgument extends RuntimeException {
     List<Object> arguments;
 
     public InvalidFunctionArgument(Operation function, List<Object> arguments) {
-        super("Invalid function, input:\n" + function.name() + "\n" + arguments.toString() +
+        super("Invalid arguments, input:\nfunction: " + function.name() + "\n" + arguments.toString() +
                 "example for valid function:\n" + function.toString());
         this.arguments = arguments;
         this.function = function;

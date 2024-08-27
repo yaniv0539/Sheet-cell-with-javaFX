@@ -1,6 +1,7 @@
 package sheet.impl;
 
 import expression.api.Data;
+import expression.api.DataType;
 import expression.impl.DataImpl;
 import expression.impl.Ref;
 import expression.parser.OrignalValueUtilis;
@@ -69,7 +70,7 @@ public class SheetImpl implements Sheet, Serializable {
     public Cell getCell(Coordinate coordinate) {
 
         if (!isCoordinateInBoundaries(coordinate)) {
-            throw new IndexOutOfBoundsException("coordinate " + coordinate + " is not in sheet boundaries");
+            throw new IndexOutOfBoundsException("coordinate " + coordinate + " is not in sheet boundaries.");
         }
 
         return activeCells.get(coordinate);
@@ -86,16 +87,10 @@ public class SheetImpl implements Sheet, Serializable {
     }
 
     // FOR INTERFACE lookupCellService
+    //NO NEED
     @Override
     public Data getCellData(String cellId) {
-        Coordinate coordinate = CoordinateFactory.toCoordinate(cellId);
-        Cell cell = activeCells.get(coordinate);
-
-        if (cell == null) {
-            throw new IllegalArgumentException(cellId + "is Empty, cannot get data");
-        }
-
-        return cell.getEffectiveValue();
+        return new DataImpl(DataType.UNKNOWN,1);
     }
 
     @Override
@@ -123,7 +118,7 @@ public class SheetImpl implements Sheet, Serializable {
          }
          else {
              insertCellToSheet(previousCell);
-             throw new RuntimeException("circle");
+//             throw new RuntimeException("circle");
          }
 
     }
@@ -241,27 +236,32 @@ public class SheetImpl implements Sheet, Serializable {
     }
 
     private boolean recHasCircle(Cell current, Set<Coordinate> visited) {
-        // If the current object is already visited, a cycle is detected
-        if (visited.contains(current.getCoordinate())) {
-            return true;
-        }
-
-        // Mark the current object as visited
-        visited.add(current.getCoordinate());
-
-        // Recur for all the objects in the relatedObjects list
-        for (Cell affectedBy : current.getInfluenceFrom()) {
-            // If a cycle is detected in the recursion, return true
-            if (recHasCircle(affectedBy, visited)) {
+        try{
+            // If the current object is already visited, a cycle is detected
+            if (visited.contains(current.getCoordinate())) {
                 return true;
             }
+
+            // Mark the current object as visited
+            visited.add(current.getCoordinate());
+
+            // Recur for all the objects in the relatedObjects list
+            for (Cell affectedBy : current.getInfluenceFrom()) {
+                // If a cycle is detected in the recursion, return true
+                if (recHasCircle(affectedBy, visited)) {
+                    throw new IllegalArgumentException(affectedBy.getCoordinate().toString());
+                }
+            }
+
+            // Remove the current object from the visited set (backtracking)
+            visited.remove(current.getCoordinate());
+
+            // If no cycle was found, return false
+            return false;
+        }catch (IllegalArgumentException exception) {
+           throw new IllegalArgumentException(exception.getMessage() + " -> " + current.getCoordinate().toString());
         }
 
-        // Remove the current object from the visited set (backtracking)
-        visited.remove(current.getCoordinate());
-
-        // If no cycle was found, return false
-        return false;
     }
 
     private Set<Cell> CoordinateToCell(Set<Coordinate> newInfluenceCellsId) {
