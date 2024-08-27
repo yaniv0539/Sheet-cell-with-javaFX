@@ -12,6 +12,7 @@ import sheet.coordinate.api.Coordinate;
 import sheet.coordinate.api.CoordinateGetters;
 import sheet.coordinate.impl.CoordinateFactory;
 import sheet.layout.api.Layout;
+import sheet.layout.api.LayoutGetters;
 
 import java.io.Serializable;
 import java.util.*;
@@ -59,7 +60,7 @@ public class SheetImpl implements Sheet, Serializable {
     }
 
     @Override
-    public Layout getLayout() {
+    public LayoutGetters getLayout() {
         return this.layout;
     }
 

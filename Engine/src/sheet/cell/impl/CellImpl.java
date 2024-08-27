@@ -88,17 +88,8 @@ public class CellImpl implements Cell, Serializable {
 
     @Override
     public void setOriginalValue(String originalValue) {
-
-//        Data effectiveValue = OrignalValueUtilis.toExpression(originalValue).evaluate();
-        //getting data, if pass this line value is valid to this specific cell.
-        //the sheet need to check if this is ok for all cells that depend on this cell data.
-        //get the cell that "this" influence from
-
-//        this.originalValue = originalValue;
-//        setEffectiveValue(effectiveValue);
-
        expression = OrignalValueUtilis.toExpression(originalValue);
-        this.originalValue = originalValue;
+       this.originalValue = originalValue;
     }
 
     private void setEffectiveValue(Data effectiveValue) {
