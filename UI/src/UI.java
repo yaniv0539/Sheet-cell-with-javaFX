@@ -200,10 +200,10 @@ public enum UI {
             sb.append("Version: ").append(cell.getVersion())
                     .append("\nDepends on: [");
             cell.getInfluenceFrom().forEach(cellDep -> sb.append(cellDep.getCoordinate()).append(", "));
-            sb.deleteCharAt(sb.length() - 3).append("]")
+            sb.deleteCharAt(sb.length() - 2).append("]")
                     .append("\nInfluence on: [");
-            cell.getInfluenceFrom().forEach(cellInf -> sb.append(cellInf.getCoordinate()).append(", "));
-            sb.deleteCharAt(sb.length() - 3).append("]");
+            cell.getInfluenceOn().forEach(cellInf -> sb.append(cellInf.getCoordinate()).append(", "));
+            sb.deleteCharAt(sb.length() - 2).append("]");
         }
 
         System.out.println(sb.toString());
@@ -220,7 +220,7 @@ public enum UI {
         } else {
             sb.append("Cell ID: ").append(cellName)
                     .append("\nOriginal Value: ").append(cell.getOriginalValue())
-                    .append("\nEffective Value: ").append(cell.getEffectiveValue());
+                    .append("\nEffective Value: ").append(cell.getEffectiveValue().getValue());
         }
 
         System.out.println(sb.toString());
