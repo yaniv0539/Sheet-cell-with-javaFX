@@ -2,6 +2,7 @@ package sheet.layout.impl;
 
 import sheet.layout.api.Layout;
 import sheet.layout.size.api.Size;
+import sheet.layout.size.api.SizeGetters;
 
 import java.io.Serializable;
 
@@ -21,7 +22,7 @@ public class LayoutImpl implements Layout, Serializable {
     }
 
     @Override
-    public Size getSize() {
+    public SizeGetters getSize() {
         return this.size;
     }
 

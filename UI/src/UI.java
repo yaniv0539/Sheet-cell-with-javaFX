@@ -3,6 +3,9 @@ import engine.impl.EngineImpl;
 import engine.version.manager.api.VersionManagerGetters;
 import sheet.api.SheetGetters;
 import sheet.cell.api.CellGetters;
+import sheet.coordinate.api.CoordinateGetters;
+import sheet.layout.api.LayoutGetters;
+import sheet.layout.size.api.SizeGetters;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -48,37 +51,56 @@ public enum UI {
         @Override
         void execute(Engine engine) {
             Scanner scanner = new Scanner(System.in);
-            System.out.print("Enter the wanted cell you want to show: ");
-            String cellName = scanner.nextLine();
-            printFullCellStatus(cellName, engine.getCellStatus(cellName));
-        }
+            String cellName = "";
+
+            while (true) {
+                try {
+                    System.out.print("Enter the wanted cell you want to show: ");
+                    cellName = scanner.nextLine();
+                    if (cellName.equalsIgnoreCase("{BACK}")) {
+                        return;
+                    }
+                    printFullCellStatus(cellName, engine.getCellStatus(cellName));
+                    break;
+                } catch (Exception e) {
+                    System.out.println(e.getMessage() + ". Please try again or enter '{BACK}' to cancel the operation.");
+                }
+            }
+            }
     },
     UPDATE_CELL("Update cell", SECOND_MENU) {
         @Override
         void execute(Engine engine) {
             Scanner scanner = new Scanner(System.in);
-            String cellName;
+            String cellName = "";
 
             while (true) {
                 try {
                     System.out.print("Enter the cell you want to update: ");
                     cellName = scanner.nextLine();
+                    if (cellName.equalsIgnoreCase("{BACK}")) {
+                        return;
+                    }
                     printCellStatus(cellName, engine.getCellStatus(cellName));
+                    System.out.println();
                     break;
                 } catch (Exception e) {
-                    System.out.println(e.getMessage() + ". Please try again.");
+                    System.out.println(e.getMessage() + ". Please try again or enter '{BACK}' to cancel the operation.");
                 }
             }
 
             while (true) {
                 try {
-                    System.out.print("Enter the cell new value: ");
+                    System.out.print("Enter the cell new value (or '{BACK}' to cancel the operation): ");
                     String value = scanner.nextLine();
+                    if (cellName.equalsIgnoreCase("{BACK}")) {
+                        return;
+                    }
                     engine.updateCellStatus(cellName, value);
                     System.out.println("Cell " + cellName + " updated successfully.");
                     break;
                 } catch (Exception e) {
-                    System.out.println(e.getMessage() + ". Please try again.");
+                    System.out.println(e.getMessage() + ". Please try again or enter '{BACK}' to cancel the operation.");
                 }
             }
 
@@ -94,15 +116,19 @@ public enum UI {
             while (true) {
                 try {
                     System.out.println("Enter the version you want to show: ");
-                    int version = scanner.nextInt();
+                    String versionStr = scanner.nextLine();
+                    if (versionStr.equalsIgnoreCase("{BACK}")) {
+                        return;
+                    }
+                    int version = Integer.parseInt(versionStr);
+
                     printSheet(versionManager.getVersion(version));
                     break;
-                } catch (InputMismatchException e) {
+                } catch (NumberFormatException e) {
                     System.out.println("Invalid input: please enter an integer that represent the version you want to show.");
-                    scanner.nextLine();
                 }
                 catch (Exception e) {
-                    System.out.println(e.getMessage() + ". Please try again.");
+                    System.out.println(e.getMessage() + ". Please try again or enter '{BACK}' to exit.");
                 }
             }
         }
@@ -185,7 +211,54 @@ public enum UI {
     }
 
     private static void printSheet(SheetGetters sheet) {
+        LayoutGetters layout = sheet.getLayout();
+        SizeGetters size = layout.getSize();
+        int width = size.getWidth();
+        int height = size.getHeight();
+        int rows = layout.getRows();
+        int columns = layout.getColumns();
 
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("Sheet Name: ").append(sheet.getName()).append("\n");
+        sb.append("Version: ").append(sheet.getVersion()).append("\n");
+
+        // Print column headers
+        sb.append("   |"); // Space for row numbers
+        for (int col = 0; col < columns; col++) {
+            sb.append(padBothSides(Character.toString((char) ('A' + col)), width)).append("|");
+        }
+        sb.append("\n");
+
+        // Print each row
+        for (int row = 0; row < rows; row++) {
+            sb.append(String.format("%02d |", row + 1)); // Row number with two digits
+            for (int line = 0; line < height; line++) {
+                for (int col = 0; col < columns; col++) {
+                    CellGetters cell = engine.getCellStatus(row, col);
+                    String value = (cell != null && line == height / 2) ? cell.getEffectiveValue().getValue().toString() : ""; // Centered vertically
+
+                    // Trim value to fit column width
+                    if (value.length() > width) {
+                        value = value.substring(0, width);
+                    }
+
+                    sb.append(padBothSides(value, width)).append("|");
+                }
+                sb.append("\n");
+                if (line < height - 1) { // Print additional lines only if needed
+                    sb.append("   |"); // Space for row numbers
+                }
+            }
+        }
+        System.out.println(sb.toString());
+    }
+
+    private static String padBothSides(String value, int width) {
+        int totalPadding = width - value.length();
+        int paddingLeft = totalPadding / 2;
+        int paddingRight = totalPadding - paddingLeft;
+        return " ".repeat(Math.max(0, paddingLeft)) + value + " ".repeat(Math.max(0, paddingRight));
     }
 
     private static void printFullCellStatus(String cellName, CellGetters cell) {

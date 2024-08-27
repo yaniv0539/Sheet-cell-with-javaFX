@@ -20,7 +20,7 @@ import sheet.api.SheetGetters;
 import sheet.cell.api.Cell;
 import sheet.cell.api.CellGetters;
 import sheet.coordinate.impl.CoordinateFactory;
-import sheet.layout.api.Layout;
+import sheet.layout.api.LayoutGetters;
 
 public class EngineImpl implements Engine {
 
@@ -71,6 +71,11 @@ public class EngineImpl implements Engine {
     public CellGetters getCellStatus(String cellName) { return getCell(cellName); }
 
     @Override
+    public CellGetters getCellStatus(int row, int col) {
+        return getCellStatus(CoordinateFactory.createCoordinate(row, col).toString());
+    }
+
+    @Override
     public void updateCellStatus(String cellName, String value) {
         versionManager.addVersion(this.sheet);
         this.sheet.setCell(CoordinateFactory.toCoordinate(cellName), value);
@@ -88,7 +93,7 @@ public class EngineImpl implements Engine {
         return (STLSheet) unmarshaller.unmarshal(inputStream);
     }
 
-    private static boolean isValidLayout(Layout layout) {
+    private static boolean isValidLayout(LayoutGetters layout) {
         return !(layout == null || layout.getRows() > MAX_ROWS || layout.getColumns() > MAX_COLUMNS);
     }
 
