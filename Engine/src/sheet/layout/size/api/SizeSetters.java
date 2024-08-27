@@ -1,6 +1,6 @@
 package sheet.layout.size.api;
 
 public interface SizeSetters {
-    public void setWidth(int width);
-    public void setHeight(int height);
+    void setWidth(int width);
+    void setHeight(int height);
 }

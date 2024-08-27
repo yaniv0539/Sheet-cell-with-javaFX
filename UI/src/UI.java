@@ -7,6 +7,8 @@ import sheet.coordinate.api.CoordinateGetters;
 import sheet.layout.api.LayoutGetters;
 import sheet.layout.size.api.SizeGetters;
 
+import java.io.*;
+import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
@@ -15,13 +17,13 @@ public enum UI {
 
     MAIN_MENU("Main Menu", null) {
         @Override
-        void execute(Engine engine) {
+        void execute() {
             runMenu(MAIN_MENU);
         }
     },
     LOAD_XML_FILE("Load XML File", MAIN_MENU) {
         @Override
-        void execute(Engine engine) {
+        void execute() {
             Scanner scanner = new Scanner(System.in);
             System.out.print("Enter the filename to load: ");
             String filename = scanner.nextLine();
@@ -29,36 +31,73 @@ public enum UI {
             runMenu(SECOND_MENU);
         }
     },
+    READ_FROM_BINARY_FILE("Read From Binary File", MAIN_MENU) {
+        @Override
+        void execute() {
+            Scanner scanner = new Scanner(System.in);
+
+            System.out.println("Please enter the binary file name: ");
+            String filename = scanner.nextLine();
+
+            try (ObjectInputStream in =
+                         new ObjectInputStream(
+                                 new FileInputStream(filename))) {
+                engine = (Engine) in.readObject();
+            } catch (ClassNotFoundException e) {
+
+            } catch (IOException e) {
+
+            }
+        }
+    },
+    WRITE_TO_BINARY_FILE("Write To Binary File", MAIN_MENU) {
+        @Override
+        void execute() {
+            Scanner scanner = new Scanner(System.in);
+
+            System.out.println("Please enter the binary file name: ");
+            String filename = scanner.nextLine();
+
+            try (ObjectOutputStream out =
+                         new ObjectOutputStream(
+                                 new FileOutputStream(filename))) {
+                out.writeObject(engine);
+                out.flush();
+            } catch (IOException e) {
+
+            }
+        }
+    },
     EXIT("Exit", MAIN_MENU) {
         @Override
-        void execute(Engine engine) {
+        void execute() {
             engine.exit();
             System.exit(0);
         }
     },
     SECOND_MENU("Operations", LOAD_XML_FILE) {
         @Override
-        void execute(Engine engine) {
+        void execute() {
             runMenu(SECOND_MENU);
         }
     },
     SHOW_SHEET("Show Sheet", SECOND_MENU) {
         @Override
-        void execute(Engine engine) {
+        void execute() {
             printSheet(engine.getSheetStatus());
         }
     },
     SHOW_CELL("Show Cell", SECOND_MENU) {
         @Override
-        void execute(Engine engine) {
+        void execute() {
             Scanner scanner = new Scanner(System.in);
             String cellName = "";
 
             while (true) {
                 try {
                     System.out.print("Enter the wanted cell you want to show: ");
-                    cellName = scanner.nextLine();
-                    if (cellName.equalsIgnoreCase("{BACK}")) {
+                    cellName = scanner.nextLine().toUpperCase();
+                    if (cellName.equals("{BACK}")) {
                         return;
                     }
                     printFullCellStatus(cellName, engine.getCellStatus(cellName));
@@ -71,15 +110,15 @@ public enum UI {
     },
     UPDATE_CELL("Update Cell", SECOND_MENU) {
         @Override
-        void execute(Engine engine) {
+        void execute() {
             Scanner scanner = new Scanner(System.in);
             String cellName = "";
 
             while (true) {
                 try {
                     System.out.print("Enter the cell you want to update: ");
-                    cellName = scanner.nextLine();
-                    if (cellName.equalsIgnoreCase("{BACK}")) {
+                    cellName = scanner.nextLine().toUpperCase();
+                    if (cellName.equals("{BACK}")) {
                         return;
                     }
                     printCellStatus(cellName, engine.getCellStatus(cellName));
@@ -94,7 +133,7 @@ public enum UI {
                 try {
                     System.out.print("Enter the cell new value (or '{BACK}' to cancel the operation): ");
                     String value = scanner.nextLine();
-                    if (cellName.equalsIgnoreCase("{BACK}")) {
+                    if (value.equalsIgnoreCase("{BACK}")) {
                         return;
                     }
                     engine.updateCellStatus(cellName, value);
@@ -109,7 +148,7 @@ public enum UI {
     },
     SHOW_VERSIONS("Show Versions", SECOND_MENU) {
         @Override
-        void execute(Engine engine) {
+        void execute() {
             VersionManagerGetters versionManager = engine.getVersionsManagerStatus();
             printVersionsTable(versionManager);
             Scanner scanner = new Scanner(System.in);
@@ -136,7 +175,7 @@ public enum UI {
     },
     BACK("Go Back", null) {
         @Override
-        void execute(Engine engine) {
+        void execute() {
             // Go back is handled in the menu runner
         }
     };
@@ -158,7 +197,7 @@ public enum UI {
         return parentMenu;
     }
 
-    abstract void execute(Engine engine);
+    abstract void execute();
 
     public static void run() {
         engine = EngineImpl.create();
@@ -189,7 +228,7 @@ public enum UI {
                         if (option.getParentMenu() == menu) {
                             validOptionsCount++;
                             if (choice == validOptionsCount) {
-                                option.execute(engine);
+                                option.execute();
                                 break;
                             }
                         }
@@ -237,7 +276,7 @@ public enum UI {
             for (int line = 0; line < height; line++) {
                 for (int col = 0; col < columns; col++) {
                     CellGetters cell = engine.getCellStatus(row, col);
-                    String value = (cell != null && line == height / 2) ? cell.getEffectiveValue().getValue().toString() : ""; // Centered vertically
+                    String value = (cell != null && line == height / 2) ? cell.getEffectiveValue().toString() : ""; // Centered vertically
 
                     // Trim value to fit column width
                     if (value.length() > width) {
@@ -294,7 +333,7 @@ public enum UI {
         } else {
             sb.append("Cell ID: ").append(cellName)
                     .append("\nOriginal Value: ").append(cell.getOriginalValue())
-                    .append("\nEffective Value: ").append(cell.getEffectiveValue().getValue());
+                    .append("\nEffective Value: ").append(cell.getEffectiveValue());
         }
 
         System.out.println(sb.toString());

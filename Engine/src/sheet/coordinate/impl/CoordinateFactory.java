@@ -4,7 +4,6 @@ import sheet.coordinate.api.Coordinate;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 public class CoordinateFactory {
 

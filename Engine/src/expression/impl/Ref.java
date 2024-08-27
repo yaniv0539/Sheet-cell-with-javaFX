@@ -4,8 +4,6 @@ import expression.api.Data;
 import expression.api.DataType;
 import expression.api.Expression;
 import sheet.api.SheetGetters;
-import sheet.cell.api.Cell;
-import sheet.cell.api.CellGetters;
 import sheet.coordinate.api.Coordinate;
 import sheet.coordinate.impl.CoordinateFactory;
 

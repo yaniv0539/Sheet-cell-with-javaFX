@@ -36,10 +36,4 @@ public class Pow extends BinaryExpression {
 
         return true;
     }
-    //    @Override
-//    public String getOperationSign() {
-//        return "^";
-//    }
-
-
 }

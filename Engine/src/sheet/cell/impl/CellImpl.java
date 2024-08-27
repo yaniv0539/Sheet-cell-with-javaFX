@@ -97,17 +97,10 @@ public class CellImpl implements Cell, Serializable {
     }
 
     @Override
-    public void setVersion(int changeInVersion) {
-        version = changeInVersion;
-    }
+    public void setVersion(int changeInVersion) { version = changeInVersion; }
 
     @Override
     public void computeEffectiveValue() {
         setEffectiveValue(expression.evaluate());
     }
-
-    private static boolean isValidVersion(int version) {
-        return version >= 1;
-    }
-
 }
