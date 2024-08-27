@@ -94,12 +94,10 @@ public enum Operation {
                     try {
                         constructor.setAccessible(true);
                         return constructor.newInstance(args);
-                    } catch (InstantiationException e) {
-                        throw new RuntimeException(e);
-                    } catch (IllegalAccessException e) {
-                        throw new RuntimeException(e);
+                    } catch (InstantiationException | IllegalAccessException e) {
+                        throw new RuntimeException(e.getMessage());
                     } catch (InvocationTargetException e) {
-                        throw new RuntimeException(e);
+                        throw new RuntimeException(e.getTargetException().getMessage());
                     }
                 })
                 .get();
