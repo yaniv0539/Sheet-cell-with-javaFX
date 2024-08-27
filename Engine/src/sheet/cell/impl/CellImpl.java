@@ -112,8 +112,6 @@ public class CellImpl implements Cell, Serializable {
 
     @Override
     public void computeEffectiveValue() {
-       // setOriginalValue(this.originalValue);
-        version++;
         setEffectiveValue(expression.evaluate());
     }
 
