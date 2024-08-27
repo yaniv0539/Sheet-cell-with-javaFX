@@ -29,4 +29,16 @@ public class DataImpl implements Data, Serializable {
     public Object getValue() {
         return value;
     }
+
+    @Override
+    public String toString() {
+        if (type == DataType.NUMERIC) {
+            double valueDouble = (double) value;
+            int valueInt = (int) valueDouble;
+            if (valueInt == valueDouble) {
+                return Integer.toString(valueInt);
+            }
+        }
+        return value.toString();
+    }
 }

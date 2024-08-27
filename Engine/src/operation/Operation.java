@@ -32,7 +32,7 @@ public enum Operation {
     TIMES(BinaryExpression.numberOfArgs){
         @Override
         public Expression create(Object... args) {
-            return  (Expression) createInstance(Minus.class, getNumberOfArguments(),args);
+            return  (Expression) createInstance(Times.class, getNumberOfArguments(),args);
         }
     },
 

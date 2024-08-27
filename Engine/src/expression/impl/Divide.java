@@ -48,11 +48,4 @@ public class Divide extends BinaryExpression {
 
         return true;
     }
-
-    //    @Override
-//    public String getOperationSign() {
-//        return "/";
-//    }
-
-
 }

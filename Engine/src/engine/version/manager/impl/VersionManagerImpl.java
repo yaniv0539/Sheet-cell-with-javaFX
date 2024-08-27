@@ -71,7 +71,4 @@ public class VersionManagerImpl implements VersionManager {
             throw new RuntimeException(e);
         }
     }
-
-
-
 }

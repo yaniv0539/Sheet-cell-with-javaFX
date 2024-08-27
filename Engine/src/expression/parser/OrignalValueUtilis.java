@@ -6,10 +6,8 @@ import expression.impl.NonValueExpression;
 import expression.impl.Number;
 import expression.impl.RawString;
 import operation.Operation;
-import sheet.cell.api.Cell;
 import sheet.coordinate.api.Coordinate;
 import sheet.coordinate.impl.CoordinateFactory;
-import sheet.coordinate.impl.CoordinateImpl;
 
 import java.util.*;
 import java.util.regex.Matcher;
