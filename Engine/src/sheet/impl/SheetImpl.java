@@ -14,19 +14,17 @@ import sheet.coordinate.impl.CoordinateFactory;
 import sheet.layout.api.Layout;
 import sheet.layout.api.LayoutGetters;
 
-import java.io.Serializable;
+import java.io.*;
 import java.util.*;
 
 
 public class SheetImpl implements Sheet, Serializable {
 
-    private static int numberOfSheets = 1;
-
     private final String name;
     private final Layout layout;
     private int version;
     private Map<Coordinate, Cell> activeCells;
-    private int numberOfCellsThatChangedSinceLastVersion;
+    private int numberOfCellsThatChanged;
 
     private SheetImpl(String name, Layout layout) {
 
@@ -38,11 +36,9 @@ public class SheetImpl implements Sheet, Serializable {
             throw new IllegalArgumentException("Layout cannot be null");
         }
 
-        numberOfSheets++;
-
         this.name = name;
         this.layout = layout;
-        this.version = 1;
+        this.version = 0;
         this.activeCells = new HashMap<>();
     }
 
@@ -51,7 +47,7 @@ public class SheetImpl implements Sheet, Serializable {
     }
 
     public static SheetImpl create(Layout layout) {
-        return new SheetImpl("Sheet" + numberOfSheets, layout);
+        return new SheetImpl("Sheet", layout);
     }
 
     @Override
@@ -117,7 +113,6 @@ public class SheetImpl implements Sheet, Serializable {
 
          if(!circleFrom(updatedCell))
          {
-             updatedCell.computeEffectiveValue();
              recalculateSheetFrom(updatedCell);
          }
          else {
@@ -162,6 +157,7 @@ public class SheetImpl implements Sheet, Serializable {
 
             throw exception;
         }
+        numberOfCellsThatChanged = originalValues.size();
     }
 
     private void setCellsHelper(Map<Coordinate, String> newOriginalValuesMap,
@@ -283,6 +279,7 @@ public class SheetImpl implements Sheet, Serializable {
                 dfs(neighbor, visited, stack);
             }
         }
+        stack.push(cell);
 
         return stack;
     }
@@ -308,7 +305,7 @@ public class SheetImpl implements Sheet, Serializable {
         OrignalValueUtilis.findInfluenceFrom(toInsert.getOriginalValue()).forEach(coord ->
         {
             if(!activeCells.containsKey(coord)) {
-                Cell c = CellImpl.create(coord,version++, DataImpl.empty);
+                Cell c = CellImpl.create(coord,version, DataImpl.empty);
                 c.computeEffectiveValue();
                 activeCells.put(coord,c);
             }
@@ -333,7 +330,7 @@ public class SheetImpl implements Sheet, Serializable {
     private void recalculateSheetFrom(Cell cell) {
 
         Stack<Cell> cellStack = topologicalSortFrom(cell);
-        //compute
+        numberOfCellsThatChanged = cellStack.size();
 
         while (!cellStack.isEmpty()) {
             Cell c = cellStack.pop();

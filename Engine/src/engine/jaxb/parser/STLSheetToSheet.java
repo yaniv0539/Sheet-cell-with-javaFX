@@ -1,6 +1,7 @@
 package engine.jaxb.parser;
 
 import engine.jaxb.generated.*;
+import engine.version.manager.impl.VersionManagerImpl;
 import sheet.api.Sheet;
 import sheet.coordinate.api.Coordinate;
 import sheet.coordinate.impl.CoordinateFactory;
@@ -36,6 +37,8 @@ public class STLSheetToSheet {
         String name = stlSheet.getName();
 
         Sheet sheet = SheetImpl.create(name, layout);
+
+        sheet.setVersion(VersionManagerImpl.firstInit);
 
         STLCells stlCells = stlSheet.getSTLCells();
 
