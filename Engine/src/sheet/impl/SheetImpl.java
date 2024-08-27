@@ -74,6 +74,12 @@ public class SheetImpl implements Sheet, Serializable {
 
         return activeCells.get(coordinate);
     }
+
+    @Override
+    public int getNumberOfCellsThatChanged() {
+        return this.numberOfCellsThatChanged;
+    }
+
     @Override
     public Map<CoordinateGetters, CellGetters> getActiveCells() {
         return Collections.unmodifiableMap(this.activeCells);
