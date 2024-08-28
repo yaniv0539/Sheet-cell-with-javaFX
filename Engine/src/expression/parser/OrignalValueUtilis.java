@@ -75,14 +75,21 @@ public class OrignalValueUtilis {
             }
 
             // Add the last part
-            if (buffer.length() > 0) {
+            if (!buffer.isEmpty()) {
                 parts.add(buffer.toString());
             }
 
-            String functionName = parts.get(0).trim().toUpperCase();
+            String functionName = parts.getFirst().trim().toUpperCase();
             parts.removeFirst();
 
             Stream<Object> listOfArg = Stream.of(parts.toArray()).map(argument ->  toExpression((String) argument));
+
+            try{
+                Operation.valueOf(functionName);
+            }catch(IllegalArgumentException e){
+                throw new IllegalArgumentException("Invalid operation: " + functionName + "\n"
+                +"Supported operations: "+ Arrays.toString(Operation.values()));
+            }
 
            return Operation.valueOf(functionName).create(listOfArg.toArray());
 
