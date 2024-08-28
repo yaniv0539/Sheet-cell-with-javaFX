@@ -23,8 +23,10 @@ public class CoordinateFactory {
 
     public static Coordinate toCoordinate(String coordinateName) {
 
+        coordinateName = coordinateName.toUpperCase();
+
         if (!isValidCoordinateFormat(coordinateName))
-            throw new IllegalArgumentException("Invalid cell-id.");
+            throw new IllegalArgumentException("Invalid cell-id");
 
         int row = extractRow(coordinateName) - 1;
         int column = parseColumnToInt(extractColumn(coordinateName)) - 1;

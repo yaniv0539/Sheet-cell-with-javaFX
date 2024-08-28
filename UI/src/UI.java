@@ -23,7 +23,7 @@ public enum UI {
         @Override
         void execute() {
             Scanner scanner = new Scanner(System.in);
-            System.out.print("Enter the filename to load: ");
+            System.out.print("Enter file name to load: ");
             String filename = scanner.nextLine();
             engine.readXMLInitFile(filename);
             runMenu(SECOND_MENU);
