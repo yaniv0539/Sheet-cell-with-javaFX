@@ -42,7 +42,8 @@ public class Sub extends ExpressionImpl {
 
         if (!(condition1 && condition2)) {
             //need to throw our own exception.
-            throw new IllegalArgumentException("first argument must be string and other numeric in " + this.getClass().getSimpleName());
+            throw new IllegalArgumentException("first argument must be string and the 2 others number/numeric function\n" +
+                    "for example: {SUB,world,{REF,A2},7} ");
         }
 
         return true;

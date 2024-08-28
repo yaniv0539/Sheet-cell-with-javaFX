@@ -43,7 +43,8 @@ public class Divide extends BinaryExpression {
 
         if (!value) {
             //need to throw our own exception.
-            throw new IllegalArgumentException("arguments must be numeric in " + this.getClass().getSimpleName());
+            throw new IllegalArgumentException("arguments must be number/numeric function or reference to cell!\n" +
+                    "for example: {DIVIDE,{PLUS,4,5},{REF,A3}}");
         }
 
         return true;

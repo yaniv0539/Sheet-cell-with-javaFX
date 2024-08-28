@@ -31,7 +31,8 @@ public class Pow extends BinaryExpression {
 
         if (!value) {
             //need to throw our own exception.
-            throw new IllegalArgumentException("arguments must be numeric in " + this.getClass().getSimpleName());
+            throw new IllegalArgumentException("arguments must be number/numeric function or reference to cell!\n" +
+                    "for example: {POW,{DIVIDE,4,5},{REF,A3}}");
         }
 
         return true;

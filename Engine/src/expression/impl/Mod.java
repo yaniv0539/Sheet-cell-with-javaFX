@@ -10,6 +10,8 @@ public class Mod extends BinaryExpression {
 
     public Mod(Expression left, Expression right) {
         super(left, right);
+        setDataType(DataType.NUMERIC);
+        isValidArgs(left, right);
     }
 
     @Override
@@ -30,7 +32,8 @@ public class Mod extends BinaryExpression {
 
         if (!value) {
             //need to throw our own exception.
-            throw new IllegalArgumentException("arguments must be numeric in " + this.getClass().getSimpleName());
+            throw new IllegalArgumentException("arguments must be number/numeric function or reference to cell!\n" +
+                    "for example: {MOD,{PLUS,4,5},{REF,A3}}");
         }
 
         return true;

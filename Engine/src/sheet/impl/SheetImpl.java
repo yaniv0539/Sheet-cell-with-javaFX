@@ -112,13 +112,13 @@ public class SheetImpl implements Sheet, Serializable {
          Cell updatedCell = CellImpl.create(target, version, originalValue);
          Cell previousCell =  insertCellToSheet(updatedCell);
 
-         if(!circleFrom(updatedCell))
-         {
+         try {
+             circleFrom(updatedCell);
              recalculateSheetFrom(updatedCell);
          }
-         else {
+         catch(IllegalArgumentException circle){
              insertCellToSheet(previousCell);
-//             throw new RuntimeException("circle");
+             throw circle;
          }
 
     }

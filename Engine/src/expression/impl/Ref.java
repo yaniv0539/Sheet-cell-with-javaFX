@@ -15,15 +15,9 @@ public class Ref extends ExpressionImpl {
     public static SheetGetters sheetView;
 
     public Ref(Expression cellId) {
-
-        if (cellId.getClass() == RawString.class) {
-
-            setDataType(DataType.UNKNOWN);
-            cellToReferTo = CoordinateFactory.toCoordinate((String) cellId.evaluate().getValue());
-        }
-        else {
-            throw new IllegalArgumentException("Ref argument must be a cell-id !");
-        }
+        setDataType(DataType.UNKNOWN);
+        isValidArgs(cellId);
+        cellToReferTo = CoordinateFactory.toCoordinate((String) cellId.evaluate().getValue());
     }
     @Override
     public Data evaluate() {
@@ -40,7 +34,8 @@ public class Ref extends ExpressionImpl {
 
         if(!value)
         {
-            throw new IllegalArgumentException("arguments must be cell-id only in " + this.getClass().getSimpleName());
+            throw new IllegalArgumentException("arguments must be cell-id!\n" +
+                    "for example: {REF,A3}");
         }
 
         return true;
