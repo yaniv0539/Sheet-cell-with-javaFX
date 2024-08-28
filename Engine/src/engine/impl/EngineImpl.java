@@ -11,16 +11,14 @@ import jakarta.xml.bind.Unmarshaller;
 import sheet.api.Sheet;
 
 import java.io.*;
-import java.util.ArrayList;
 
 import engine.jaxb.generated.STLSheet;
 import sheet.api.SheetGetters;
-import sheet.cell.api.Cell;
 import sheet.cell.api.CellGetters;
 import sheet.coordinate.impl.CoordinateFactory;
 import sheet.layout.api.LayoutGetters;
 
-public class EngineImpl implements Engine {
+public class EngineImpl implements Engine, Serializable {
 
     private final static String JAXB_XML_GENERATED_PACKAGE_NAME = "engine.jaxb.generated";
     private final static int MAX_ROWS = 50;
@@ -66,17 +64,36 @@ public class EngineImpl implements Engine {
     public SheetGetters getSheetStatus() { return this.sheet; }
 
     @Override
-    public CellGetters getCellStatus(String cellName) { return getCell(cellName.toUpperCase()); }
+    public CellGetters getCellStatus(SheetGetters sheet, String cellName) {
+        return sheet.getCell(CoordinateFactory.toCoordinate(cellName.toUpperCase()));
+    }
+
+    @Override
+    public CellGetters getCellStatus(String cellName) {
+        return getCellStatus(this.sheet, cellName);
+    }
 
     @Override
     public CellGetters getCellStatus(int row, int col) {
-        return getCellStatus(CoordinateFactory.createCoordinate(row, col).toString());
+        return getCellStatus(this.sheet, row, col);
+    }
+
+    @Override
+    public CellGetters getCellStatus(SheetGetters sheet, int row, int col) {
+        return getCellStatus(sheet, CoordinateFactory.createCoordinate(row, col).toString());
     }
 
     @Override
     public void updateCellStatus(String cellName, String value) {
-        this.sheet.setCell(CoordinateFactory.toCoordinate(cellName.toUpperCase()), value);
-        versionManager.addVersion(this.sheet);
+        versionManager.increaseVersion(sheet);
+        // this.sheet.setVersion(sheet.getVersion() + 1);
+        try {
+            this.sheet.setCell(CoordinateFactory.toCoordinate(cellName.toUpperCase()), value);
+            versionManager.addVersion(this.sheet);
+        } catch (Exception e) {
+            versionManager.decreaseVersion(sheet);
+            throw e;
+        }
     }
 
     @Override
@@ -93,9 +110,5 @@ public class EngineImpl implements Engine {
 
     private static boolean isValidLayout(LayoutGetters layout) {
         return !(layout == null || layout.getRows() > MAX_ROWS || layout.getColumns() > MAX_COLUMNS);
-    }
-
-    private Cell getCell(String cellName) {
-        return this.sheet.getCell(CoordinateFactory.toCoordinate(cellName.toUpperCase()));
     }
 }

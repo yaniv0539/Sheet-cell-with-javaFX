@@ -3,12 +3,10 @@ import engine.impl.EngineImpl;
 import engine.version.manager.api.VersionManagerGetters;
 import sheet.api.SheetGetters;
 import sheet.cell.api.CellGetters;
-import sheet.coordinate.api.CoordinateGetters;
 import sheet.layout.api.LayoutGetters;
 import sheet.layout.size.api.SizeGetters;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
@@ -36,36 +34,24 @@ public enum UI {
         void execute() {
             Scanner scanner = new Scanner(System.in);
 
-            System.out.println("Please enter the binary file name: ");
-            String filename = scanner.nextLine();
-
-            try (ObjectInputStream in =
-                         new ObjectInputStream(
-                                 new FileInputStream(filename))) {
-                engine = (Engine) in.readObject();
-            } catch (ClassNotFoundException e) {
-
-            } catch (IOException e) {
-
+            while (true) {
+                System.out.println("Please enter the binary file name: ");
+                String filename = scanner.nextLine();
+                if (filename.equals("{BACK}")) {
+                    return;
+                }
+                try (ObjectInputStream in =
+                             new ObjectInputStream(
+                                     new FileInputStream(filename))) {
+                    engine = (Engine) in.readObject();
+                    System.out.println("Read successfully!");
+                    runMenu(SECOND_MENU);
+                    break;
+                } catch (ClassNotFoundException | IOException e) {
+                    System.out.println("Error reading binary file! Please try again or enter '{BACK}' to exit.");
+                }
             }
-        }
-    },
-    WRITE_TO_BINARY_FILE("Write To Binary File", MAIN_MENU) {
-        @Override
-        void execute() {
-            Scanner scanner = new Scanner(System.in);
 
-            System.out.println("Please enter the binary file name: ");
-            String filename = scanner.nextLine();
-
-            try (ObjectOutputStream out =
-                         new ObjectOutputStream(
-                                 new FileOutputStream(filename))) {
-                out.writeObject(engine);
-                out.flush();
-            } catch (IOException e) {
-
-            }
         }
     },
     EXIT("Exit", MAIN_MENU) {
@@ -173,6 +159,33 @@ public enum UI {
             }
         }
     },
+    WRITE_TO_BINARY_FILE("Write To Binary File", SECOND_MENU) {
+        @Override
+        void execute() {
+            Scanner scanner = new Scanner(System.in);
+
+            while (true) {
+                System.out.println("Please enter the binary file name: ");
+                String filename = scanner.nextLine();
+                if (filename.equals("{BACK}")) {
+                    return;
+                }
+                try (ObjectOutputStream out =
+                             new ObjectOutputStream(
+                                     new FileOutputStream(filename))) {
+                    out.writeObject(engine);
+                    out.flush();
+                    System.out.println("Write successfully!");
+                    break;
+                } catch (FileNotFoundException e) {
+                    System.out.println("File not found. Please try again or enter '{BACK}' to exit.");
+                }
+                catch (IOException e) {
+                    System.out.println("Error writing binary file! Please try again or enter '{BACK}' to exit.");
+                }
+            }
+        }
+    },
     BACK("Go Back", null) {
         @Override
         void execute() {
@@ -275,7 +288,7 @@ public enum UI {
             sb.append(String.format("%02d |", row + 1)); // Row number with two digits
             for (int line = 0; line < height; line++) {
                 for (int col = 0; col < columns; col++) {
-                    CellGetters cell = engine.getCellStatus(row, col);
+                    CellGetters cell = engine.getCellStatus(sheet, row, col);
                     String value = (cell != null && line == height / 2) ? cell.getEffectiveValue().toString() : ""; // Centered vertically
 
                     // Trim value to fit column width
@@ -303,23 +316,37 @@ public enum UI {
 
     private static void printFullCellStatus(String cellName, CellGetters cell) {
         printCellStatus(cellName, cell);
-        StringBuilder sb = new StringBuilder();
+
+        StringBuilder sbVersion = new StringBuilder();
+        StringBuilder sbDependsOn = new StringBuilder();
+        StringBuilder sbInfluenceOn = new StringBuilder();
 
         if (cell == null) {
-            sb.append("Version: 1\nDepends on: []\nInfluence on: []");
+            sbVersion.append("Version: 1\nDepends on: []\nInfluence on: []");
+            System.out.println(sbVersion.toString());
+            return;
         }
 
         else {
-            sb.append("Version: ").append(cell.getVersion())
-                    .append("\nDepends on: [");
-            cell.getInfluenceFrom().forEach(cellDep -> sb.append(cellDep.getCoordinate()).append(", "));
-            sb.deleteCharAt(sb.length() - 2).append("]")
-                    .append("\nInfluence on: [");
-            cell.getInfluenceOn().forEach(cellInf -> sb.append(cellInf.getCoordinate()).append(", "));
-            sb.deleteCharAt(sb.length() - 2).append("]");
+            sbVersion.append("Version: ").append(cell.getVersion());
+            sbDependsOn.append("Depends on: [");
+            cell.getInfluenceFrom().forEach(cellDep -> sbDependsOn.append(cellDep.getCoordinate()).append(", "));
+            sbDependsOn.append("]");
+
+            if (sbDependsOn.charAt(sbDependsOn.length() - 2) != '[') {
+                sbDependsOn.deleteCharAt(sbDependsOn.length() - 2).deleteCharAt(sbDependsOn.length() - 2);
+            }
+
+            sbInfluenceOn.append("Influence on: [");
+            cell.getInfluenceOn().forEach(cellInf -> sbInfluenceOn.append(cellInf.getCoordinate()).append(", "));
+            sbInfluenceOn.append("]");
+
+            if (sbInfluenceOn.charAt(sbInfluenceOn.length() - 2) != '[') {
+                sbInfluenceOn.deleteCharAt(sbInfluenceOn.length() - 2).deleteCharAt(sbInfluenceOn.length() - 2);
+            }
         }
 
-        System.out.println(sb.toString());
+        System.out.println(sbVersion.append("\n").append(sbDependsOn.toString()).append("\n").append(sbInfluenceOn.toString()).toString());
     }
 
     private static void printCellStatus(String cellName, CellGetters cell) {

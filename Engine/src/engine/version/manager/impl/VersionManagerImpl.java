@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class VersionManagerImpl implements VersionManager {
+public class VersionManagerImpl implements VersionManager, Serializable {
 
     private int currentVersion = 0;
 
@@ -46,8 +46,16 @@ public class VersionManagerImpl implements VersionManager {
 
     @Override
     public void addVersion(Sheet sheet) {
-        sheet.setVersion(++currentVersion);
         this.versions.add(copySheet(sheet));
+        currentVersion++;
+    }
+
+    public void increaseVersion(Sheet sheet) {
+        sheet.setVersion(sheet.getVersion() + 1);
+    }
+
+    public void decreaseVersion(Sheet sheet) {
+        sheet.setVersion(sheet.getVersion() - 1);
     }
 
     @Override
