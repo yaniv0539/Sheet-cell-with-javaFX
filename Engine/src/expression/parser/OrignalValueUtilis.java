@@ -103,7 +103,7 @@ public class OrignalValueUtilis {
     public static Set<Coordinate> findInfluenceFrom(String value)
     {
         Set<Coordinate> cellDependence = new HashSet<>();
-
+        value = value.toUpperCase();
         // Define the regex pattern to match the structure and capture the value after the comma
         Pattern pattern = Pattern.compile("\\{REF,\\s*([A-Z]\\d+)\\}");
 

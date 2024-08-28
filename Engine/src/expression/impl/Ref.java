@@ -17,7 +17,7 @@ public class Ref extends ExpressionImpl {
     public Ref(Expression cellId) {
         setDataType(DataType.UNKNOWN);
         isValidArgs(cellId);
-        cellToReferTo = CoordinateFactory.toCoordinate((String) cellId.evaluate().getValue());
+        cellToReferTo = CoordinateFactory.toCoordinate(((String) cellId.evaluate().getValue()).toUpperCase());
     }
     @Override
     public Data evaluate() {

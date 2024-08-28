@@ -24,7 +24,7 @@ public class CoordinateFactory {
     public static Coordinate toCoordinate(String coordinateName) {
 
         if (!isValidCoordinateFormat(coordinateName))
-            throw new IllegalArgumentException("Invalid cell name");
+            throw new IllegalArgumentException("Invalid cell-id.");
 
         int row = extractRow(coordinateName) - 1;
         int column = parseColumnToInt(extractColumn(coordinateName)) - 1;
@@ -37,6 +37,7 @@ public class CoordinateFactory {
         if (coordinateName == null || coordinateName.isEmpty()) {
             return false;
         }
+        coordinateName = coordinateName.toUpperCase();
 
         return coordinateName.matches("^[A-Z]+[0-9]+$");
     }
