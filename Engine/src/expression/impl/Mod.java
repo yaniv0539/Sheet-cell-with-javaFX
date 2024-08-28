@@ -17,9 +17,21 @@ public class Mod extends BinaryExpression {
     @Override
     protected Data dynamicEvaluate(Data left, Data right) {
 
-        return left.getType() == DataType.NUMERIC && right.getType() == DataType.NUMERIC ?
-                new DataImpl(DataType.NUMERIC,(double)left.getValue() % (double)right.getValue())
-                : new DataImpl(DataType.UNKNOWN,Double.NaN);
+        Data d;
+
+        if(left.getType() == DataType.NUMERIC && right.getType() == DataType.NUMERIC) {
+            if((double) right.getValue() == 0) {
+                d = new DataImpl(DataType.UNKNOWN, Double.NaN);
+            }
+            else {
+                d = new DataImpl(DataType.NUMERIC, (double) left.getValue() % (double) right.getValue());
+            }
+        }
+        else {
+            d = new DataImpl(DataType.UNKNOWN, Double.NaN);
+        }
+
+        return d;
     }
 
     @Override
