@@ -38,7 +38,11 @@ public class DataImpl implements Data, Serializable {
             if (valueInt == valueDouble) {
                 return Integer.toString(valueInt);
             }
+            else{
+                return String.format("%.2f", valueDouble);
+            }
         }
+
         return value.toString();
     }
 }
