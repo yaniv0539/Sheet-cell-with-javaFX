@@ -82,7 +82,7 @@ public enum UI {
             while (true) {
                 try {
                     System.out.print("Enter the wanted cell you want to show: ");
-                    cellName = scanner.nextLine().toUpperCase();
+                    cellName = scanner.nextLine().trim().toUpperCase();
                     if (cellName.equals("{BACK}")) {
                         return;
                     }
@@ -103,7 +103,7 @@ public enum UI {
             while (true) {
                 try {
                     System.out.print("Enter the cell you want to update: ");
-                    cellName = scanner.nextLine().toUpperCase();
+                    cellName = scanner.nextLine().trim().toUpperCase();
                     if (cellName.equals("{BACK}")) {
                         return;
                     }
@@ -118,7 +118,7 @@ public enum UI {
             while (true) {
                 try {
                     System.out.print("Enter the cell new value (or '{BACK}' to cancel the operation): ");
-                    String value = scanner.nextLine();
+                    String value = scanner.nextLine().trim();
                     if (value.equalsIgnoreCase("{BACK}")) {
                         return;
                     }
@@ -142,7 +142,7 @@ public enum UI {
             while (true) {
                 try {
                     System.out.println("Enter the version you want to show: ");
-                    String versionStr = scanner.nextLine();
+                    String versionStr = scanner.nextLine().trim();
                     if (versionStr.equalsIgnoreCase("{BACK}")) {
                         return;
                     }
