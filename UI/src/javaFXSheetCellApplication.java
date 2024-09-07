@@ -6,8 +6,6 @@ import javafx.stage.Stage;
 
 import java.net.URL;
 
-import java.net.URL;
-
 public class javaFXSheetCellApplication extends Application {
 
     private static final String APP_FXML_INCLUDE_RESOURCE = "app/app.fxml";
