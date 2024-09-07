@@ -14,16 +14,16 @@
 
 <ScrollPane xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="header.HeaderController">
    <content>
-      <GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="183.0" prefWidth="800.0">
+      <GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" vgap="15.0">
         <columnConstraints>
-          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+          <ColumnConstraints hgrow="SOMETIMES" />
         </columnConstraints>
         <rowConstraints>
-          <RowConstraints maxHeight="105.5999984741211" minHeight="10.0" prefHeight="88.80001068115234" vgrow="SOMETIMES" />
-          <RowConstraints maxHeight="147.39999237060547" minHeight="10.0" prefHeight="95.19998931884766" vgrow="SOMETIMES" />
+          <RowConstraints vgrow="SOMETIMES" />
+          <RowConstraints vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <HBox prefHeight="92.0" prefWidth="596.0" spacing="10.0">
+            <HBox spacing="10.0">
                <children>
                   <Button fx:id="buttonUploadXmlFile" mnemonicParsing="false" onAction="#buttonUploadXmlFileAction" prefHeight="26.0" prefWidth="96.0" text="upload xml file">
                      <opaqueInsets>
@@ -42,10 +42,13 @@
                   </TextField>
                </children>
                <padding>
-                  <Insets left="5.0" />
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </padding>
+               <GridPane.margin>
+                  <Insets />
+               </GridPane.margin>
             </HBox>
-            <HBox prefHeight="45.0" prefWidth="800.0" spacing="10.0" GridPane.rowIndex="1">
+            <HBox spacing="10.0" GridPane.rowIndex="1">
                <children>
                   <Label fx:id="labelCellId" prefHeight="18.0" prefWidth="46.0" text="Cell-id:" />
                   <TextField fx:id="textFieldCellId" editable="false" prefHeight="26.0" prefWidth="38.0" promptText="id..." />
@@ -69,6 +72,9 @@
                </padding>
             </HBox>
          </children>
+         <padding>
+            <Insets bottom="15.0" left="10.0" right="15.0" top="15.0" />
+         </padding>
       </GridPane>
    </content>
 </ScrollPane>

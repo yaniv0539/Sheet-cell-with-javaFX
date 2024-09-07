@@ -6,21 +6,24 @@ import javafx.stage.Stage;
 
 import java.net.URL;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
-public class Main extends Application {
+import java.net.URL;
+
+public class javaFXSheetCellApplication extends Application {
+
+    private static final String APP_FXML_INCLUDE_RESOURCE = "app/app.fxml";
 
     @Override
     public void start(Stage stage) throws Exception {
 
         FXMLLoader fxmlLoader = new FXMLLoader();
-        URL url = getClass().getResource("header/header.fxml");
+        URL url = getClass().getResource(APP_FXML_INCLUDE_RESOURCE);
         fxmlLoader.setLocation(url);
         Parent root = fxmlLoader.load(url.openStream());
 
         Scene scene = new Scene(root, 850, 500);
+
+        stage.setTitle("Shticell");
         stage.setScene(scene);
         stage.show();
-
     }
 }
