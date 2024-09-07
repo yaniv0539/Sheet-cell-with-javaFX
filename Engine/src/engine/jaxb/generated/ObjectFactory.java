@@ -70,6 +70,36 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link STLRanges }
+     * 
+     * @return
+     *     the new instance of {@link STLRanges }
+     */
+    public STLRanges createSTLRanges() {
+        return new STLRanges();
+    }
+
+    /**
+     * Create an instance of {@link STLRange }
+     * 
+     * @return
+     *     the new instance of {@link STLRange }
+     */
+    public STLRange createSTLRange() {
+        return new STLRange();
+    }
+
+    /**
+     * Create an instance of {@link STLBoundaries }
+     * 
+     * @return
+     *     the new instance of {@link STLBoundaries }
+     */
+    public STLBoundaries createSTLBoundaries() {
+        return new STLBoundaries();
+    }
+
+    /**
      * Create an instance of {@link STLCells }
      * 
      * @return

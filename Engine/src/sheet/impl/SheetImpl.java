@@ -14,6 +14,7 @@ import sheet.coordinate.api.CoordinateGetters;
 import sheet.coordinate.impl.CoordinateFactory;
 import sheet.layout.api.Layout;
 import sheet.layout.api.LayoutGetters;
+import sheet.range.api.Range;
 
 import java.io.*;
 import java.util.*;
@@ -25,6 +26,7 @@ public class SheetImpl implements Sheet, Serializable {
     private final Layout layout;
     private int version;
     private Map<Coordinate, Cell> activeCells;
+    private Set<Range> ranges;
     private int numberOfCellsThatChanged;
 
     private SheetImpl(String name, Layout layout) {
@@ -41,6 +43,7 @@ public class SheetImpl implements Sheet, Serializable {
         this.layout = layout;
         this.version = 1;
         this.activeCells = new HashMap<>();
+        this.ranges = new HashSet<>();
     }
 
     public static SheetImpl create(String name, Layout layout) {
@@ -101,6 +104,18 @@ public class SheetImpl implements Sheet, Serializable {
         }
 
         this.version = version;
+    }
+
+    @Override
+    public void addRange(Range range) {
+        if (!ranges.add(range)) {
+            throw new IllegalArgumentException("Range already exists in " + this.name);
+        }
+    }
+
+    @Override
+    public void removeRange(Range range) {
+        ranges.remove(range);
     }
 
     @Override
