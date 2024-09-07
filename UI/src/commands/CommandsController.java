@@ -1,16 +1,22 @@
 package commands;
 
+import app.AppController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 
-public class commandsController {
+public class CommandsController {
+
+    private AppController mainController;
 
     @FXML
     private Button bottonSetColumnAlignment;
 
     @FXML
-    private Button buttonFilter;
+    private Button buttonChangeColumnsSize12;
+
+    @FXML
+    private Button buttonChangeColumnsSize13;
 
     @FXML
     private Button buttonSetCellDesign;
@@ -18,12 +24,13 @@ public class commandsController {
     @FXML
     private Button buttonSetColumnsSize;
 
-    @FXML
-    private Button buttonSort;
+    public void setMainController(AppController mainController) {
+        this.mainController = mainController;
+    }
 
     @FXML
-    void filterAction(ActionEvent event) {
-        buttonFilter.setDisable(true);
+    void handleChangeColumnsSize(ActionEvent event) {
+
     }
 
     @FXML
@@ -38,11 +45,6 @@ public class commandsController {
 
     @FXML
     void setColumnsSizeAction(ActionEvent event) {
-
-    }
-
-    @FXML
-    void sortAction(ActionEvent event) {
 
     }
 

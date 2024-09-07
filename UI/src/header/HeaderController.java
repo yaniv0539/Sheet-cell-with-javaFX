@@ -1,5 +1,6 @@
 package header;
 
+import app.AppController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -37,6 +38,12 @@ public class HeaderController {
 
         @FXML
         private TextField textFieldVersionSelector;
+
+        private AppController mainController;
+
+        public void setMainController(AppController mainController) {
+                this.mainController = mainController;
+        }
 
         @FXML
         void buttonUpdateCellAction(ActionEvent event) {

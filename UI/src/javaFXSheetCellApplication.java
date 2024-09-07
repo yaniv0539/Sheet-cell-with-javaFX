@@ -20,7 +20,7 @@ public class javaFXSheetCellApplication extends Application {
         fxmlLoader.setLocation(url);
         Parent root = fxmlLoader.load(url.openStream());
 
-        Scene scene = new Scene(root, 850, 500);
+        Scene scene = new Scene(root, 900, 600);
 
         stage.setTitle("Shticell");
         stage.setScene(scene);
