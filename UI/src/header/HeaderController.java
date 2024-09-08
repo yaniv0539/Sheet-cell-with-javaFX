@@ -1,6 +1,8 @@
 package header;
 
 import app.AppController;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -45,9 +47,15 @@ public class HeaderController {
                 this.mainController = mainController;
         }
 
+        //TEST
+        public void bindCellIdTextField(StringProperty strProp) {
+                textFieldCellId.textProperty().bind(strProp);
+        }
+
+        //test nor real implementation
         @FXML
         void buttonUpdateCellAction(ActionEvent event) {
-
+                mainController.focusChanged(new SimpleBooleanProperty(),true,true);
         }
 
         @FXML

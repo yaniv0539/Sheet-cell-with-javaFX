@@ -35,8 +35,8 @@ public class SheetController {
         gridPane.setGridLinesVisible(true);  // Enable grid lines for visualization
 
         // Define number of rows and columns
-        int rows = 20;
-        int columns = 20;
+        int rows = 26;
+        int columns = 26;
 
         // Add column constraints to match FXML configuration
         for (int col = 0; col <= columns; col++) {
