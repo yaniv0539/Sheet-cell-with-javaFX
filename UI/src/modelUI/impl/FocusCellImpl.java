@@ -2,11 +2,11 @@ package modelUI.impl;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import modelUI.api.focusCell;
+import modelUI.api.FocusCell;
 
 import java.util.Collection;
 
-public class FocusCellImpl implements focusCell {
+public class FocusCellImpl implements FocusCell {
 
     public StringProperty coordinate;
     public StringProperty originalValue;
@@ -35,6 +35,10 @@ public class FocusCellImpl implements focusCell {
     @Override
     public void setEffectiveValue(String effectiveValue) {
         this.effectiveValue.set(effectiveValue);
+    }
+
+    public void setLastUpdateVersion(String lastUpdateVersion) {
+        this.lastUpdateVersion.set(lastUpdateVersion);
     }
 
     @Override

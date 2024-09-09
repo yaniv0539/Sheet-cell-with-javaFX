@@ -4,22 +4,30 @@ import commands.CommandsController;
 import engine.api.Engine;
 import engine.impl.EngineImpl;
 import header.HeaderController;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
+import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.text.Font;
+import javafx.stage.FileChooser;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import modelUI.api.FocusCell;
 import modelUI.impl.FocusCellImpl;
 import ranges.RangesController;
 import sheet.SheetController;
 import sheet.cell.api.CellGetters;
 import sheet.coordinate.impl.CoordinateFactory;
+
+import java.io.File;
 
 public class AppController {
 
@@ -30,18 +38,27 @@ public class AppController {
     @FXML private CommandsController commandsComponentController;
     @FXML private ScrollPane rangesComponent;
     @FXML private RangesController rangesComponentController;
+
+    private SimpleBooleanProperty isFileSelected;
+    private SimpleStringProperty selectedFileProperty;
+
     private ScrollPane sheetComponent;
     private SheetController sheetComponentController;
-
-    private FocusCellImpl cellInFocus;
+    private Stage primaryStage;
+    private FocusCell cellInFocus;
     private StringProperty[][] cellsValue; //should be here or in app controller ?
     private Engine engine;
-    //private View view;
+
+    public AppController() {
+        this.isFileSelected = new SimpleBooleanProperty(false);
+        this.selectedFileProperty = new SimpleStringProperty("");
+        this.cellInFocus = new FocusCellImpl();
+    }
 
     @FXML
     public void initialize() {
 
-        cellInFocus = new FocusCellImpl();
+
         engine = EngineImpl.create();
 
         if (headerComponentController != null && commandsComponentController != null && rangesComponentController != null) {
@@ -49,19 +66,37 @@ public class AppController {
             commandsComponentController.setMainController(this);
             rangesComponentController.setMainController(this);
 
+//            headerComponentController.getTextFieldCellId.textProperty().bind(cellInFocus.coordinate);
+//            headerComponentController.textFieldOrignalValue.textProperty().bind(cellInFocus.originalValue);
+//            headerComponentController.textFieldLastUpdateInVersion.textProperty().bind(cellInFocus.lastUpdateVersion);
+//            headerComponentController.buttonUpdateCell.disableProperty().bind(isFileSelected.not());
+//            headerComponentController.splitMenuButtonSelectVersion.disableProperty().bind(isFileSelected.not());
+//            headerComponentController.buttonUpdateCell.disableProperty().bind(isFileSelected.not());
+//            headerComponentController.buttonUpdateCell.disableProperty().bind(isFileSelected.not());
 
-            headerComponentController.textFieldCellId.textProperty().bind(cellInFocus.coordinate);
-            headerComponentController.textFieldOrignalValue.textProperty().bind(cellInFocus.originalValue);
-            headerComponentController.labelVersionSelector.textProperty().bind(cellInFocus.lastUpdateVersion);
         }
+
+    }
+
+    public void setPrimaryStage(Stage primaryStage) {
+        this.primaryStage = primaryStage;
     }
 
     public void uploadXml()
     {
-       // headerComponentController.buttonUploadXmlFileAction(new ActionEvent()); //why i need it or how to use it ?
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Select words file");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("XML files", "*.xml"));
+        File selectedFile = fileChooser.showOpenDialog(primaryStage);
+        if (selectedFile == null) {
+            return;
+        }
 
-        engine.readXMLInitFile("C:/Users/USER/IdeaProjects/Sheet-cell-with-javaFX/Engine/src/engine/jaxb/resources/test.xml");
-        //dynamic sheet component,
+        String absolutePath = selectedFile.getAbsolutePath();
+        engine.readXMLInitFile(absolutePath);
+        selectedFileProperty.set(absolutePath);
+        isFileSelected.set(true);
+
         //TODO: from here put in private function
         sheetComponentController = new SheetController();
         sheetComponent = sheetComponentController.getInitializedSheet(engine.getSheetStatus().getLayout().getRows(),
@@ -69,6 +104,7 @@ public class AppController {
         setContentAndBindsOnGrid();
         appBorderPane.setCenter(sheetComponent);
     }
+
 
     public void setContentAndBindsOnGrid()
     {
@@ -129,7 +165,7 @@ public class AppController {
                         }
                         //add listener to focus.
                         textField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-                            focusChanged(newValue,coord,originalValue,lastUpdateVersion);
+                            this.focusChanged(newValue, coord, originalValue, lastUpdateVersion);
                         });
                     }
                 }
@@ -149,16 +185,16 @@ public class AppController {
         }
     }
 
-    public void focusChanged(boolean newValue,String coord,String originalValue,String lastUpdateVersion)
+    public void focusChanged(boolean newValue, String coord, String originalValue, String lastUpdateVersion)
     {
-        if(newValue)
+        if (newValue)
         {
             //change text box cell id
             cellInFocus.setCoordinate(coord);
             //change orignal value
             cellInFocus.setOriginalValue(originalValue);
             //change version
-            cellInFocus.lastUpdateVersion.set(lastUpdateVersion);
+            cellInFocus.setLastUpdateVersion(lastUpdateVersion);
         }
     }
 

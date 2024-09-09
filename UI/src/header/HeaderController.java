@@ -7,42 +7,101 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.SplitMenuButton;
 import javafx.scene.control.TextField;
 import sheet.SheetController;
 
 public class HeaderController {
 
         @FXML
-        public Button buttonUpdateCell;
+        private Button buttonUpdateCell;
 
         @FXML
-        public Button buttonUploadXmlFile;
+        private Button buttonUploadXmlFile;
 
         @FXML
-        public Label labelCellId;
+        private Label labelCellId;
 
         @FXML
-        public Label labelOriginalValue;
+        private Label labelOriginalValue;
 
         @FXML
-        public Label labelVersionSelector;
+        private Label labelVersionSelector;
 
         @FXML
-        public Label lableFileName;
+        private SplitMenuButton splitMenuButtonSelectVersion;
 
         @FXML
-        public TextField textFieldCellId;
+        private Label lableFileName;
 
         @FXML
-        public TextField textFieldFileName;
+        private TextField textFieldCellId;
 
         @FXML
-        public TextField textFieldOrignalValue;
+        private TextField textFieldFileName;
 
         @FXML
-        public TextField textFieldVersionSelector;
+        private TextField textFieldOrignalValue;
+
+        @FXML
+        private TextField textFieldLastUpdateInVersion;
+
+        @FXML
+        private TextField textFieldVersionSelector;
 
         private AppController mainController;
+
+        public Button getButtonUpdateCell() {
+                return buttonUpdateCell;
+        }
+
+        public Button getButtonUploadXmlFile() {
+                return buttonUploadXmlFile;
+        }
+
+        public Label getLabelCellId() {
+                return labelCellId;
+        }
+
+        public Label getLabelOriginalValue() {
+                return labelOriginalValue;
+        }
+
+        public Label getLabelVersionSelector() {
+                return labelVersionSelector;
+        }
+
+        public SplitMenuButton getSplitMenuButtonSelectVersion() {
+                return splitMenuButtonSelectVersion;
+        }
+
+        public Label getLableFileName() {
+                return lableFileName;
+        }
+
+        public TextField getTextFieldCellId() {
+                return textFieldCellId;
+        }
+
+        public TextField getTextFieldFileName() {
+                return textFieldFileName;
+        }
+
+        public TextField getTextFieldOrignalValue() {
+                return textFieldOrignalValue;
+        }
+
+        public TextField getTextFieldLastUpdateInVersion() {
+                return textFieldLastUpdateInVersion;
+        }
+
+        public TextField getTextFieldVersionSelector() {
+                return textFieldVersionSelector;
+        }
+
+        public AppController getMainController() {
+                return mainController;
+        }
 
         public void setMainController(AppController mainController) {
                 this.mainController = mainController;
@@ -61,7 +120,7 @@ public class HeaderController {
         }
 
         @FXML
-        public  void buttonUploadXmlFileAction(ActionEvent event) {
+        public void buttonUploadXmlFileAction(ActionEvent event) {
             mainController.uploadXml();
         }
 
