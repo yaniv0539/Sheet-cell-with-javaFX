@@ -8,38 +8,39 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import sheet.SheetController;
 
 public class HeaderController {
 
         @FXML
-        private Button buttonUpdateCell;
+        public Button buttonUpdateCell;
 
         @FXML
-        private Button buttonUploadXmlFile;
+        public Button buttonUploadXmlFile;
 
         @FXML
-        private Label labelCellId;
+        public Label labelCellId;
 
         @FXML
-        private Label labelOriginalValue;
+        public Label labelOriginalValue;
 
         @FXML
-        private Label labelVersionSelector;
+        public Label labelVersionSelector;
 
         @FXML
-        private Label lableFileName;
+        public Label lableFileName;
 
         @FXML
-        private TextField textFieldCellId;
+        public TextField textFieldCellId;
 
         @FXML
-        private TextField textFieldFileName;
+        public TextField textFieldFileName;
 
         @FXML
-        private TextField textFieldOrignalValue;
+        public TextField textFieldOrignalValue;
 
         @FXML
-        private TextField textFieldVersionSelector;
+        public TextField textFieldVersionSelector;
 
         private AppController mainController;
 
@@ -55,12 +56,13 @@ public class HeaderController {
         //test nor real implementation
         @FXML
         void buttonUpdateCellAction(ActionEvent event) {
-                mainController.focusChanged(new SimpleBooleanProperty(),true,true);
+                //TEST
+                //mainController.focusChanged(new SimpleBooleanProperty(),true,true);
         }
 
         @FXML
-        void buttonUploadXmlFileAction(ActionEvent event) {
-
+        public  void buttonUploadXmlFileAction(ActionEvent event) {
+            mainController.uploadXml();
         }
 
         @FXML

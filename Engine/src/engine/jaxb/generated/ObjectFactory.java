@@ -81,7 +81,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link STLRange }
-     * 
+     *
      * @return
      *     the new instance of {@link STLRange }
      */
@@ -91,7 +91,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link STLBoundaries }
-     * 
+     *
      * @return
      *     the new instance of {@link STLBoundaries }
      */

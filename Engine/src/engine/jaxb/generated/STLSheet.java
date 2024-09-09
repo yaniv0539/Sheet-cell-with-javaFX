@@ -93,11 +93,11 @@ public class STLSheet {
 
     /**
      * Sets the value of the stlRanges property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link STLRanges }
-     *     
+     *
      */
     public void setSTLRanges(STLRanges value) {
         this.stlRanges = value;

@@ -11,6 +11,7 @@ public class FocusCellImpl implements focusCell {
     public StringProperty coordinate;
     public StringProperty originalValue;
     public StringProperty effectiveValue;
+    public StringProperty lastUpdateVersion;
     //depandeOn
     //influenceOn
 
@@ -19,6 +20,7 @@ public class FocusCellImpl implements focusCell {
         coordinate = new SimpleStringProperty("");
         originalValue = new SimpleStringProperty("");
         effectiveValue = new SimpleStringProperty("");
+        lastUpdateVersion = new SimpleStringProperty("");
     }
     @Override
     public void setCoordinate(String coordinate) {
