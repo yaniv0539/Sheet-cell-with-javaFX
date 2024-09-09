@@ -36,7 +36,7 @@ public class SheetController {
         scrollPane.setFitToHeight(true);  // Ensure it stretches to fit the height
 
         // Create a GridPane
-        GridPane gridPane = new GridPane();
+        gridPane = new GridPane();
         gridPane.setGridLinesVisible(true);  // Enable grid lines for visualization
 
         //init the "dataBase" of effective values, text fields will bind to this.
