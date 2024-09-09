@@ -1,43 +1,46 @@
 package header;
 
 import app.AppController;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import sheet.SheetController;
 
 public class HeaderController {
 
         @FXML
-        private Button buttonUpdateCell;
+        public Button buttonUpdateCell;
 
         @FXML
-        private Button buttonUploadXmlFile;
+        public Button buttonUploadXmlFile;
 
         @FXML
-        private Label labelCellId;
+        public Label labelCellId;
 
         @FXML
-        private Label labelOriginalValue;
+        public Label labelOriginalValue;
 
         @FXML
-        private Label labelVersionSelector;
+        public Label labelVersionSelector;
 
         @FXML
-        private Label lableFileName;
+        public Label lableFileName;
 
         @FXML
-        private TextField textFieldCellId;
+        public TextField textFieldCellId;
 
         @FXML
-        private TextField textFieldFileName;
+        public TextField textFieldFileName;
 
         @FXML
-        private TextField textFieldOrignalValue;
+        public TextField textFieldOrignalValue;
 
         @FXML
-        private TextField textFieldVersionSelector;
+        public TextField textFieldVersionSelector;
 
         private AppController mainController;
 
@@ -45,14 +48,21 @@ public class HeaderController {
                 this.mainController = mainController;
         }
 
+        //TEST
+        public void bindCellIdTextField(StringProperty strProp) {
+                textFieldCellId.textProperty().bind(strProp);
+        }
+
+        //test nor real implementation
         @FXML
         void buttonUpdateCellAction(ActionEvent event) {
-
+                //TEST
+                //mainController.focusChanged(new SimpleBooleanProperty(),true,true);
         }
 
         @FXML
-        void buttonUploadXmlFileAction(ActionEvent event) {
-
+        public  void buttonUploadXmlFileAction(ActionEvent event) {
+            mainController.uploadXml();
         }
 
         @FXML

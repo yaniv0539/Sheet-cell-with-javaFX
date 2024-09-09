@@ -55,18 +55,18 @@ public class STLSheetToSheet {
 
         sheet.setCells(originalValuesMap);
 
-        STLRanges stlRanges = stlSheet.getSTLRanges();
-
-        List<STLRange> stlRangeList = stlRanges.getSTLRange();
-
-        stlRangeList.forEach(stlRange -> {
-            String rangeName = stlRange.getName();
-
-            STLBoundaries stlBoundaries = stlRange.getSTLBoundaries();
-            Boundaries boundaries = BoundariesImpl.create(stlBoundaries.getFrom(), stlBoundaries.getTo());
-
-            sheet.addRange(RangeImpl.create(rangeName, boundaries));
-        });
+//        STLRanges stlRanges = stlSheet.getSTLRanges();
+//
+//        List<STLRange> stlRangeList = stlRanges.getSTLRange();
+//
+//        stlRangeList.forEach(stlRange -> {
+//            String rangeName = stlRange.getName();
+//
+//            STLBoundaries stlBoundaries = stlRange.getSTLBoundaries();
+//            Boundaries boundaries = BoundariesImpl.create(stlBoundaries.getFrom(), stlBoundaries.getTo());
+//
+//            sheet.addRange(RangeImpl.create(rangeName, boundaries));
+//        });
 
         return sheet;
     }
