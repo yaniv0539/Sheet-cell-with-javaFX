@@ -4,6 +4,7 @@ import commands.CommandsController;
 import engine.api.Engine;
 import engine.impl.EngineImpl;
 import header.HeaderController;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
@@ -48,6 +49,7 @@ public class AppController {
             commandsComponentController.setMainController(this);
             rangesComponentController.setMainController(this);
 
+
             headerComponentController.textFieldCellId.textProperty().bind(cellInFocus.coordinate);
             headerComponentController.textFieldOrignalValue.textProperty().bind(cellInFocus.originalValue);
             headerComponentController.labelVersionSelector.textProperty().bind(cellInFocus.lastUpdateVersion);
@@ -58,7 +60,7 @@ public class AppController {
     {
        // headerComponentController.buttonUploadXmlFileAction(new ActionEvent()); //why i need it or how to use it ?
 
-        engine.readXMLInitFile("C:/Users/itayr/OneDrive/Desktop/basic.xml");
+        engine.readXMLInitFile("C:/Users/USER/IdeaProjects/Sheet-cell-with-javaFX/Engine/src/engine/jaxb/resources/test.xml");
         //dynamic sheet component,
         //TODO: from here put in private function
         sheetComponentController = new SheetController();
@@ -74,7 +76,15 @@ public class AppController {
         int columns = engine.getSheetStatus().getLayout().getColumns();
         // Dynamically populate the GridPane with TextFields
         //all of this should be in the appController ??
+
         cellsValue = new StringProperty[rows + 1][columns + 1];
+
+        // Initialize each element with a SimpleStringProperty
+        for (int i = 0; i <= rows; i++) {
+            for (int j = 0; j <= columns; j++) {
+                cellsValue[i][j] = new SimpleStringProperty("");
+            }
+        }
 
         for (int row = 0; row <= rows; row++) {
             for (int col = 0; col <= columns; col++) {
@@ -96,30 +106,32 @@ public class AppController {
                 } else if (col == 0 && row > 0) {
                     cellsValue[row][col].setValue(Integer.toString(row));  // Row headers (1, 2, 3, etc.)
                 } else {
-                    //getting cel
-                    CellGetters cell = engine.getCellStatus(row, col);
-                    final String originalValue;
-                    final String coord;
-                    final String lastUpdateVersion;
+                    if (row != 0 || col != 0) {
+                        //getting cell
+                        CellGetters cell = engine.getCellStatus(row - 1, col - 1);
+                        final String originalValue;
+                        final String coord;
+                        final String lastUpdateVersion;
 
-                    if (cell != null) //exist
-                    {
-                        cellsValue[row][col].setValue(cell.getEffectiveValue().getValue().toString());
-                        originalValue = cell.getOriginalValue();
-                        coord = cell.getCoordinate().toString();
-                        lastUpdateVersion = String.valueOf(cell.getVersion());
+                        if (cell != null) //exist
+                        {
+                            cellsValue[row][col].setValue(cell.getEffectiveValue().getValue().toString());
+                            originalValue = cell.getOriginalValue();
+                            coord = cell.getCoordinate().toString();
+                            lastUpdateVersion = String.valueOf(cell.getVersion());
 
-                    } else { //empty cell
-                        cellsValue[row][col].setValue("");
-                        originalValue = "";
-                        coord = CoordinateFactory.createCoordinate(row,col).toString();
-                        lastUpdateVersion = "";
+                        } else { //empty cell
+    //                        cellsValue[row][col].setValue("");
+                            originalValue = "";
+                            coord = CoordinateFactory.createCoordinate(row - 1,col - 1).toString();
+                            lastUpdateVersion = "";
 
+                        }
+                        //add listener to focus.
+                        textField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+                            focusChanged(newValue,coord,originalValue,lastUpdateVersion);
+                        });
                     }
-                    //add listener to focus.
-                    textField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-                        focusChanged(newValue,coord,originalValue,lastUpdateVersion);
-                    });
                 }
 
                 textField.textProperty().bind(cellsValue[row][col]); //cellsValue[row][col] = stringProperty.

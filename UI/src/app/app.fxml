@@ -24,7 +24,4 @@
    <top>
       <fx:include fx:id="headerComponent" source="../header/header.fxml" />
    </top>
-   <center>
-       <fx:include fx:id="sheetComponent" source="../sheet/sheet.fxml" />
-   </center>
 </BorderPane>
