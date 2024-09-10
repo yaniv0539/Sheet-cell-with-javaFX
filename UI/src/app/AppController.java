@@ -39,6 +39,8 @@ public class AppController {
     private ScrollPane sheetComponent;
     private SheetController sheetComponentController;
     private Stage primaryStage;
+
+
     private FocusCellProperty cellInFocus;
     private EffectiveValuesPoolProperty effectiveValuesPool;
     private Engine engine;
@@ -118,8 +120,7 @@ public class AppController {
         }
     }
 
-    public void focusChanged(boolean newValue, Coordinate coordinate)
-    {
+    public void focusChanged(boolean newValue, Coordinate coordinate) {
         if (newValue)
         {
             Cell cell = engine.getSheetStatus().getCell(coordinate);
@@ -148,5 +149,10 @@ public class AppController {
     }
 
     public void alignCells(Pos pos) {
+    }
+
+    public void updateCell() {
+        engine.updateCellStatus(cellInFocus.getCoordinate().get(), cellInFocus.getOriginalValue().get());
+        setEffectiveValuesPoolProperty();
     }
 }

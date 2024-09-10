@@ -129,8 +129,7 @@ public class HeaderController {
         //test nor real implementation
         @FXML
         void buttonUpdateCellAction(ActionEvent event) {
-                //TEST
-                //mainController.focusChanged(new SimpleBooleanProperty(),true,true);
+                mainController.updateCell();
         }
 
         @FXML
@@ -148,14 +147,14 @@ public class HeaderController {
                 mainController.uploadXml(selectedFileProperty.get());
         }
 
-        @FXML
+        @FXML //no need
         void textFieldFileNameAction(ActionEvent event) {
 
         }
 
-        @FXML
+        @FXML //maybe
         void textFieldOrignalValueAction(ActionEvent event) {
-
+                mainController.updateCell();
         }
 
         @FXML
