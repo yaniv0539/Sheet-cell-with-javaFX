@@ -42,11 +42,6 @@ public class SheetController {
         //until here set the grid.
         setBindsTo();
         setScrollPane();
-        setScrollPane();
-        scrollPane.setFitToWidth(true);  // Ensure it stretches to fit the width
-        scrollPane.setFitToHeight(true);  // Ensure it stretches to fit the height
-        scrollPane.setContent(gridPane);
-
         return scrollPane;
     }
 

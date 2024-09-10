@@ -1,17 +1,17 @@
 package commands;
 
 import app.AppController;
+import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
+import javafx.geometry.Pos;
+import javafx.scene.control.*;
 
-import java.io.IOException;
-import java.net.URL;
 
 public class CommandsController {
 
@@ -20,59 +20,166 @@ public class CommandsController {
     private AppController mainController;
 
     @FXML
-    private Button bottonSetColumnAlignment;
+    private Button buttonFilter;
 
     @FXML
-    private Button buttonChangeColumnsSize12;
+    private Button buttonResetToDefault;
 
     @FXML
-    private Button buttonChangeColumnsSize13;
+    private Button buttonSort;
 
     @FXML
-    private Button buttonSetCellDesign;
+    private ColorPicker colorPickerBackgroundColor;
 
     @FXML
-    private Button buttonSetColumnsSize;
+    private ColorPicker colorPickerTextColor;
+
+    @FXML
+    private ComboBox<String> comboBoxAlignment;
+
+    @FXML
+    private Spinner<Integer> spinnerHeight;
+
+    @FXML
+    private Spinner<Integer> spinnerWidth;
+
+    private IntegerProperty heightProperty;
+
+    private IntegerProperty widthProperty;
+
+    public AppController getMainController() {
+        return mainController;
+    }
+
+    public Button getButtonResetToDefault() {
+        return buttonResetToDefault;
+    }
+
+    public ColorPicker getColorPickerBackgroundColor() {
+        return colorPickerBackgroundColor;
+    }
+
+    public ColorPicker getColorPickerTextColor() {
+        return colorPickerTextColor;
+    }
+
+    public ComboBox<String> getComboBoxAlignment() {
+        return comboBoxAlignment;
+    }
+
+    public Spinner<Integer> getSpinnerHeight() {
+        return spinnerHeight;
+    }
+
+    public Spinner<Integer> getSpinnerWidth() {
+        return spinnerWidth;
+    }
+
+    public int getHeightProperty() {
+        return heightProperty.get();
+    }
+
+    public IntegerProperty heightPropertyProperty() {
+        return heightProperty;
+    }
+
+    public int getWidthProperty() {
+        return widthProperty.get();
+    }
+
+    public IntegerProperty widthPropertyProperty() {
+        return widthProperty;
+    }
+
+    public CommandsController() {
+        heightProperty = new SimpleIntegerProperty();
+        widthProperty = new SimpleIntegerProperty();
+    }
+
+    @FXML
+    private void initialize() {
+
+    }
 
     public void setMainController(AppController mainController) {
         this.mainController = mainController;
     }
 
-    @FXML
-    void handleChangeColumnsSize(ActionEvent event) {
+    public void commandsInitializeBinding() {
 
+        // Set the alignment options in the combo box and initiate it to Left as default.
+        ObservableList<String> columnAlignmentOptions = FXCollections.observableArrayList("Left", "Center", "Right");
+        comboBoxAlignment.setItems(columnAlignmentOptions);
+        comboBoxAlignment.getSelectionModel().selectFirst();
+
+        // column width picker
+        spinnerWidth
+                .valueProperty()
+                .addListener((observable, oldValue, newValue) -> mainController.changeColumnWidth(newValue));
+
+        SpinnerValueFactory<Integer> widthValueFactory =
+                new SpinnerValueFactory.IntegerSpinnerValueFactory(50, 200, 100, 1);
+        spinnerWidth.setValueFactory(widthValueFactory);
+
+        // row height picker
+        spinnerHeight
+                .valueProperty()
+                .addListener((observable, oldValue, newValue) -> mainController.changeRowHeight(newValue));
+
+        SpinnerValueFactory<Integer> heightValueFactory =
+                new SpinnerValueFactory.IntegerSpinnerValueFactory(30, 100, 40, 1);
+        spinnerHeight.setValueFactory(heightValueFactory);
+
+        // set initial values
+        Platform.runLater(() -> {
+            comboBoxAlignment.getSelectionModel().selectFirst();
+
+            spinnerWidth.getValueFactory().setValue(100);
+
+            spinnerHeight.getValueFactory().setValue(40);
+        });
     }
 
     @FXML
-    void setCellDesignAction(ActionEvent event) {
+    void alignmentAction(ActionEvent event) {
+        int selectedIndex = comboBoxAlignment.getSelectionModel().getSelectedIndex();
+        switch (selectedIndex) {
+            case 0:
+                mainController.alignCells(Pos.CENTER_LEFT);
+                break;
+            case 1:
+                mainController.alignCells(Pos.CENTER);
+                break;
+            case 2:
+                mainController.alignCells(Pos.CENTER_RIGHT);
+                break;
+        }
+    }
+
+    @FXML
+    void filterAction(ActionEvent event) {
 
     }
 
     @FXML
-    void setColumnAlignmentAction(ActionEvent event) {
+    void resetToDefaultAction(ActionEvent event) {
 
     }
 
     @FXML
-    void setColumnsSizeAction(ActionEvent event) throws IOException {
-        activateCommandAction(SET_COLUMN_SIZE_FXML_INCLUDE_RESOURCE, "Set Column Size");
+    void sortAction(ActionEvent event) {
+
     }
 
-    void activateCommandAction(String resource, String title) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader();
-        URL url = getClass().getResource(resource);
-        fxmlLoader.setLocation(url);
-        Parent popupRoot = fxmlLoader.load(url.openStream());
-
-        Stage popupStage = new Stage();
-        popupStage.initModality(Modality.APPLICATION_MODAL);
-        popupStage.setTitle(title);
-
-        Scene popupScene = new Scene(popupRoot, 360, 120);
-        popupStage.setResizable(false);
-        popupStage.setScene(popupScene);
-
-        popupStage.showAndWait();
+    public void init() {
+        BooleanProperty isSelectedProperty = this.mainController.isFileSelectedProperty();
+        buttonResetToDefault.disableProperty().bind(isSelectedProperty.not());
+        buttonSort.disableProperty().bind(isSelectedProperty.not());
+        buttonFilter.disableProperty().bind(isSelectedProperty.not());
+        spinnerWidth.disableProperty().bind(isSelectedProperty.not());
+        spinnerHeight.disableProperty().bind(isSelectedProperty.not());
+        comboBoxAlignment.disableProperty().bind(isSelectedProperty.not());
+        colorPickerBackgroundColor.disableProperty().bind(isSelectedProperty.not());
+        colorPickerTextColor.disableProperty().bind(isSelectedProperty.not());
     }
-
 }

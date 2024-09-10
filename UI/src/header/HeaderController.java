@@ -113,6 +113,14 @@ public class HeaderController {
                 this.mainController = mainController;
         }
 
+        public String getSelectedFileProperty() {
+                return selectedFileProperty.get();
+        }
+
+        public SimpleStringProperty selectedFilePropertyProperty() {
+                return selectedFileProperty;
+        }
+
         //TEST
         public void bindCellIdTextField(StringProperty strProp) {
                 textFieldCellId.textProperty().bind(strProp);
@@ -155,7 +163,15 @@ public class HeaderController {
 
         }
 
-        public String getSelectedFileProperty() {
-                return selectedFileProperty.get();
+        public void init() {
+                SimpleBooleanProperty fileSelectedProperty = this.mainController.isFileSelectedProperty();
+                buttonUpdateCell.disableProperty().bind(fileSelectedProperty.not());
+                splitMenuButtonSelectVersion.disableProperty().bind(fileSelectedProperty.not());
+                textFieldOrignalValue.disableProperty().bind(fileSelectedProperty.not());
+                textFieldCellId.disableProperty().bind(fileSelectedProperty.not());
+                textFieldLastUpdateInVersion.disableProperty().bind(fileSelectedProperty.not());
+                textFieldCellId.textProperty().bind(this.mainController.getCellInFocus().getCoordinate());
+                textFieldOrignalValue.textProperty().bindBidirectional(this.mainController.getCellInFocus().getOriginalValue());
+                textFieldLastUpdateInVersion.textProperty().bind(this.mainController.getCellInFocus().getLastUpdateVersion());
         }
 }

@@ -1,13 +1,15 @@
 package ranges;
 
 import app.AppController;
+import javafx.beans.property.BooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -26,10 +28,10 @@ public class RangesController {
     private Button buttonDeleteRange;
 
     @FXML
-    private Button buttonShowRange;
+    private TableColumn<?, ?> tableActiveRanges;
 
     @FXML
-    private TextArea rangeList;
+    private TableView<?> tableViewActiveRanges;
 
     private AppController mainController;
 
@@ -69,4 +71,10 @@ public class RangesController {
         popupStage.showAndWait();
     }
 
+    public void init() {
+        BooleanProperty isSelectedProperty = this.mainController.isFileSelectedProperty();
+        buttonAddRange.disableProperty().bind(isSelectedProperty.not());
+        buttonDeleteRange.disableProperty().bind(isSelectedProperty.not());
+        tableViewActiveRanges.disableProperty().bind(isSelectedProperty.not());
+    }
 }
