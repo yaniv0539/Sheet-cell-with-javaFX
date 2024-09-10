@@ -6,28 +6,25 @@ import engine.impl.EngineImpl;
 import header.HeaderController;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
-import javafx.geometry.HPos;
-import javafx.geometry.VPos;
-import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Priority;
-import javafx.scene.text.Font;
-import javafx.stage.FileChooser;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
-import modelUI.api.FocusCell;
-import modelUI.impl.FocusCellImpl;
+import modelUI.api.EffectiveValuesPoolProperty;
+import modelUI.api.EffectiveValuesPoolPropertyReadOnly;
+import modelUI.api.FocusCellProperty;
+import modelUI.api.FocusCellPropertyWriteOnly;
+import modelUI.impl.EffectiveValuesPoolPropertyImpl;
+import modelUI.impl.FocusCellPropertyImpl;
 import ranges.RangesController;
 import sheet.SheetController;
+import sheet.cell.api.Cell;
 import sheet.cell.api.CellGetters;
+import sheet.coordinate.api.Coordinate;
+import sheet.coordinate.api.CoordinateGetters;
 import sheet.coordinate.impl.CoordinateFactory;
 
-import java.io.File;
+import java.util.Map;
 
 public class AppController {
 
@@ -40,25 +37,21 @@ public class AppController {
     @FXML private RangesController rangesComponentController;
 
     private SimpleBooleanProperty isFileSelected;
-    private SimpleStringProperty selectedFileProperty;
-
     private ScrollPane sheetComponent;
     private SheetController sheetComponentController;
     private Stage primaryStage;
-    private FocusCell cellInFocus;
-    private StringProperty[][] cellsValue; //should be here or in app controller ?
+    private FocusCellProperty cellInFocus;
+    private EffectiveValuesPoolProperty effectiveValuesPool;
     private Engine engine;
 
     public AppController() {
         this.isFileSelected = new SimpleBooleanProperty(false);
-        this.selectedFileProperty = new SimpleStringProperty("");
-        this.cellInFocus = new FocusCellImpl();
+        this.cellInFocus = new FocusCellPropertyImpl();
+        effectiveValuesPool = new EffectiveValuesPoolPropertyImpl();
     }
 
     @FXML
     public void initialize() {
-
-
         engine = EngineImpl.create();
 
         if (headerComponentController != null && commandsComponentController != null && rangesComponentController != null) {
@@ -66,9 +59,9 @@ public class AppController {
             commandsComponentController.setMainController(this);
             rangesComponentController.setMainController(this);
 
-//            headerComponentController.getTextFieldCellId.textProperty().bind(cellInFocus.coordinate);
-//            headerComponentController.textFieldOrignalValue.textProperty().bind(cellInFocus.originalValue);
-//            headerComponentController.textFieldLastUpdateInVersion.textProperty().bind(cellInFocus.lastUpdateVersion);
+            headerComponentController.getTextFieldCellId().textProperty().bind(cellInFocus.getCoordinate());
+            headerComponentController.getTextFieldOrignalValue().textProperty().bind(cellInFocus.getOriginalValue());
+            headerComponentController.getTextFieldLastUpdateInVersion().textProperty().bind(cellInFocus.getLastUpdateVersion());
 //            headerComponentController.buttonUpdateCell.disableProperty().bind(isFileSelected.not());
 //            headerComponentController.splitMenuButtonSelectVersion.disableProperty().bind(isFileSelected.not());
 //            headerComponentController.buttonUpdateCell.disableProperty().bind(isFileSelected.not());
@@ -82,120 +75,65 @@ public class AppController {
         this.primaryStage = primaryStage;
     }
 
-    public void uploadXml()
+    public Stage getPrimaryStage() {
+        return primaryStage;
+    }
+
+    public void uploadXml(String path)
     {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Select words file");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("XML files", "*.xml"));
-        File selectedFile = fileChooser.showOpenDialog(primaryStage);
-        if (selectedFile == null) {
-            return;
-        }
-
-        String absolutePath = selectedFile.getAbsolutePath();
-        engine.readXMLInitFile(absolutePath);
-        selectedFileProperty.set(absolutePath);
+        engine.readXMLInitFile(path);
         isFileSelected.set(true);
+        setEffectiveValuesPoolProperty();
+        setSheet();
+    }
 
-        //TODO: from here put in private function
+    private void setSheet() {
         sheetComponentController = new SheetController();
+        sheetComponentController.setMainController(this);
         sheetComponent = sheetComponentController.getInitializedSheet(engine.getSheetStatus().getLayout().getRows(),
-                                                                      engine.getSheetStatus().getLayout().getColumns()); //only for structure of flow.
-        setContentAndBindsOnGrid();
+                engine.getSheetStatus().getLayout().getColumns());
         appBorderPane.setCenter(sheetComponent);
     }
 
 
-    public void setContentAndBindsOnGrid()
-    {
-        int rows = engine.getSheetStatus().getLayout().getRows();
-        int columns = engine.getSheetStatus().getLayout().getColumns();
-        // Dynamically populate the GridPane with TextFields
-        //all of this should be in the appController ??
+    private void setEffectiveValuesPoolProperty() {
 
-        cellsValue = new StringProperty[rows + 1][columns + 1];
+        Map<CoordinateGetters,CellGetters> map = engine.getSheetStatus().getActiveCells();
 
-        // Initialize each element with a SimpleStringProperty
-        for (int i = 0; i <= rows; i++) {
-            for (int j = 0; j <= columns; j++) {
-                cellsValue[i][j] = new SimpleStringProperty("");
-            }
-        }
-
-        for (int row = 0; row <= rows; row++) {
-            for (int col = 0; col <= columns; col++) {
-
-                TextField textField = new TextField();
-                textField.setEditable(false);  // Disable editing
-
-                textField.setMaxWidth(Double.MAX_VALUE);  // Allow TextField to stretch horizontally
-                textField.setMaxHeight(Double.MAX_VALUE);  // Allow TextField to stretch vertically
-
-                // Set font size and alignment to match FXML
-                textField.setFont(Font.font("System", 12));
-                textField.setAlignment(javafx.geometry.Pos.CENTER);
-
-                // Dynamically set the content of the TextField
-
-                if (row == 0 && col > 0) {
-                    cellsValue[row][col].setValue(Character.toString((char) ('A' + col - 1)));  // Column headers (A, B, C, etc.)
-                } else if (col == 0 && row > 0) {
-                    cellsValue[row][col].setValue(Integer.toString(row));  // Row headers (1, 2, 3, etc.)
-                } else {
-                    if (row != 0 || col != 0) {
-                        //getting cell
-                        CellGetters cell = engine.getCellStatus(row - 1, col - 1);
-                        final String originalValue;
-                        final String coord;
-                        final String lastUpdateVersion;
-
-                        if (cell != null) //exist
-                        {
-                            cellsValue[row][col].setValue(cell.getEffectiveValue().getValue().toString());
-                            originalValue = cell.getOriginalValue();
-                            coord = cell.getCoordinate().toString();
-                            lastUpdateVersion = String.valueOf(cell.getVersion());
-
-                        } else { //empty cell
-    //                        cellsValue[row][col].setValue("");
-                            originalValue = "";
-                            coord = CoordinateFactory.createCoordinate(row - 1,col - 1).toString();
-                            lastUpdateVersion = "";
-
-                        }
-                        //add listener to focus.
-                        textField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-                            this.focusChanged(newValue, coord, originalValue, lastUpdateVersion);
-                        });
-                    }
+        for(int row = 0; row < engine.getSheetStatus().getLayout().getRows(); row++) {
+            for(int column = 0; column < engine.getSheetStatus().getLayout().getColumns(); column++) {
+              Coordinate coordinate = CoordinateFactory.createCoordinate(row,column);
+              CellGetters cell = map.get(coordinate);
+                if(cell != null){
+                    effectiveValuesPool.addEffectiveValuePropertyAt(coordinate, cell.getEffectiveValue().toString());
                 }
-
-                textField.textProperty().bind(cellsValue[row][col]); //cellsValue[row][col] = stringProperty.
-                // Add TextField to cells
-
-                // Add TextField to the GridPane
-                sheetComponentController.gridPane.add(textField, col, row); //gridPane is public just for flow.
-
-                // Set alignment for grid children if necessary
-                GridPane.setHgrow(textField, Priority.ALWAYS);
-                GridPane.setVgrow(textField, Priority.ALWAYS);
-                GridPane.setHalignment(textField, HPos.CENTER);
-                GridPane.setValignment(textField, VPos.CENTER);
+                else {
+                    effectiveValuesPool.addEffectiveValuePropertyAt(coordinate, "");
+                }
             }
         }
     }
 
-    public void focusChanged(boolean newValue, String coord, String originalValue, String lastUpdateVersion)
+    public void focusChanged(boolean newValue, Coordinate coordinate)
     {
-        if (newValue)
+        if (newValue )
         {
-            //change text box cell id
-            cellInFocus.setCoordinate(coord);
-            //change orignal value
-            cellInFocus.setOriginalValue(originalValue);
-            //change version
-            cellInFocus.setLastUpdateVersion(lastUpdateVersion);
+            Cell cell = engine.getSheetStatus().getCell(coordinate);
+            cellInFocus.setCoordinate(coordinate.toString());
+
+            if(cell != null)
+            {
+                cellInFocus.setOriginalValue(cell.getOriginalValue());
+                cellInFocus.setLastUpdateVersion(String.valueOf(cell.getVersion()));
+            }
+            else{
+                cellInFocus.setOriginalValue("");
+                cellInFocus.setLastUpdateVersion("");
+            }
         }
     }
 
+    public EffectiveValuesPoolPropertyReadOnly getEffectiveValuesPool() {
+        return effectiveValuesPool;
+    }
 }

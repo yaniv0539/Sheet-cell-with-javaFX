@@ -2,7 +2,7 @@ package modelUI.api;
 
 import java.util.Collection;
 
-public interface FocusCell {
+public interface FocusCellPropertyWriteOnly {
 
     void setCoordinate(String coordinate );
     void setOriginalValue(String originalValue );
