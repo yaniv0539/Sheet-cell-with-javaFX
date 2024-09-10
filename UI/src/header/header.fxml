@@ -42,7 +42,7 @@
                         <Insets bottom="5.0" left="40.0" right="5.0" top="5.0" />
                      </HBox.margin>
                   </Label>
-                  <TextField fx:id="textFieldFileName" editable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onAction="#textFieldFileNameAction" opacity="0.5" prefWidth="650.0" HBox.hgrow="ALWAYS">
+                  <TextField fx:id="textFieldFileName" disable="true" editable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onAction="#textFieldFileNameAction" opacity="0.5" prefWidth="650.0" HBox.hgrow="ALWAYS">
                      <font>
                         <Font name="System Italic" size="12.0" />
                      </font>

@@ -5,15 +5,14 @@ import engine.api.Engine;
 import engine.impl.EngineImpl;
 import header.HeaderController;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import modelUI.api.EffectiveValuesPoolProperty;
 import modelUI.api.EffectiveValuesPoolPropertyReadOnly;
 import modelUI.api.FocusCellProperty;
-import modelUI.api.FocusCellPropertyWriteOnly;
 import modelUI.impl.EffectiveValuesPoolPropertyImpl;
 import modelUI.impl.FocusCellPropertyImpl;
 import ranges.RangesController;
@@ -45,6 +44,7 @@ public class AppController {
     private Engine engine;
 
     public AppController() {
+        engine = EngineImpl.create();
         this.isFileSelected = new SimpleBooleanProperty(false);
         this.cellInFocus = new FocusCellPropertyImpl();
         effectiveValuesPool = new EffectiveValuesPoolPropertyImpl();
@@ -52,23 +52,27 @@ public class AppController {
 
     @FXML
     public void initialize() {
-        engine = EngineImpl.create();
-
         if (headerComponentController != null && commandsComponentController != null && rangesComponentController != null) {
             headerComponentController.setMainController(this);
             commandsComponentController.setMainController(this);
             rangesComponentController.setMainController(this);
 
-            headerComponentController.getTextFieldCellId().textProperty().bind(cellInFocus.getCoordinate());
-            headerComponentController.getTextFieldOrignalValue().textProperty().bind(cellInFocus.getOriginalValue());
-            headerComponentController.getTextFieldLastUpdateInVersion().textProperty().bind(cellInFocus.getLastUpdateVersion());
-//            headerComponentController.buttonUpdateCell.disableProperty().bind(isFileSelected.not());
-//            headerComponentController.splitMenuButtonSelectVersion.disableProperty().bind(isFileSelected.not());
-//            headerComponentController.buttonUpdateCell.disableProperty().bind(isFileSelected.not());
-//            headerComponentController.buttonUpdateCell.disableProperty().bind(isFileSelected.not());
-
+            headerComponentController.init();
+            commandsComponentController.init();
+            rangesComponentController.init();
         }
+    }
 
+    public boolean isFileSelected() {
+        return isFileSelected.get();
+    }
+
+    public SimpleBooleanProperty isFileSelectedProperty() {
+        return isFileSelected;
+    }
+
+    public FocusCellProperty getCellInFocus() {
+        return cellInFocus;
     }
 
     public void setPrimaryStage(Stage primaryStage) {
@@ -96,7 +100,7 @@ public class AppController {
     }
 
 
-    private void setEffectiveValuesPoolProperty() {
+    private void  setEffectiveValuesPoolProperty() {
 
         Map<CoordinateGetters,CellGetters> map = engine.getSheetStatus().getActiveCells();
 
@@ -116,24 +120,33 @@ public class AppController {
 
     public void focusChanged(boolean newValue, Coordinate coordinate)
     {
-        if (newValue )
+        if (newValue)
         {
             Cell cell = engine.getSheetStatus().getCell(coordinate);
             cellInFocus.setCoordinate(coordinate.toString());
 
-            if(cell != null)
-            {
+            if (cell != null) {
                 cellInFocus.setOriginalValue(cell.getOriginalValue());
                 cellInFocus.setLastUpdateVersion(String.valueOf(cell.getVersion()));
-            }
-            else{
+            } else {
                 cellInFocus.setOriginalValue("");
                 cellInFocus.setLastUpdateVersion("");
             }
+
+
         }
     }
 
     public EffectiveValuesPoolPropertyReadOnly getEffectiveValuesPool() {
         return effectiveValuesPool;
+    }
+
+    public void changeColumnWidth(Integer newValue) {
+    }
+
+    public void changeRowHeight(Integer newValue) {
+    }
+
+    public void alignCells(Pos pos) {
     }
 }

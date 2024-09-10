@@ -2,7 +2,6 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
@@ -17,8 +16,6 @@
           <ColumnConstraints hgrow="NEVER" minWidth="10.0" prefWidth="200.0" />
         </columnConstraints>
         <rowConstraints>
-            <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="30.0" vgrow="NEVER" />
-          <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="30.0" vgrow="NEVER" />
           <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="30.0" vgrow="NEVER" />
           <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="30.0" vgrow="NEVER" />
             <RowConstraints minHeight="-Infinity" vgrow="ALWAYS" />
@@ -27,11 +24,9 @@
             <Insets />
          </opaqueInsets>
          <children>
-            <Button fx:id="buttonAddRange" mnemonicParsing="false" onAction="#addRangeAction" prefHeight="67.0" prefWidth="214.0" text="Add Range" GridPane.rowIndex="1" />
-            <Button fx:id="buttonDeleteRange" mnemonicParsing="false" onAction="#deleteRangeAction" prefHeight="67.0" prefWidth="214.0" text="Delete Range" GridPane.rowIndex="2" />
-            <Button fx:id="buttonShowRange" mnemonicParsing="false" onAction="#showRangeAction" prefHeight="67.0" prefWidth="214.0" text="Show Range" GridPane.rowIndex="3" />
-            <Label alignment="CENTER" prefHeight="18.0" prefWidth="238.0" text="Range Operations" wrapText="true" />
-            <TableView prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="4">
+            <Button fx:id="buttonAddRange" mnemonicParsing="false" onAction="#addRangeAction" prefHeight="67.0" prefWidth="214.0" text="Add Range" />
+            <Button fx:id="buttonDeleteRange" mnemonicParsing="false" onAction="#deleteRangeAction" prefHeight="67.0" prefWidth="214.0" text="Delete Range" GridPane.rowIndex="1" />
+            <TableView fx:id="tableViewActiveRanges" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="2">
               <columns>
                 <TableColumn fx:id="tableActiveRanges" prefWidth="199.0" text="Active Ranges" />
               </columns>
