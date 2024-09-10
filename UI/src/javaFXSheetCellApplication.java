@@ -1,3 +1,4 @@
+import app.AppController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -22,6 +23,7 @@ public class javaFXSheetCellApplication extends Application {
 
         stage.setTitle("Shticell");
         stage.setScene(scene);
+        ((AppController) fxmlLoader.getController()).setPrimaryStage(stage);
         stage.show();
     }
 }

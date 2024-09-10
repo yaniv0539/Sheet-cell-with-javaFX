@@ -2,6 +2,7 @@ package header;
 
 import app.AppController;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -9,7 +10,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.SplitMenuButton;
 import javafx.scene.control.TextField;
+import javafx.stage.FileChooser;
 import sheet.SheetController;
+
+import java.io.File;
 
 public class HeaderController {
 
@@ -48,6 +52,8 @@ public class HeaderController {
 
         @FXML
         private TextField textFieldVersionSelector;
+
+        private SimpleStringProperty selectedFileProperty;
 
         private AppController mainController;
 
@@ -121,7 +127,17 @@ public class HeaderController {
 
         @FXML
         public void buttonUploadXmlFileAction(ActionEvent event) {
-            mainController.uploadXml();
+                FileChooser fileChooser = new FileChooser();
+                fileChooser.setTitle("Select xml file");
+                fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("XML files", "*.xml"));
+                File selectedFile = fileChooser.showOpenDialog(mainController.getPrimaryStage());
+                if (selectedFile == null) {
+                        //popup error
+                        return;
+                }
+                selectedFileProperty = new SimpleStringProperty(selectedFile.getAbsolutePath());
+                textFieldFileName.textProperty().bind(selectedFileProperty);
+                mainController.uploadXml(selectedFileProperty.get());
         }
 
         @FXML
@@ -139,4 +155,7 @@ public class HeaderController {
 
         }
 
-    }
+        public String getSelectedFileProperty() {
+                return selectedFileProperty.get();
+        }
+}
