@@ -6,10 +6,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.SplitMenuButton;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.FileChooser;
 import sheet.SheetController;
 
@@ -172,5 +169,19 @@ public class HeaderController {
                 textFieldCellId.textProperty().bind(this.mainController.getCellInFocus().getCoordinate());
                 textFieldOrignalValue.textProperty().bindBidirectional(this.mainController.getCellInFocus().getOriginalValue());
                 textFieldLastUpdateInVersion.textProperty().bind(this.mainController.getCellInFocus().getLastUpdateVersion());
+        }
+
+        public void addMenuOptionToVersionSelction(String numberOfVersion) {
+
+                MenuItem menuItem = new MenuItem(numberOfVersion);
+
+                // Add an action listener to the MenuItem
+                menuItem.setOnAction(event -> {
+                        // Update the SplitMenuButton's text to show the selected option
+                        mainController.viewSheetVersion(numberOfVersion);
+                });
+
+                // Add the MenuItem to the SplitButton
+                splitMenuButtonSelectVersion.getItems().add(menuItem);
         }
 }

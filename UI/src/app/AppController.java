@@ -17,6 +17,7 @@ import modelUI.impl.EffectiveValuesPoolPropertyImpl;
 import modelUI.impl.FocusCellPropertyImpl;
 import ranges.RangesController;
 import sheet.SheetController;
+import sheet.api.SheetGetters;
 import sheet.cell.api.Cell;
 import sheet.cell.api.CellGetters;
 import sheet.coordinate.api.Coordinate;
@@ -89,8 +90,9 @@ public class AppController {
     {
         engine.readXMLInitFile(path);
         isFileSelected.set(true);
-        setEffectiveValuesPoolProperty();
+        setEffectiveValuesPoolProperty(engine.getSheetStatus());
         setSheet();
+        headerComponentController.addMenuOptionToVersionSelction(String.valueOf(engine.getVersionsManagerStatus().getVersions().size()));
     }
 
     private void setSheet() {
@@ -102,7 +104,7 @@ public class AppController {
     }
 
 
-    private void  setEffectiveValuesPoolProperty() {
+    private void  setEffectiveValuesPoolProperty(SheetGetters sheetToView) {
 
         Map<CoordinateGetters,CellGetters> map = engine.getSheetStatus().getActiveCells();
 
@@ -153,6 +155,17 @@ public class AppController {
 
     public void updateCell() {
         engine.updateCellStatus(cellInFocus.getCoordinate().get(), cellInFocus.getOriginalValue().get());
-        setEffectiveValuesPoolProperty();
+        setEffectiveValuesPoolProperty(engine.getSheetStatus());
+        //need to make in engine version manager, current version number.
+        headerComponentController.addMenuOptionToVersionSelction(String.valueOf(engine.getVersionsManagerStatus().getVersions().size()));
+
+    }
+
+    public void viewSheetVersion(String numberOfVersion) {
+        //TODO:need to change it to some toggle on/off for disable enable
+        //TODO: need to put a current version showing, and if we pick the newest version the button would not be disable.
+        isFileSelected.set(false);
+        headerComponentController.getSplitMenuButtonSelectVersion().setDisable(false);
+        setEffectiveValuesPoolProperty(engine.getVersionsManagerStatus().getVersion(Integer.parseInt(numberOfVersion)));
     }
 }
