@@ -184,4 +184,8 @@ public class HeaderController {
                 // Add the MenuItem to the SplitButton
                 splitMenuButtonSelectVersion.getItems().add(menuItem);
         }
+
+        public void clearVersionButton() {
+                splitMenuButtonSelectVersion.getItems().clear();
+        }
 }

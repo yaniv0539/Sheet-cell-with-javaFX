@@ -92,6 +92,7 @@ public class AppController {
         isFileSelected.set(true);
         setEffectiveValuesPoolProperty(engine.getSheetStatus());
         setSheet();
+        headerComponentController.clearVersionButton();
         headerComponentController.addMenuOptionToVersionSelction(String.valueOf(engine.getVersionsManagerStatus().getVersions().size()));
     }
 
@@ -106,10 +107,10 @@ public class AppController {
 
     private void  setEffectiveValuesPoolProperty(SheetGetters sheetToView) {
 
-        Map<CoordinateGetters,CellGetters> map = engine.getSheetStatus().getActiveCells();
+        Map<CoordinateGetters,CellGetters> map = sheetToView.getActiveCells();
 
-        for(int row = 0; row < engine.getSheetStatus().getLayout().getRows(); row++) {
-            for(int column = 0; column < engine.getSheetStatus().getLayout().getColumns(); column++) {
+        for(int row = 0; row < sheetToView.getLayout().getRows(); row++) {
+            for(int column = 0; column < sheetToView.getLayout().getColumns(); column++) {
               Coordinate coordinate = CoordinateFactory.createCoordinate(row,column);
               CellGetters cell = map.get(coordinate);
                 if(cell != null){
@@ -164,8 +165,9 @@ public class AppController {
     public void viewSheetVersion(String numberOfVersion) {
         //TODO:need to change it to some toggle on/off for disable enable
         //TODO: need to put a current version showing, and if we pick the newest version the button would not be disable.
+        //TODO: the disable make exeption.
         isFileSelected.set(false);
-        headerComponentController.getSplitMenuButtonSelectVersion().setDisable(false);
+        //headerComponentController.getSplitMenuButtonSelectVersion().setDisable(false);
         setEffectiveValuesPoolProperty(engine.getVersionsManagerStatus().getVersion(Integer.parseInt(numberOfVersion)));
     }
 }
