@@ -113,8 +113,7 @@ public class AppController {
     private void setSheet() {
         sheetComponentController = new SheetController();
         sheetComponentController.setMainController(this);
-        sheetComponent = sheetComponentController.getInitializedSheet(engine.getSheetStatus().getLayout().getRows(),
-                engine.getSheetStatus().getLayout().getColumns());
+        sheetComponent = sheetComponentController.getInitializedSheet(engine.getSheetStatus().getLayout());
         appBorderPane.setCenter(sheetComponent);
     }
 
@@ -188,14 +187,7 @@ public class AppController {
         //TODO: need to put a current version showing, and if we pick the newest version the button would not be disable.
         //TODO: the disable make exeption.
         currentSheet = engine.getVersionsManagerStatus().getVersion(Integer.parseInt(numberOfVersion));
-        if(Integer.parseInt(numberOfVersion) != engine.getVersionsManagerStatus().getVersions().size())
-        {
-            isEditableProperty.set(false);
-            headerComponentController.getSplitMenuButtonSelectVersion().setDisable(false);
-        }
-        else{
-            isEditableProperty.set(true);
-        }
+        isEditableProperty.set(Integer.parseInt(numberOfVersion) == engine.getVersionsManagerStatus().getVersions().size());
         setEffectiveValuesPoolProperty(currentSheet);
     }
 
