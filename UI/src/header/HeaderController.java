@@ -7,8 +7,8 @@ import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCombination;
 import javafx.stage.FileChooser;
-import sheet.SheetController;
 
 import java.io.File;
 
@@ -160,20 +160,21 @@ public class HeaderController {
         }
 
         public void init() {
-                SimpleBooleanProperty fileSelectedProperty = this.mainController.isFileSelectedProperty();
-                buttonUpdateCell.disableProperty().bind(fileSelectedProperty.not());
-                splitMenuButtonSelectVersion.disableProperty().bind(fileSelectedProperty.not());
-                textFieldOrignalValue.disableProperty().bind(fileSelectedProperty.not());
-                textFieldCellId.disableProperty().bind(fileSelectedProperty.not());
-                textFieldLastUpdateInVersion.disableProperty().bind(fileSelectedProperty.not());
+                SimpleBooleanProperty editableProperty = this.mainController.isEditableProperty();
+
+                buttonUpdateCell.disableProperty().bind(editableProperty.not());
+                splitMenuButtonSelectVersion.setDisable(true);
+                textFieldOrignalValue.disableProperty().bind(editableProperty.not());
+                textFieldCellId.disableProperty().bind(editableProperty.not());
+                textFieldLastUpdateInVersion.disableProperty().bind(editableProperty.not());
                 textFieldCellId.textProperty().bind(this.mainController.getCellInFocus().getCoordinate());
                 textFieldOrignalValue.textProperty().bindBidirectional(this.mainController.getCellInFocus().getOriginalValue());
                 textFieldLastUpdateInVersion.textProperty().bind(this.mainController.getCellInFocus().getLastUpdateVersion());
         }
 
-        public void addMenuOptionToVersionSelction(String numberOfVersion) {
+        public void addMenuOptionToVersionSelection(String numberOfVersion) {
 
-                MenuItem menuItem = new MenuItem(numberOfVersion);
+                MenuItem menuItem = new MenuItem(numberOfVersion + " (Editable)");
 
                 // Add an action listener to the MenuItem
                 menuItem.setOnAction(event -> {
@@ -181,7 +182,12 @@ public class HeaderController {
                         mainController.viewSheetVersion(numberOfVersion);
                 });
 
+                splitMenuButtonSelectVersion.getItems().forEach(item -> item.setText(item.getText().substring(0,1)));
                 // Add the MenuItem to the SplitButton
-                splitMenuButtonSelectVersion.getItems().add(menuItem);
+                splitMenuButtonSelectVersion.getItems().addFirst(menuItem);
+        }
+
+        public void clearVersionButton() {
+                splitMenuButtonSelectVersion.getItems().clear();
         }
 }
