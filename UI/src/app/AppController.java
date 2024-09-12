@@ -36,6 +36,7 @@ public class AppController {
     @FXML private ScrollPane rangesComponent;
     @FXML private RangesController rangesComponentController;
 
+    private SimpleBooleanProperty isEditableProperty; //this is the needed one for bind to buttons.except selctor version.
     private SimpleBooleanProperty isFileSelected;
     private ScrollPane sheetComponent;
     private SheetController sheetComponentController;
@@ -43,14 +44,16 @@ public class AppController {
 
 
     private FocusCellProperty cellInFocus;
+    private SheetGetters currentSheet;
     private EffectiveValuesPoolProperty effectiveValuesPool;
     private Engine engine;
 
     public AppController() {
-        engine = EngineImpl.create();
+        this.engine = EngineImpl.create();
         this.isFileSelected = new SimpleBooleanProperty(false);
+        this.isEditableProperty = new SimpleBooleanProperty(false);
         this.cellInFocus = new FocusCellPropertyImpl();
-        effectiveValuesPool = new EffectiveValuesPoolPropertyImpl();
+        this.effectiveValuesPool = new EffectiveValuesPoolPropertyImpl();
     }
 
     @FXML
@@ -89,11 +92,14 @@ public class AppController {
     public void uploadXml(String path)
     {
         engine.readXMLInitFile(path);
-        isFileSelected.set(true);
+        isFileSelected.set(true); //no need ALL will look on editable except version selector.
+        isEditableProperty.set(true);
+        headerComponentController.getSplitMenuButtonSelectVersion().setDisable(false);
         setEffectiveValuesPoolProperty(engine.getSheetStatus());
         setSheet();
+        this.currentSheet = engine.getSheetStatus();
         headerComponentController.clearVersionButton();
-        headerComponentController.addMenuOptionToVersionSelction(String.valueOf(engine.getVersionsManagerStatus().getVersions().size()));
+        headerComponentController.addMenuOptionToVersionSelection(String.valueOf(engine.getVersionsManagerStatus().getVersions().size()));
     }
 
     private void setSheet() {
@@ -126,7 +132,7 @@ public class AppController {
     public void focusChanged(boolean newValue, Coordinate coordinate) {
         if (newValue)
         {
-            Cell cell = engine.getSheetStatus().getCell(coordinate);
+            Cell cell = currentSheet.getCell(coordinate);
             cellInFocus.setCoordinate(coordinate.toString());
 
             if (cell != null) {
@@ -158,7 +164,7 @@ public class AppController {
         engine.updateCellStatus(cellInFocus.getCoordinate().get(), cellInFocus.getOriginalValue().get());
         setEffectiveValuesPoolProperty(engine.getSheetStatus());
         //need to make in engine version manager, current version number.
-        headerComponentController.addMenuOptionToVersionSelction(String.valueOf(engine.getVersionsManagerStatus().getVersions().size()));
+        headerComponentController.addMenuOptionToVersionSelection(String.valueOf(engine.getVersionsManagerStatus().getVersions().size()));
 
     }
 
@@ -166,8 +172,19 @@ public class AppController {
         //TODO:need to change it to some toggle on/off for disable enable
         //TODO: need to put a current version showing, and if we pick the newest version the button would not be disable.
         //TODO: the disable make exeption.
-        isFileSelected.set(false);
-        //headerComponentController.getSplitMenuButtonSelectVersion().setDisable(false);
-        setEffectiveValuesPoolProperty(engine.getVersionsManagerStatus().getVersion(Integer.parseInt(numberOfVersion)));
+        currentSheet = engine.getVersionsManagerStatus().getVersion(Integer.parseInt(numberOfVersion));
+        if(Integer.parseInt(numberOfVersion) != engine.getVersionsManagerStatus().getVersions().size())
+        {
+            isEditableProperty.set(false);
+            headerComponentController.getSplitMenuButtonSelectVersion().setDisable(false);
+        }
+        else{
+            isEditableProperty.set(true);
+        }
+        setEffectiveValuesPoolProperty(currentSheet);
+    }
+
+    public SimpleBooleanProperty isEditableProperty() {
+        return isEditableProperty;
     }
 }
