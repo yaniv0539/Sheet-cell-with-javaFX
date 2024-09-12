@@ -1,8 +1,6 @@
 package sheet;
 
 import app.AppController;
-import engine.api.Engine;
-import javafx.beans.property.StringProperty;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
 import javafx.scene.control.ScrollPane;
@@ -10,14 +8,9 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import modelUI.api.EffectiveValuesPoolPropertyReadOnly;
-import sheet.api.SheetGetters;
-import sheet.cell.api.CellGetters;
 import sheet.coordinate.api.Coordinate;
 import sheet.coordinate.impl.CoordinateFactory;
-import sheet.coordinate.impl.CoordinateImpl;
-
-import java.util.ArrayList;
-import java.util.List;
+import sheet.layout.api.LayoutGetters;
 
 public class SheetController {
 
@@ -35,17 +28,17 @@ public class SheetController {
         this.mainController = mainController;
     }
 
-    public ScrollPane getInitializedSheet(int rows, int columns) {
+    public ScrollPane getInitializedSheet(LayoutGetters layout) {
         //TODO:SPLIT INTO SMALLER FUNCTIONS, JUST FOR FLOW.
 
-        setLayoutGridPane(rows,columns);
+        setLayoutGridPane(layout);
         //until here set the grid.
         setBindsTo();
         setScrollPane();
         return scrollPane;
     }
 
-    private void setLayoutGridPane(int rows, int columns) {
+    private void setLayoutGridPane(LayoutGetters layout) {
 
         // Create a GridPane
         gridPane.setGridLinesVisible(true);  // Enable grid lines for visualization
@@ -54,7 +47,7 @@ public class SheetController {
         //cellsValue = new StringProperty[rows + 1][columns + 1];
 
         // Add column constraints to match FXML configuration
-        for (int col = 0; col <= columns; col++) {
+        for (int col = 0; col <= layout.getColumns(); col++) {
 
             ColumnConstraints columnConstraints = new ColumnConstraints();
             if (col == 0) {
@@ -63,15 +56,15 @@ public class SheetController {
                 columnConstraints.setPrefWidth(30);  // First column for row numbers
                 columnConstraints.setHgrow(Priority.NEVER);  // No horizontal grow
             } else {
-                columnConstraints.setMinWidth(70);
-                columnConstraints.setPrefWidth(70);  // Other columns
-                columnConstraints.setHgrow(Priority.SOMETIMES);  // Allow horizontal grow
+                columnConstraints.setMinWidth(layout.getSize().getWidth());
+                columnConstraints.setPrefWidth(layout.getSize().getWidth());  // Other columns
+                columnConstraints.setHgrow(Priority.NEVER);  // Allow horizontal grow
             }
             gridPane.getColumnConstraints().add(columnConstraints);
         }
 
         // Add row constraints to match FXML configuration
-        for (int row = 0; row <= rows; row++) {
+        for (int row = 0; row <= layout.getRows(); row++) {
             RowConstraints rowConstraints = new RowConstraints();
             if (row == 0) {
                 rowConstraints.setMinHeight(30);
@@ -79,9 +72,9 @@ public class SheetController {
                 rowConstraints.setPrefHeight(30);
                 rowConstraints.setVgrow(Priority.NEVER);  // No horizontal grow
             } else {
-                rowConstraints.setMinHeight(30);
-                rowConstraints.setPrefHeight(30);  // Set preferred height for rows
-                rowConstraints.setVgrow(Priority.SOMETIMES);  // Allow vertical grow
+                rowConstraints.setMinHeight(layout.getSize().getHeight());
+                rowConstraints.setPrefHeight(layout.getSize().getHeight());  // Set preferred height for rows
+                rowConstraints.setVgrow(Priority.NEVER);  // Allow vertical grow
             }
             gridPane.getRowConstraints().add(rowConstraints);
         }
