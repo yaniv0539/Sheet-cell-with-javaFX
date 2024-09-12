@@ -1,13 +1,19 @@
 package modelUI.impl;
 
+import javafx.beans.property.ListProperty;
+import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import modelUI.api.FocusCellProperty;
-import modelUI.api.FocusCellPropertyReadOnly;
-import modelUI.api.FocusCellPropertyWriteOnly;
+import sheet.coordinate.api.Coordinate;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class FocusCellPropertyImpl implements FocusCellProperty {
 
@@ -15,14 +21,16 @@ public class FocusCellPropertyImpl implements FocusCellProperty {
     public StringProperty originalValue;
     public StringProperty effectiveValue;
     public StringProperty lastUpdateVersion;
-    //depandeOn
-    //influenceOn
+    private ObservableList<Coordinate> dependenceOn;
+    private ObservableList<Coordinate> influenceOn;
 
     public FocusCellPropertyImpl() {
         coordinate = new SimpleStringProperty("");
         originalValue = new SimpleStringProperty("");
         effectiveValue = new SimpleStringProperty("");
         lastUpdateVersion = new SimpleStringProperty("");
+        dependenceOn = FXCollections.observableArrayList();
+        influenceOn = FXCollections.observableArrayList();
     }
 
     @Override
@@ -46,13 +54,13 @@ public class FocusCellPropertyImpl implements FocusCellProperty {
     }
 
     @Override
-    public Collection<String> getDependOn() {
-        return List.of();
+    public ObservableList<Coordinate> getDependOn() {
+        return dependenceOn;
     }
 
     @Override
-    public Collection<String> getInfluenceOn() {
-        return List.of();
+    public ObservableList<Coordinate> getInfluenceOn() {
+        return influenceOn;
     }
 
     @Override
@@ -75,11 +83,14 @@ public class FocusCellPropertyImpl implements FocusCellProperty {
     }
 
     @Override
-    public void setDependOn(Collection<String> dependOn) {
-
+    public void setDependOn(Collection<Coordinate> dependOn) {
+        this.dependenceOn.clear();
+        this.dependenceOn.addAll(dependOn);
     }
     @Override
-    public void setInfluenceOn(Collection<String> influence) {
+    public void setInfluenceOn(Collection<Coordinate> influenceOn) {
+        this.influenceOn.clear();
+        this.influenceOn.addAll(influenceOn);
 
     }
 }

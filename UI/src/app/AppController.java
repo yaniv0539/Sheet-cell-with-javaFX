@@ -5,6 +5,7 @@ import engine.api.Engine;
 import engine.impl.EngineImpl;
 import header.HeaderController;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.ScrollPane;
@@ -24,7 +25,10 @@ import sheet.coordinate.api.Coordinate;
 import sheet.coordinate.api.CoordinateGetters;
 import sheet.coordinate.impl.CoordinateFactory;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class AppController {
 
@@ -66,6 +70,10 @@ public class AppController {
             headerComponentController.init();
             commandsComponentController.init();
             rangesComponentController.init();
+
+            //cell in focus init
+            cellInFocus.getDependOn().addListener((ListChangeListener<Coordinate>) change -> sheetComponentController.changeColorDependedCoordinate(change));
+            cellInFocus.getInfluenceOn().addListener((ListChangeListener<Coordinate>) change -> sheetComponentController.changeColorInfluenceCoordinate(change));
         }
     }
 
@@ -129,6 +137,7 @@ public class AppController {
     }
 
     public void focusChanged(boolean newValue, Coordinate coordinate) {
+
         if (newValue)
         {
             Cell cell = currentSheet.getCell(coordinate);
@@ -137,9 +146,17 @@ public class AppController {
             if (cell != null) {
                 cellInFocus.setOriginalValue(cell.getOriginalValue());
                 cellInFocus.setLastUpdateVersion(String.valueOf(cell.getVersion()));
+                cellInFocus.setDependOn(cell.getInfluenceFrom().stream()
+                        .map(CellGetters::getCoordinate)
+                        .collect(Collectors.toSet()));
+                cellInFocus.setInfluenceOn(cell.getInfluenceOn().stream()
+                        .map(CellGetters::getCoordinate)
+                        .collect(Collectors.toSet()));
             } else {
                 cellInFocus.setOriginalValue("");
                 cellInFocus.setLastUpdateVersion("");
+                cellInFocus.setDependOn(new HashSet<>());
+                cellInFocus.setInfluenceOn(new HashSet<>());
             }
         }
     }
