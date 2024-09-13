@@ -9,7 +9,9 @@ import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.Background;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import modelUI.api.EffectiveValuesPoolProperty;
 import modelUI.api.EffectiveValuesPoolPropertyReadOnly;
@@ -25,7 +27,6 @@ import sheet.coordinate.api.Coordinate;
 import sheet.coordinate.api.CoordinateGetters;
 import sheet.coordinate.impl.CoordinateFactory;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -40,8 +41,9 @@ public class AppController {
     @FXML private ScrollPane rangesComponent;
     @FXML private RangesController rangesComponentController;
 
-    private SimpleBooleanProperty isEditableProperty; //this is the needed one for bind to buttons.except selctor version.
-    private SimpleBooleanProperty isFileSelected;
+    private SimpleBooleanProperty showCommands;
+    private SimpleBooleanProperty showRanges;
+    private SimpleBooleanProperty showHeaders;
     private ScrollPane sheetComponent;
     private SheetController sheetComponentController;
     private Stage primaryStage;
@@ -54,8 +56,9 @@ public class AppController {
 
     public AppController() {
         this.engine = EngineImpl.create();
-        this.isFileSelected = new SimpleBooleanProperty(false);
-        this.isEditableProperty = new SimpleBooleanProperty(false);
+        this.showHeaders = new SimpleBooleanProperty(false);
+        this.showRanges = new SimpleBooleanProperty(false);
+        this.showCommands = new SimpleBooleanProperty(false);
         this.cellInFocus = new FocusCellPropertyImpl();
         this.effectiveValuesPool = new EffectiveValuesPoolPropertyImpl();
     }
@@ -77,12 +80,16 @@ public class AppController {
         }
     }
 
-    public boolean isFileSelected() {
-        return isFileSelected.get();
+    public SimpleBooleanProperty showCommandsProperty() {
+        return showCommands;
     }
 
-    public SimpleBooleanProperty isFileSelectedProperty() {
-        return isFileSelected;
+    public SimpleBooleanProperty showRangesProperty() {
+        return showRanges;
+    }
+
+    public SimpleBooleanProperty showHeadersProperty() {
+        return showHeaders;
     }
 
     public FocusCellProperty getCellInFocus() {
@@ -100,8 +107,8 @@ public class AppController {
     public void uploadXml(String path)
     {
         engine.readXMLInitFile(path);
-        isFileSelected.set(true); //no need ALL will look on editable except version selector.
-        isEditableProperty.set(true);
+        showHeaders.set(true);
+        showRanges.set(true);
         headerComponentController.getSplitMenuButtonSelectVersion().setDisable(false);
         setEffectiveValuesPoolProperty(engine.getSheetStatus());
         setSheet();
@@ -138,6 +145,8 @@ public class AppController {
 
     public void focusChanged(boolean newValue, Coordinate coordinate) {
 
+        showCommands.set(currentSheet.getVersion() == engine.getVersionsManagerStatus().getVersions().size());
+
         if (newValue)
         {
             Cell cell = currentSheet.getCell(coordinate);
@@ -165,15 +174,6 @@ public class AppController {
         return effectiveValuesPool;
     }
 
-    public void changeColumnWidth(Integer newValue) {
-    }
-
-    public void changeRowHeight(Integer newValue) {
-    }
-
-    public void alignCells(Pos pos) {
-    }
-
     public void updateCell() {
         engine.updateCellStatus(cellInFocus.getCoordinate().get(), cellInFocus.getOriginalValue().get());
         setEffectiveValuesPoolProperty(engine.getSheetStatus());
@@ -187,11 +187,60 @@ public class AppController {
         //TODO: need to put a current version showing, and if we pick the newest version the button would not be disable.
         //TODO: the disable make exeption.
         currentSheet = engine.getVersionsManagerStatus().getVersion(Integer.parseInt(numberOfVersion));
-        isEditableProperty.set(Integer.parseInt(numberOfVersion) == engine.getVersionsManagerStatus().getVersions().size());
+        showCommands.set(Integer.parseInt(numberOfVersion) == engine.getVersionsManagerStatus().getVersions().size());
+        showRanges.set(Integer.parseInt(numberOfVersion) == engine.getVersionsManagerStatus().getVersions().size());
+        showHeaders.set(Integer.parseInt(numberOfVersion) == engine.getVersionsManagerStatus().getVersions().size());
         setEffectiveValuesPoolProperty(currentSheet);
     }
 
-    public SimpleBooleanProperty isEditableProperty() {
-        return isEditableProperty;
+    public void changeCommandsColumnWidth(double prefWidth) {
+        commandsComponentController.changeColumnWidth((int) prefWidth);
     }
+
+    public void changeCommandsRowHeight(double prefHeight) {
+        commandsComponentController.changeRowHeight((int) prefHeight);
+    }
+
+    public void changeCommandsColumnAlignment(Pos alignment) {
+        commandsComponentController.changeColumnAlignment(alignment);
+    }
+
+    public void changeCommandsCellBackgroundColor(Background background) {
+//        commandsComponentController.changeCellBackgroundColor()
+    }
+
+    public void changeSheetColumnWidth(int prefWidth) {
+        int column =
+                CoordinateFactory.parseColumnToInt(
+                        CoordinateFactory.extractColumn(
+                                cellInFocus
+                                        .getCoordinate()
+                                        .get()));
+        sheetComponentController.changeColumnWidth(column, prefWidth);
+    }
+
+    public void changeSheetRowHeight(int prefHeight) {
+        int row =
+                CoordinateFactory.extractRow(
+                        cellInFocus
+                                .getCoordinate()
+                                .get());
+        sheetComponentController.changeRowHeight(row, prefHeight);
+    }
+
+    public void alignCells(Pos pos) {
+        int column =
+                CoordinateFactory.parseColumnToInt(
+                        CoordinateFactory.extractColumn(
+                                cellInFocus
+                                        .getCoordinate()
+                                        .get()));
+        sheetComponentController.changeColumnAlignment(column, pos);
+    }
+
+    public void changeSheetCellBackgroundColor(Color color) {
+        sheetComponentController.changeCellBackgroundColor(color);
+    }
+
+
 }

@@ -160,13 +160,13 @@ public class HeaderController {
         }
 
         public void init() {
-                SimpleBooleanProperty editableProperty = this.mainController.isEditableProperty();
+                SimpleBooleanProperty showHeadersProperty = this.mainController.showHeadersProperty();
 
-                buttonUpdateCell.disableProperty().bind(editableProperty.not());
+                buttonUpdateCell.disableProperty().bind(showHeadersProperty.not());
                 splitMenuButtonSelectVersion.setDisable(true);
-                textFieldOrignalValue.disableProperty().bind(editableProperty.not());
-                textFieldCellId.disableProperty().bind(editableProperty.not());
-                textFieldLastUpdateInVersion.disableProperty().bind(editableProperty.not());
+                textFieldOrignalValue.disableProperty().bind(showHeadersProperty.not());
+                textFieldCellId.disableProperty().bind(showHeadersProperty.not());
+                textFieldLastUpdateInVersion.disableProperty().bind(showHeadersProperty.not());
                 textFieldCellId.textProperty().bind(this.mainController.getCellInFocus().getCoordinate());
                 textFieldOrignalValue.textProperty().bindBidirectional(this.mainController.getCellInFocus().getOriginalValue());
                 textFieldLastUpdateInVersion.textProperty().bind(this.mainController.getCellInFocus().getLastUpdateVersion());

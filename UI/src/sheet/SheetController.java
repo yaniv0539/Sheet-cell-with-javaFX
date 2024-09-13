@@ -1,22 +1,19 @@
 package sheet;
 
 import app.AppController;
-import engine.api.Engine;
-import javafx.beans.property.StringProperty;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.HPos;
+import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import modelUI.api.EffectiveValuesPoolPropertyReadOnly;
 import sheet.coordinate.api.Coordinate;
 import sheet.coordinate.impl.CoordinateFactory;
-import sheet.coordinate.impl.CoordinateImpl;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 import sheet.layout.api.LayoutGetters;
@@ -117,16 +114,22 @@ public class SheetController {
                         Coordinate coordinate = CoordinateFactory.createCoordinate(row-1,col-1);
                         textField.textProperty().bind(dataToView.getEffectiveValuePropertyAt(coordinate));
                         //add listener to focus, need to change.
+                        int finalCol = col;
+                        int finalRow = row;
                         textField.focusedProperty().addListener((observable, oldValue, newValue) -> {
                             mainController.focusChanged(newValue, coordinate);
+                            mainController.changeCommandsColumnWidth(gridPane.getColumnConstraints().get(finalCol).getPrefWidth());
+                            mainController.changeCommandsRowHeight(gridPane.getRowConstraints().get(finalRow).getPrefHeight());
+                            mainController.changeCommandsColumnAlignment(textField.getAlignment());
+//                            mainController.changeCommandsCellBackgroundColor(textField.set());
                         });
                     }
                 }
                 // Add TextField to the GridPane
                 gridPane.add(textField, col, row); //gridPane is public just for flow.
                 // Set alignment for grid children if necessary
-                GridPane.setHgrow(textField, Priority.ALWAYS);
-                GridPane.setVgrow(textField, Priority.ALWAYS);
+                GridPane.setHgrow(textField, Priority.NEVER);
+                GridPane.setVgrow(textField, Priority.NEVER);
                 GridPane.setHalignment(textField, HPos.CENTER);
                 GridPane.setValignment(textField, VPos.CENTER);
             }
@@ -194,6 +197,32 @@ public class SheetController {
             }
         }
         return null;
+    }
+
+    public void changeColumnWidth(int column, int prefWidth) {
+        gridPane.getColumnConstraints().get(column).setPrefWidth(prefWidth);
+        gridPane.getColumnConstraints().get(column).setMinWidth(prefWidth);
+        gridPane.getColumnConstraints().get(column).setMaxWidth(prefWidth);
+    }
+
+    public void changeRowHeight(int row, int prefHeight) {
+        gridPane.getRowConstraints().get(row).setPrefHeight(prefHeight);
+        gridPane.getRowConstraints().get(row).setMinHeight(prefHeight);
+        gridPane.getRowConstraints().get(row).setMaxHeight(prefHeight);
+    }
+
+    public void changeColumnAlignment(int column, Pos pos) {
+        gridPane.getChildren().forEach(node -> {
+            Integer colIndex = GridPane.getColumnIndex(node);
+            Integer rowIndex = GridPane.getRowIndex(node);
+            if (node instanceof TextField && colIndex == column && rowIndex != 0) {
+                ((TextField) node).setAlignment(pos);
+            }
+        });
+    }
+
+    public void changeCellBackgroundColor(Color color) {
+
     }
 }
 

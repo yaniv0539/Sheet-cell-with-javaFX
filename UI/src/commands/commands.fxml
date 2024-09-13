@@ -46,8 +46,8 @@
                   <Label text="Background Color" GridPane.rowIndex="5" />
                   <Label text="Text Color" GridPane.rowIndex="6" />
                   <Label text="Alignment" GridPane.rowIndex="2" />
-                  <ColorPicker fx:id="colorPickerBackgroundColor" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-                  <ColorPicker fx:id="colorPickerTextColor" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                  <ColorPicker fx:id="colorPickerBackgroundColor" maxWidth="1.7976931348623157E308" onAction="#backgroundColorAction" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                  <ColorPicker fx:id="colorPickerTextColor" maxWidth="1.7976931348623157E308" onAction="#textColorAction" GridPane.columnIndex="1" GridPane.rowIndex="6" />
                   <ComboBox fx:id="comboBoxAlignment" onAction="#alignmentAction" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                   <Button fx:id="buttonSort" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#sortAction" text="Sort" GridPane.rowIndex="3" />
                   <Button fx:id="buttonFilter" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#filterAction" text="Filter" GridPane.columnIndex="1" GridPane.rowIndex="3" />
