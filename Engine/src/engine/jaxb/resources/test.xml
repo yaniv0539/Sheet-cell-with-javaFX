@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <STL-Sheet name="beginner" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="shtisel-v2.xsd">
 	<STL-Layout rows="10" columns="10">
-		<STL-Size column-width-units="50" rows-height-units="15"/>
+		<STL-Size column-width-units="100" rows-height-units="100"/>
 	</STL-Layout>
 	<STL-Ranges>
 		<STL-Range name="effective-grades">

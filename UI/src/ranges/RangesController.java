@@ -72,9 +72,9 @@ public class RangesController {
     }
 
     public void init() {
-        BooleanProperty isSelectedProperty = this.mainController.isFileSelectedProperty();
-        buttonAddRange.disableProperty().bind(isSelectedProperty.not());
-        buttonDeleteRange.disableProperty().bind(isSelectedProperty.not());
-        tableViewActiveRanges.disableProperty().bind(isSelectedProperty.not());
+        BooleanProperty showRangesProperty = this.mainController.showRangesProperty();
+        buttonAddRange.disableProperty().bind(showRangesProperty.not());
+        buttonDeleteRange.disableProperty().bind(showRangesProperty.not());
+        tableViewActiveRanges.disableProperty().bind(showRangesProperty.not());
     }
 }

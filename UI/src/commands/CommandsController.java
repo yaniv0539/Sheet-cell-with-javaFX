@@ -11,6 +11,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.paint.Color;
 
 
 public class CommandsController {
@@ -35,7 +36,7 @@ public class CommandsController {
     private ColorPicker colorPickerTextColor;
 
     @FXML
-    private ComboBox<String> comboBoxAlignment;
+    private ComboBox<Pos> comboBoxAlignment;
 
     @FXML
     private Spinner<Integer> spinnerHeight;
@@ -63,7 +64,7 @@ public class CommandsController {
         return colorPickerTextColor;
     }
 
-    public ComboBox<String> getComboBoxAlignment() {
+    public ComboBox<Pos> getComboBoxAlignment() {
         return comboBoxAlignment;
     }
 
@@ -105,41 +106,6 @@ public class CommandsController {
         this.mainController = mainController;
     }
 
-    public void commandsInitializeBinding() {
-
-        // Set the alignment options in the combo box and initiate it to Left as default.
-        ObservableList<String> columnAlignmentOptions = FXCollections.observableArrayList("Left", "Center", "Right");
-        comboBoxAlignment.setItems(columnAlignmentOptions);
-        comboBoxAlignment.getSelectionModel().selectFirst();
-
-        // column width picker
-        spinnerWidth
-                .valueProperty()
-                .addListener((observable, oldValue, newValue) -> mainController.changeColumnWidth(newValue));
-
-        SpinnerValueFactory<Integer> widthValueFactory =
-                new SpinnerValueFactory.IntegerSpinnerValueFactory(50, 200, 100, 1);
-        spinnerWidth.setValueFactory(widthValueFactory);
-
-        // row height picker
-        spinnerHeight
-                .valueProperty()
-                .addListener((observable, oldValue, newValue) -> mainController.changeRowHeight(newValue));
-
-        SpinnerValueFactory<Integer> heightValueFactory =
-                new SpinnerValueFactory.IntegerSpinnerValueFactory(30, 100, 40, 1);
-        spinnerHeight.setValueFactory(heightValueFactory);
-
-        // set initial values
-        Platform.runLater(() -> {
-            comboBoxAlignment.getSelectionModel().selectFirst();
-
-            spinnerWidth.getValueFactory().setValue(100);
-
-            spinnerHeight.getValueFactory().setValue(40);
-        });
-    }
-
     @FXML
     void alignmentAction(ActionEvent event) {
         int selectedIndex = comboBoxAlignment.getSelectionModel().getSelectedIndex();
@@ -157,6 +123,11 @@ public class CommandsController {
     }
 
     @FXML
+    void backgroundColorAction(ActionEvent event) {
+        mainController.changeSheetCellBackgroundColor(colorPickerBackgroundColor.getValue());
+    }
+
+    @FXML
     void filterAction(ActionEvent event) {
 
     }
@@ -171,15 +142,66 @@ public class CommandsController {
 
     }
 
+    @FXML
+    void textColorAction(ActionEvent event) {
+
+    }
+
     public void init() {
-        BooleanProperty isSelectedProperty = this.mainController.isFileSelectedProperty();
-        buttonResetToDefault.disableProperty().bind(isSelectedProperty.not());
-        buttonSort.disableProperty().bind(isSelectedProperty.not());
-        buttonFilter.disableProperty().bind(isSelectedProperty.not());
-        spinnerWidth.disableProperty().bind(isSelectedProperty.not());
-        spinnerHeight.disableProperty().bind(isSelectedProperty.not());
-        comboBoxAlignment.disableProperty().bind(isSelectedProperty.not());
-        colorPickerBackgroundColor.disableProperty().bind(isSelectedProperty.not());
-        colorPickerTextColor.disableProperty().bind(isSelectedProperty.not());
+        BooleanProperty showCommandsProperty = this.mainController.showCommandsProperty();
+        buttonResetToDefault.disableProperty().bind(showCommandsProperty.not());
+        buttonSort.disableProperty().bind(showCommandsProperty.not());
+        buttonFilter.disableProperty().bind(showCommandsProperty.not());
+        spinnerWidth.disableProperty().bind(showCommandsProperty.not());
+        spinnerHeight.disableProperty().bind(showCommandsProperty.not());
+        comboBoxAlignment.disableProperty().bind(showCommandsProperty.not());
+        colorPickerBackgroundColor.disableProperty().bind(showCommandsProperty.not());
+        colorPickerTextColor.disableProperty().bind(showCommandsProperty.not());
+
+        // Set the alignment options in the combo box and initiate it to Left as default.
+        ObservableList<Pos> columnAlignmentOptions = FXCollections.observableArrayList(Pos.CENTER_LEFT, Pos.CENTER, Pos.CENTER_RIGHT);
+        comboBoxAlignment.setItems(columnAlignmentOptions);
+        comboBoxAlignment.getSelectionModel().selectFirst();
+
+        // column width picker
+        SpinnerValueFactory<Integer> widthValueFactory =
+                new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 1000, 0, 1);
+        spinnerWidth.setValueFactory(widthValueFactory);
+
+        spinnerWidth
+                .valueProperty()
+                .addListener((observable, oldValue, newValue) -> mainController.changeSheetColumnWidth(newValue));
+
+
+        // row height picker
+        SpinnerValueFactory<Integer> heightValueFactory =
+                new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 1000, 0, 1);
+        spinnerHeight.setValueFactory(heightValueFactory);
+
+        spinnerHeight
+                .valueProperty()
+                .addListener((observable, oldValue, newValue) -> mainController.changeSheetRowHeight(newValue));
+
+
+//        // set initial values
+//        Platform.runLater(() -> {
+//            comboBoxAlignment.getSelectionModel().selectFirst();
+//
+//            spinnerWidth.getValueFactory().setValue(100);
+//
+//            spinnerHeight.getValueFactory().setValue(40);
+//        });
+    }
+
+    public void changeColumnWidth(int prefWidth) {
+        spinnerWidth.getValueFactory().setValue(prefWidth);
+    }
+
+    public void changeRowHeight(int prefHeight) {
+        spinnerHeight.getValueFactory().setValue(prefHeight);
+    }
+
+    public void changeColumnAlignment(Pos alignment) {
+        comboBoxAlignment.getSelectionModel().select(alignment);
     }
 }
