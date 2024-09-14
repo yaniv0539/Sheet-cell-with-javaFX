@@ -4,6 +4,7 @@ import expression.api.Data;
 import expression.api.DataType;
 import expression.impl.DataImpl;
 import expression.impl.Ref;
+import expression.impl.Sum;
 import expression.parser.OrignalValueUtilis;
 import sheet.api.Sheet;
 import sheet.cell.api.Cell;
@@ -122,6 +123,7 @@ public class SheetImpl implements Sheet, Serializable {
     public void setCell(Coordinate target, String originalValue) {
 
          Ref.sheetView = this;
+        Sum.sheetView = this;
 
          isCoordinateInBoundaries(target);
          Cell updatedCell = CellImpl.create(target, version, originalValue);
@@ -359,6 +361,20 @@ public class SheetImpl implements Sheet, Serializable {
             c.setVersion(version);
 
         }
+    }
+
+    @Override
+    public Range getRangeByName(String name) {
+
+        Range theRange;
+
+        try{
+            theRange = ranges.stream().filter(range -> range.getName().equals(name)).findFirst().get();
+        }catch (NoSuchElementException exception) {
+            theRange = null;
+        }
+
+        return theRange;
     }
 
 }
