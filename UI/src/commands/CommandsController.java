@@ -11,6 +11,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.layout.Background;
 import javafx.scene.paint.Color;
 
 
@@ -134,7 +135,7 @@ public class CommandsController {
 
     @FXML
     void resetToDefaultAction(ActionEvent event) {
-
+        mainController.resetCellsToDefault();
     }
 
     @FXML
@@ -182,6 +183,13 @@ public class CommandsController {
                 .valueProperty()
                 .addListener((observable, oldValue, newValue) -> mainController.changeSheetRowHeight(newValue));
 
+        colorPickerBackgroundColor
+                .valueProperty()
+                .addListener((observable, oldValue, newValue) -> mainController.changeSheetCellBackgroundColor(newValue));
+
+        colorPickerTextColor
+                .valueProperty()
+                .addListener((observableValue, oldValue, newValue) -> mainController.changeSheetTextColor(newValue));
 
 //        // set initial values
 //        Platform.runLater(() -> {
@@ -203,5 +211,13 @@ public class CommandsController {
 
     public void changeColumnAlignment(Pos alignment) {
         comboBoxAlignment.getSelectionModel().select(alignment);
+    }
+
+    public void changeCellBackgroundColor(Color color) {
+        colorPickerBackgroundColor.setValue(color);
+    }
+
+    public void changeCellTextColor(Color color) {
+        colorPickerTextColor.setValue(color);
     }
 }
