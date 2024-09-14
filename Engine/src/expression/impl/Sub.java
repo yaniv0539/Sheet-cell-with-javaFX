@@ -15,7 +15,7 @@ public class Sub extends ExpressionImpl {
         this.left = left;
         this.right = right;
         setDataType(DataType.STRING);
-        isValidArgs(source, left, right);
+       //isValidArgs(source, left, right);
     }
 
     @Override

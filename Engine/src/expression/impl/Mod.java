@@ -11,7 +11,7 @@ public class Mod extends BinaryExpression {
     public Mod(Expression left, Expression right) {
         super(left, right);
         setDataType(DataType.NUMERIC);
-        isValidArgs(left, right);
+        //isValidArgs(left, right);
     }
 
     @Override

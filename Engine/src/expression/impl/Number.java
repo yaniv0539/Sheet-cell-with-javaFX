@@ -10,7 +10,7 @@ public class Number extends ExpressionImpl {
     public Number(double value) {
         this.value = value;
         setDataType(DataType.NUMERIC);
-        isValidArgs(value);
+        //isValidArgs(value);
     }
 
     public double getValue() {

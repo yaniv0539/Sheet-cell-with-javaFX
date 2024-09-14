@@ -11,7 +11,7 @@ public class Pow extends BinaryExpression {
     public Pow(Expression left, Expression right) {
         super(left, right);
         setDataType(DataType.NUMERIC);
-        isValidArgs(left, right);
+        //isValidArgs(left, right);
     }
 
     @Override

@@ -10,7 +10,7 @@ public class BooleanExpression extends ExpressionImpl {
     public BooleanExpression(boolean value) {
         this.value = value;
         setDataType(DataType.BOOLEAN);
-        isValidArgs(value);
+        //isValidArgs(value);
     }
 
 
