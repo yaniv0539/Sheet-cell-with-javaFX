@@ -10,24 +10,22 @@ import java.util.List;
 
 public enum Operation {
 
-
     PLUS(BinaryExpression.numberOfArgs)
         {
-            @Override
-           public Expression create(Object... args)
-            {
-                return (Expression) createInstance(Plus.class, getNumberOfArguments(),args);
-            }
-        },
-
-    MINUS(BinaryExpression.numberOfArgs)
+        @Override
+        public Expression create(Object... args)
         {
-            @Override
-            public Expression create(Object... args)
-            {
-                return (Expression) createInstance(Minus.class, getNumberOfArguments(),args);
-            }
-        },
+            return (Expression) createInstance(Plus.class, getNumberOfArguments(),args);
+        }
+    },
+
+    MINUS(BinaryExpression.numberOfArgs) {
+        @Override
+        public Expression create(Object... args)
+        {
+            return (Expression) createInstance(Minus.class, getNumberOfArguments(),args);
+        }
+    },
 
     TIMES(BinaryExpression.numberOfArgs){
         @Override
@@ -76,6 +74,48 @@ public enum Operation {
         @Override
         public Expression create(Object... args) {
             return (Expression) createInstance(Ref.class, getNumberOfArguments(),args);
+        }
+    },
+    EQUAL(BinaryExpression.numberOfArgs){
+        @Override
+        public Expression create(Object... args) {
+            return (Expression) createInstance(Equal.class, getNumberOfArguments(),args);
+        }
+    },
+    NOT(UnaryExpression.numberOfArgs){
+        @Override
+        public Expression create(Object... args) {
+            return (Expression) createInstance(Not.class, getNumberOfArguments(),args);
+        }
+    },
+    OR(BinaryExpression.numberOfArgs){
+        @Override
+        public Expression create(Object... args) {
+            return (Expression) createInstance(Or.class, getNumberOfArguments(),args);
+        }
+    },
+    AND(BinaryExpression.numberOfArgs){
+        @Override
+        public Expression create(Object... args) {
+            return (Expression) createInstance(And.class, getNumberOfArguments(),args);
+        }
+    },
+    BIGGER(BinaryExpression.numberOfArgs){
+        @Override
+        public Expression create(Object... args) {
+            return (Expression) createInstance(Bigger.class, getNumberOfArguments(),args);
+        }
+    },
+    LESS(BinaryExpression.numberOfArgs){
+        @Override
+        public Expression create(Object... args) {
+            return (Expression) createInstance(Less.class, getNumberOfArguments(),args);
+        }
+    },
+    IF(3){
+        @Override
+        public Expression create(Object... args) {
+            return (Expression) createInstance(If.class, getNumberOfArguments(),args);
         }
     };
 

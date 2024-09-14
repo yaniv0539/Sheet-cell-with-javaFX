@@ -14,24 +14,22 @@ public class If extends ExpressionImpl {
         this.condition = condition;
         this.thenExpression = thenExpression;
         this.elseExpression = elseExpression;
-
+        setDataType(this.evaluate().getType());
     }
 
     @Override
     public Data evaluate() {
+
         Data data;
 
         if(condition.getType() == DataType.BOOLEAN && thenExpression.getType() == elseExpression.getType()) {
+            DataType type = thenExpression.getType();
 
-            if((Boolean)condition.evaluate().getValue()) {
-
-            }
-            else {
-
-            }
+            data = (Boolean) condition.evaluate().getValue() ? new DataImpl(thenExpression.getType(), type.cast(thenExpression.evaluate().getValue()))
+                    : new DataImpl(elseExpression.getType(), type.cast(elseExpression.evaluate().getValue()));
         }
         else {
-
+            data = new DataImpl(DataType.UNKNOWN,DataType.UNKNOWN);
         }
 
         return data;

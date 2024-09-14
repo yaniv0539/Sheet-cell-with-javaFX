@@ -43,7 +43,9 @@ public class DataImpl implements Data, Serializable {
                 return String.format("%.2f", valueDouble);
             }
         }
-
+        if (type == DataType.BOOLEAN) {
+            return value.toString().toUpperCase();
+        }
         return value.toString();
     }
 }
