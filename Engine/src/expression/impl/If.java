@@ -14,7 +14,7 @@ public class If extends ExpressionImpl {
         this.condition = condition;
         this.thenExpression = thenExpression;
         this.elseExpression = elseExpression;
-        setDataType(this.evaluate().getType());
+       // setDataType(this.evaluate().getType());
     }
 
     @Override
@@ -22,7 +22,7 @@ public class If extends ExpressionImpl {
 
         Data data;
 
-        if(condition.getType() == DataType.BOOLEAN && thenExpression.getType() == elseExpression.getType()) {
+        if(condition.evaluate().getType() == DataType.BOOLEAN && thenExpression.evaluate().getType() == elseExpression.evaluate().getType()) {
             DataType type = thenExpression.getType();
 
             data = (boolean) condition.evaluate().getValue() ? new DataImpl(thenExpression.getType(), type.cast(thenExpression.evaluate().getValue()))
