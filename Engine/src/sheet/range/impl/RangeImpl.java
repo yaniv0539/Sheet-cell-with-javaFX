@@ -20,6 +20,12 @@ public class RangeImpl implements Range, Serializable {
     }
 
     public static RangeImpl create(String name, Boundaries boundaries) {
+        Coordinate from = CoordinateFactory.toCoordinate(boundaries.getFrom());
+        Coordinate to = CoordinateFactory.toCoordinate(boundaries.getTo());
+
+        if (from.getRow() > to.getRow() || from.getCol() > to.getCol()) {
+            throw new IllegalArgumentException("Invalid boundaries! From: " + from + " To: " + to + "is not logical.");
+        }
         return new RangeImpl(name, boundaries);
     }
 
