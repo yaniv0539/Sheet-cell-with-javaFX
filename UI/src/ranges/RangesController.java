@@ -12,6 +12,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import ranges.operations.add.AddRangeController;
 
 import java.io.IOException;
 import java.net.URL;
@@ -59,6 +60,10 @@ public class RangesController {
         URL url = getClass().getResource(resource);
         fxmlLoader.setLocation(url);
         Parent popupRoot = fxmlLoader.load(url.openStream());
+
+        AddRangeController addRangeController = fxmlLoader.getController();
+
+        addRangeController.setMainController(this);
 
         Stage popupStage = new Stage();
         popupStage.initModality(Modality.APPLICATION_MODAL);
