@@ -209,8 +209,12 @@ public class AppController {
         commandsComponentController.changeColumnAlignment(alignment);
     }
 
-    public void changeCommandsCellBackgroundColor(Background background) {
-//        commandsComponentController.changeCellBackgroundColor()
+    public void changeCommandsCellBackgroundColor(Color color) {
+        commandsComponentController.changeCellBackgroundColor(color);
+    }
+
+    public void changeCommandsCellTextColor(Color color) {
+        commandsComponentController.changeCellTextColor(color);
     }
 
     public void changeSheetColumnWidth(int prefWidth) {
@@ -246,5 +250,11 @@ public class AppController {
         sheetComponentController.changeCellBackgroundColor(color);
     }
 
+    public void changeSheetTextColor(Color color) {
+        sheetComponentController.changeCellTextColor(color);
+    }
 
+    public void resetCellsToDefault() {
+        sheetComponentController.resetCellsToDefault();
+    }
 }

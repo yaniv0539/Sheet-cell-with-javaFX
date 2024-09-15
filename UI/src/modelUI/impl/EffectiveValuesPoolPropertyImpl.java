@@ -10,21 +10,21 @@ import java.util.Map;
 
 public class EffectiveValuesPoolPropertyImpl implements EffectiveValuesPoolProperty {
 
-    Map<Coordinate,StringProperty> EffectiveValuesMap;
+    Map<Coordinate, StringProperty> effectiveValuesMap;
 
     public EffectiveValuesPoolPropertyImpl() {
-        EffectiveValuesMap = new HashMap<>();
+        effectiveValuesMap = new HashMap<>();
     }
 
     @Override
     public StringProperty getEffectiveValuePropertyAt(Coordinate coordinate) {
-        return EffectiveValuesMap.get(coordinate);
+        return effectiveValuesMap.get(coordinate);
     }
 
     @Override
     public boolean setEffectiveValuePropertyAt(Coordinate coordinate, String value) {
-        if(EffectiveValuesMap.containsKey(coordinate)) {
-            EffectiveValuesMap.get(coordinate).set(value);
+        if (effectiveValuesMap.containsKey(coordinate)) {
+            effectiveValuesMap.get(coordinate).set(value);
             return true;
         }
 
@@ -33,26 +33,26 @@ public class EffectiveValuesPoolPropertyImpl implements EffectiveValuesPoolPrope
 
     @Override
     public void addEffectiveValuePropertyAt(Coordinate coordinate, String value) {
-        if(EffectiveValuesMap.containsKey(coordinate)) {
+        if(effectiveValuesMap.containsKey(coordinate)) {
             setEffectiveValuePropertyAt(coordinate, value);
             return;
         }
 
-        EffectiveValuesMap.put(coordinate, new SimpleStringProperty(value));
+        effectiveValuesMap.put(coordinate, new SimpleStringProperty(value));
     }
 
     @Override
     public void bindPropertyTo(Coordinate coordinate, StringProperty ToBind) {
-        EffectiveValuesMap.get(coordinate).bind(ToBind);
+        effectiveValuesMap.get(coordinate).bind(ToBind);
     }
 
     @Override
     public boolean isExcite(Coordinate coordinate) {
-        return EffectiveValuesMap.containsKey(coordinate);
+        return effectiveValuesMap.containsKey(coordinate);
     }
 
     @Override
     public void clear() {
-        EffectiveValuesMap.clear();
+        effectiveValuesMap.clear();
     }
 }
