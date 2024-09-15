@@ -11,13 +11,11 @@ import java.util.Objects;
 
 public class Average extends UnaryExpression {
 
-    private double sumOfNumericCells;
     public static SheetGetters sheetView;
 
     public Average(Expression input) {
         super(input);
         setDataType(DataType.NUMERIC);
-        this.sumOfNumericCells = (double)(new Sum(input).evaluate().getValue());
     }
 
     @Override
@@ -27,6 +25,7 @@ public class Average extends UnaryExpression {
 
         if(input.getType() == DataType.STRING) {
 
+            double sumOfNumericCells = (double) new Sum(new RawString((String) input.getValue())).evaluate().getValue();
             Range range = sheetView.getRangeByName((String) input.getValue());
 
             if (range != null) {
