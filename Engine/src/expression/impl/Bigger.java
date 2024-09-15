@@ -13,6 +13,7 @@ public class Bigger extends BinaryExpression {
 
     @Override
     protected Data dynamicEvaluate(Data left, Data right) {
+
         return left.getType() == DataType.NUMERIC && right.getType() == DataType.NUMERIC  ? new DataImpl(DataType.BOOLEAN,(double)left.getValue() >= (double)right.getValue())
                 : new DataImpl(DataType.UNKNOWN,DataImpl.BoolUndefiled);
     }

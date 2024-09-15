@@ -2,6 +2,7 @@ package sheet.impl;
 
 import expression.api.Data;
 import expression.api.DataType;
+import expression.impl.Average;
 import expression.impl.DataImpl;
 import expression.impl.Ref;
 import expression.impl.Sum;
@@ -123,7 +124,8 @@ public class SheetImpl implements Sheet, Serializable {
     public void setCell(Coordinate target, String originalValue) {
 
          Ref.sheetView = this;
-        Sum.sheetView = this;
+         Sum.sheetView = this;
+         Average.sheetView = this;
 
          isCoordinateInBoundaries(target);
          Cell updatedCell = CellImpl.create(target, version, originalValue);
@@ -194,7 +196,7 @@ public class SheetImpl implements Sheet, Serializable {
 
         String newOriginalValue = newOriginalValuesMap.get(coordinate);
 
-        Set<Coordinate> refCoordinates = OrignalValueUtilis.findInfluenceFrom(newOriginalValue);
+        Set<Coordinate> refCoordinates = OrignalValueUtilis.findInfluenceFrom(newOriginalValue,this);
 
         // For each cell that we might be depended on, we'll do some checks:
         // If the cell is inside 'newOriginalValuesMap', we'll do recursive operation with this cell.
@@ -325,7 +327,7 @@ public class SheetImpl implements Sheet, Serializable {
     private Cell insertCellToSheet(Cell toInsert) {
 
         Cell toReplace = activeCells.put(toInsert.getCoordinate(),toInsert);
-        OrignalValueUtilis.findInfluenceFrom(toInsert.getOriginalValue()).forEach(coord ->
+        OrignalValueUtilis.findInfluenceFrom(toInsert.getOriginalValue(),this).forEach(coord ->
         {
             if(!activeCells.containsKey(coord)) {
                 Cell c = CellImpl.create(coord,version, DataImpl.empty);
@@ -334,7 +336,7 @@ public class SheetImpl implements Sheet, Serializable {
             }
         });
 
-        toInsert.setInfluenceFrom(CoordinateToCell(OrignalValueUtilis.findInfluenceFrom(toInsert.getOriginalValue())));
+        toInsert.setInfluenceFrom(CoordinateToCell(OrignalValueUtilis.findInfluenceFrom(toInsert.getOriginalValue(),this)));
         toInsert.getInfluenceFrom().forEach(cell -> cell.getInfluenceOn().add(toInsert));
 
         //if it is a new cell there is no influenceOn, if exist he may have influenced on other cells.
@@ -369,7 +371,7 @@ public class SheetImpl implements Sheet, Serializable {
         Range theRange;
 
         try{
-            theRange = ranges.stream().filter(range -> range.getName().equals(name)).findFirst().get();
+            theRange = ranges.stream().filter(range -> range.getName().equals(name.toLowerCase())).findFirst().get();
         }catch (NoSuchElementException exception) {
             theRange = null;
         }

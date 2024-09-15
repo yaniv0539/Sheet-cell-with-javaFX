@@ -43,6 +43,19 @@ public class STLSheetToSheet {
 
         Sheet sheet = SheetImpl.create(sheetName, layout);
 
+        STLRanges stlRanges = stlSheet.getSTLRanges();
+
+        List<STLRange> stlRangeList = stlRanges.getSTLRange();
+
+        stlRangeList.forEach(stlRange -> {
+            String rangeName = stlRange.getName();
+
+            STLBoundaries stlBoundaries = stlRange.getSTLBoundaries();
+            Boundaries boundaries = BoundariesImpl.create(stlBoundaries.getFrom(), stlBoundaries.getTo());
+
+            sheet.addRange(RangeImpl.create(rangeName, boundaries));
+        });
+
         STLCells stlCells = stlSheet.getSTLCells();
 
         List<STLCell> stlCellsList = stlCells.getSTLCell();
@@ -54,19 +67,6 @@ public class STLSheetToSheet {
                 ));
 
         sheet.setCells(originalValuesMap);
-
-//        STLRanges stlRanges = stlSheet.getSTLRanges();
-//
-//        List<STLRange> stlRangeList = stlRanges.getSTLRange();
-//
-//        stlRangeList.forEach(stlRange -> {
-//            String rangeName = stlRange.getName();
-//
-//            STLBoundaries stlBoundaries = stlRange.getSTLBoundaries();
-//            Boundaries boundaries = BoundariesImpl.create(stlBoundaries.getFrom(), stlBoundaries.getTo());
-//
-//            sheet.addRange(RangeImpl.create(rangeName, boundaries));
-//        });
 
         return sheet;
     }

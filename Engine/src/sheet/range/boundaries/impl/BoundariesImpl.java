@@ -2,7 +2,9 @@ package sheet.range.boundaries.impl;
 
 import sheet.range.boundaries.api.Boundaries;
 
-public class BoundariesImpl implements Boundaries {
+import java.io.Serializable;
+
+public class BoundariesImpl implements Boundaries, Serializable {
     private String from;
     private String to;
 

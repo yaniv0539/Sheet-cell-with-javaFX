@@ -12,6 +12,7 @@ import java.util.Objects;
 public class Sum extends UnaryExpression {
 
     public static SheetGetters sheetView;
+
     public Sum(Expression RangeName) {
         super(RangeName);
         setDataType(DataType.NUMERIC);
@@ -20,11 +21,12 @@ public class Sum extends UnaryExpression {
     @Override
     protected Data dynamicEvaluate(Data input) {
 
-        DataImpl data = new DataImpl(DataType.UNKNOWN,Double.NaN);;
+        Data data = new DataImpl(DataType.UNKNOWN,Double.NaN);;
 
         if(input.getType() == DataType.STRING) {
 
             Range range = sheetView.getRangeByName((String)input.getValue());
+
             if(range != null) {
                 double sum = range.toCoordinateCollection().stream()
                         .map(coordinate -> sheetView.getCell(coordinate))
@@ -36,10 +38,6 @@ public class Sum extends UnaryExpression {
 
                 data = new DataImpl(DataType.NUMERIC,sum);
             }
-            else{
-                data = new DataImpl(DataType.UNKNOWN,Double.NaN);
-            }
-
         }
 
         return data;

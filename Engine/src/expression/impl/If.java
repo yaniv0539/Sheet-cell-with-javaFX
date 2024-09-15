@@ -25,7 +25,7 @@ public class If extends ExpressionImpl {
         if(condition.getType() == DataType.BOOLEAN && thenExpression.getType() == elseExpression.getType()) {
             DataType type = thenExpression.getType();
 
-            data = (Boolean) condition.evaluate().getValue() ? new DataImpl(thenExpression.getType(), type.cast(thenExpression.evaluate().getValue()))
+            data = (boolean) condition.evaluate().getValue() ? new DataImpl(thenExpression.getType(), type.cast(thenExpression.evaluate().getValue()))
                     : new DataImpl(elseExpression.getType(), type.cast(elseExpression.evaluate().getValue()));
         }
         else {

@@ -117,6 +117,24 @@ public enum Operation {
         public Expression create(Object... args) {
             return (Expression) createInstance(If.class, getNumberOfArguments(),args);
         }
+    },
+    PERCENT(BinaryExpression.numberOfArgs){
+        @Override
+        public Expression create(Object... args) {
+            return (Expression) createInstance(Percent.class, getNumberOfArguments(),args);
+        }
+    },
+    SUM(UnaryExpression.numberOfArgs){
+        @Override
+        public Expression create(Object... args) {
+            return (Expression) createInstance(Sum.class, getNumberOfArguments(),args);
+        }
+    },
+    AVERAGE(UnaryExpression.numberOfArgs){
+        @Override
+        public Expression create(Object... args) {
+            return (Expression) createInstance(Average.class, getNumberOfArguments(),args);
+        }
     };
 
     private int numberOfArguments;

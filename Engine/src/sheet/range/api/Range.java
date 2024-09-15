@@ -1,5 +1,6 @@
 package sheet.range.api;
 
+import expression.api.DataType;
 import sheet.coordinate.api.Coordinate;
 import sheet.range.boundaries.api.Boundaries;
 
