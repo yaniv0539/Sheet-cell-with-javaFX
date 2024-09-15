@@ -168,6 +168,10 @@ public class AppController {
                 cellInFocus.setInfluenceOn(new HashSet<>());
             }
         }
+        else{
+            cellInFocus.setDependOn(new HashSet<>());
+            cellInFocus.setInfluenceOn(new HashSet<>());
+        }
     }
 
     public EffectiveValuesPoolPropertyReadOnly getEffectiveValuesPool() {

@@ -10,7 +10,7 @@ public class Plus extends BinaryExpression {
 
         super(left, right);
         setDataType(DataType.NUMERIC);
-        isValidArgs(left, right);
+        //isValidArgs(left, right);
     }
 
 

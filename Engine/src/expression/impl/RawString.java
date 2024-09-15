@@ -11,7 +11,7 @@ public class RawString extends ExpressionImpl {
     public RawString(String value) {
         this.value = value;
         setDataType(DataType.STRING);
-        isValidArgs(value);
+        //isValidArgs(value);
     }
 
     @Override

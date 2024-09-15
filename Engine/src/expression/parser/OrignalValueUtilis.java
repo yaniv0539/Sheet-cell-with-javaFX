@@ -1,17 +1,22 @@
 package expression.parser;
 
+import expression.api.DataType;
 import expression.api.Expression;
 import expression.impl.BooleanExpression;
 import expression.impl.NonValueExpression;
 import expression.impl.Number;
 import expression.impl.RawString;
 import operation.Operation;
+import sheet.api.SheetGetters;
+import sheet.cell.api.CellGetters;
 import sheet.coordinate.api.Coordinate;
 import sheet.coordinate.impl.CoordinateFactory;
+import sheet.range.api.Range;
 
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class OrignalValueUtilis {
@@ -105,9 +110,11 @@ public class OrignalValueUtilis {
 
     }
 
-    public static Set<Coordinate> findInfluenceFrom(String value)
+    public static Set<Coordinate> findInfluenceFrom(String value, SheetGetters sheetGetters)
     {
         Set<Coordinate> cellDependence = new HashSet<>();
+        Set<String> validFirstStrings = Set.of("sum", "average"); //should be in expression.
+
         value = value.toUpperCase();
         // Define the regex pattern to match the structure and capture the value after the comma
         Pattern pattern = Pattern.compile("\\{REF,\\s*([A-Z]\\d+)\\}");
@@ -120,7 +127,41 @@ public class OrignalValueUtilis {
             String extractedValue = matcher.group(1);
             cellDependence.add(CoordinateFactory.toCoordinate(extractedValue));
         }
+
+        String regex = "\\{([a-zA-Z]+),(.+)\\}";// {sum,grades}
+
+        // Compile the regex and match against the input
+         pattern = Pattern.compile(regex);
+         matcher = pattern.matcher(value);
+
+        // If it matches the pattern
+        if (matcher.matches()) {
+            String firstString = matcher.group(1);
+            String secondString = matcher.group(2);
+
+            // Check if the first string is within the valid set
+            if (validFirstStrings.contains(firstString.toLowerCase())) {
+                Expression rangeName = toExpression(secondString);
+
+                if(rangeName.getType() == DataType.STRING){
+
+                    String value1 = (String) rangeName.evaluate().getValue();
+                    Range r = sheetGetters.getRangeByName(value1);
+                    if (r != null) {
+                        cellDependence.addAll(r.toCoordinateCollection());
+                                //.stream()
+                                //.map(sheetGetters::getCell)
+                                //.filter(Objects::nonNull)
+                               //.filter(cell -> cell.getEffectiveValue().getType() == DataType.NUMERIC)
+                               // .map(CellGetters::getCoordinate)
+                               // .collect(Collectors.toSet()));// Extract the second string
+
+                    }
+                }
+
+            }
+        }
+
         return cellDependence;
     }
-
 }

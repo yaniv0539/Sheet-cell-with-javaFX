@@ -1,17 +1,21 @@
 package sheet.range.impl;
 
+import expression.api.DataType;
+import sheet.coordinate.api.Coordinate;
+import sheet.coordinate.impl.CoordinateFactory;
 import sheet.range.api.Range;
 import sheet.range.boundaries.api.Boundaries;
 
-import java.util.Objects;
+import java.io.Serializable;
+import java.util.*;
 
-public class RangeImpl implements Range {
+public class RangeImpl implements Range, Serializable {
 
     String name;
     Boundaries boundaries;
 
     private RangeImpl(String name, Boundaries boundaries) {
-        this.name = name;
+        this.name = name.toLowerCase();
         this.boundaries = boundaries;
     }
 
@@ -32,6 +36,21 @@ public class RangeImpl implements Range {
     @Override
     public void setBoundaries(Boundaries boundaries) {
         this.boundaries = boundaries;
+    }
+
+    @Override
+    public Collection<Coordinate> toCoordinateCollection() {
+        //logic
+        Set<Coordinate> coordinates = new HashSet<>();
+        Coordinate from = CoordinateFactory.toCoordinate(boundaries.getFrom());
+        Coordinate to = CoordinateFactory.toCoordinate(boundaries.getTo());
+
+        for(int row = from.getRow(); row <= to.getRow(); row++) {
+            for(int col = from.getCol(); col <= to.getCol(); col++) {
+                coordinates.add(CoordinateFactory.createCoordinate(row,col));
+            }
+        }
+        return coordinates;
     }
 
     @Override

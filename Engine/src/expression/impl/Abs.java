@@ -12,7 +12,7 @@ public class Abs extends UnaryExpression {
 
         super(input);
         setDataType(DataType.NUMERIC);
-        isValidArgs(input);
+        //isValidArgs(input);
     }
 
     @Override

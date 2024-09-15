@@ -8,6 +8,7 @@ import java.io.Serializable;
 public class DataImpl implements Data, Serializable {
 
     public static final String undefiled = "!UNDEIFINED!";
+    public static final String BoolUndefiled = "UNKNOWN";
     public static final String empty = "";
 
     private DataType type;
@@ -42,7 +43,9 @@ public class DataImpl implements Data, Serializable {
                 return String.format("%.2f", valueDouble);
             }
         }
-
+        if (type == DataType.BOOLEAN) {
+            return value.toString().toUpperCase();
+        }
         return value.toString();
     }
 }
