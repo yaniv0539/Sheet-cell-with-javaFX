@@ -8,7 +8,6 @@ import expression.impl.Number;
 import expression.impl.RawString;
 import operation.Operation;
 import sheet.api.SheetGetters;
-import sheet.cell.api.CellGetters;
 import sheet.coordinate.api.Coordinate;
 import sheet.coordinate.impl.CoordinateFactory;
 import sheet.range.api.Range;
@@ -16,7 +15,6 @@ import sheet.range.api.Range;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class OrignalValueUtilis {
@@ -146,7 +144,7 @@ public class OrignalValueUtilis {
                 if(rangeName.getType() == DataType.STRING){
 
                     String value1 = (String) rangeName.evaluate().getValue();
-                    Range r = sheetGetters.getRangeByName(value1);
+                    Range r = sheetGetters.getRange(value1);
                     if (r != null) {
                         cellDependence.addAll(r.toCoordinateCollection());
                                 //.stream()

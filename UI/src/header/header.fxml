@@ -68,7 +68,7 @@
                      <HBox.margin>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                      </HBox.margin></Label>
-                  <TextField fx:id="textFieldOrignalValue" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onAction="#textFieldOrignalValueAction" prefHeight="30.0" promptText="original value...">
+                  <TextField fx:id="textFieldOrignalValue" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onAction="#textFieldOrignalValueAction" prefHeight="30.0" prefWidth="500.0" promptText="original value...">
                      <HBox.margin>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                      </HBox.margin></TextField>

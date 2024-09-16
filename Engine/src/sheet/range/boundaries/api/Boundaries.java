@@ -1,8 +1,10 @@
 package sheet.range.boundaries.api;
 
+import sheet.coordinate.api.Coordinate;
+
 public interface Boundaries {
-    String getFrom();
-    void setFrom(String from);
-    String getTo();
-    void setTo(String to);
+    Coordinate getFrom();
+    void setFrom(Coordinate from);
+    Coordinate getTo();
+    void setTo(Coordinate to);
 }

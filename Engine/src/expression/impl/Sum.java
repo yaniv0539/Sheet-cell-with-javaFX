@@ -25,7 +25,7 @@ public class Sum extends UnaryExpression {
 
         if(input.getType() == DataType.STRING) {
 
-            Range range = sheetView.getRangeByName((String)input.getValue());
+            Range range = sheetView.getRange((String)input.getValue());
 
             if(range != null) {
                 double sum = range.toCoordinateCollection().stream()

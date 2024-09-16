@@ -29,7 +29,7 @@ public class EngineImpl implements Engine, Serializable {
     private final static String JAXB_XML_GENERATED_PACKAGE_NAME = "engine.jaxb.generated";
     private final static int MAX_ROWS = 50;
     private final static int MAX_COLUMNS = 20;
-    private static final String CELL_RANGE_REGEX = "^[A-Z]+\\d+\\.\\.[A-Z]+\\d+$";
+    private static final String CELL_RANGE_REGEX = "^[a-zA-Z]+\\d+\\.\\.[a-zA-Z]+\\d+$";
 
     private Sheet sheet;
     private final VersionManager versionManager;
