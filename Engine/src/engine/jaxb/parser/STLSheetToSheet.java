@@ -9,15 +9,12 @@ import sheet.layout.api.Layout;
 import sheet.layout.impl.LayoutImpl;
 import sheet.layout.size.api.Size;
 import sheet.layout.size.impl.SizeImpl;
-import sheet.range.api.Range;
 import sheet.range.boundaries.api.Boundaries;
 import sheet.range.boundaries.impl.BoundariesImpl;
 import sheet.range.impl.RangeImpl;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public class STLSheetToSheet {
@@ -51,9 +48,9 @@ public class STLSheetToSheet {
             String rangeName = stlRange.getName();
 
             STLBoundaries stlBoundaries = stlRange.getSTLBoundaries();
-            Boundaries boundaries = BoundariesImpl.create(stlBoundaries.getFrom(), stlBoundaries.getTo());
+            Boundaries boundaries = BoundariesImpl.create(CoordinateFactory.toCoordinate(stlBoundaries.getFrom()), CoordinateFactory.toCoordinate(stlBoundaries.getTo()));
 
-            sheet.addRange(RangeImpl.create(rangeName, boundaries));
+            sheet.addRange(rangeName, boundaries);
         });
 
         STLCells stlCells = stlSheet.getSTLCells();

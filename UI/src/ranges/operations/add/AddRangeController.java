@@ -1,6 +1,5 @@
 package ranges.operations.add;
 
-import app.AppController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -26,7 +25,7 @@ public class AddRangeController {
 
     @FXML
     void submitAction(ActionEvent event) {
-
+        this.mainController.addRange(textFieldRangeName.getText(), textFieldRangeBoundaries.getText());
     }
 
 

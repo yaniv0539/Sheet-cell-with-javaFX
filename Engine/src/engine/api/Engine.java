@@ -3,6 +3,10 @@ package engine.api;
 import engine.version.manager.api.VersionManagerGetters;
 import sheet.api.SheetGetters;
 import sheet.cell.api.CellGetters;
+import sheet.range.api.Range;
+import sheet.range.api.RangeGetters;
+
+import java.util.Set;
 
 public interface Engine {
 
@@ -14,5 +18,8 @@ public interface Engine {
     CellGetters getCellStatus(SheetGetters sheet, int row, int col);
     void updateCellStatus(String cellName, String value);
     VersionManagerGetters getVersionsManagerStatus();
+    void addRange(String from, String to);
+    RangeGetters getRange(String name);
+    Set<RangeGetters> getRanges();
     void exit();
 }

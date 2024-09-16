@@ -15,11 +15,17 @@ public class RangeImpl implements Range, Serializable {
     Boundaries boundaries;
 
     private RangeImpl(String name, Boundaries boundaries) {
-        this.name = name.toLowerCase();
+        this.name = name.toUpperCase();
         this.boundaries = boundaries;
     }
 
     public static RangeImpl create(String name, Boundaries boundaries) {
+        Coordinate from = boundaries.getFrom();
+        Coordinate to = boundaries.getTo();
+
+        if (from.getRow() > to.getRow() || from.getCol() > to.getCol()) {
+            throw new IllegalArgumentException("Invalid boundaries! From: " + from + " To: " + to + "is not logical.");
+        }
         return new RangeImpl(name, boundaries);
     }
 
@@ -42,8 +48,8 @@ public class RangeImpl implements Range, Serializable {
     public Collection<Coordinate> toCoordinateCollection() {
         //logic
         Set<Coordinate> coordinates = new HashSet<>();
-        Coordinate from = CoordinateFactory.toCoordinate(boundaries.getFrom());
-        Coordinate to = CoordinateFactory.toCoordinate(boundaries.getTo());
+        Coordinate from = boundaries.getFrom();
+        Coordinate to = boundaries.getTo();
 
         for(int row = from.getRow(); row <= to.getRow(); row++) {
             for(int col = from.getCol(); col <= to.getCol(); col++) {
