@@ -12,18 +12,25 @@ import javafx.concurrent.Task;
 import sheet.api.Sheet;
 
 import java.io.*;
+import java.util.Collections;
+import java.util.Set;
 
 import engine.jaxb.generated.STLSheet;
 import sheet.api.SheetGetters;
 import sheet.cell.api.CellGetters;
+import sheet.coordinate.api.Coordinate;
 import sheet.coordinate.impl.CoordinateFactory;
 import sheet.layout.api.LayoutGetters;
+import sheet.range.api.RangeGetters;
+import sheet.range.boundaries.api.Boundaries;
+import sheet.range.boundaries.impl.BoundariesImpl;
 
 public class EngineImpl implements Engine, Serializable {
 
     private final static String JAXB_XML_GENERATED_PACKAGE_NAME = "engine.jaxb.generated";
     private final static int MAX_ROWS = 50;
     private final static int MAX_COLUMNS = 20;
+    private static final String CELL_RANGE_REGEX = "^[a-zA-Z]+\\d+\\.\\.[a-zA-Z]+\\d+$";
 
     private Sheet sheet;
     private final VersionManager versionManager;
@@ -121,6 +128,35 @@ public class EngineImpl implements Engine, Serializable {
                 return true;
             }
         };
+    }
+
+    @Override
+    public void addRange(String name, String boundariesString) {
+        if (boundariesString.trim().isEmpty()) {
+            throw new IllegalArgumentException("Range name cannot be empty");
+        }
+
+        if (!boundariesString.matches(CELL_RANGE_REGEX)) {
+            throw new NumberFormatException("Invalid range boundaries");
+        }
+
+        String[] cells = boundariesString.split("\\.\\.");
+
+        Coordinate from = CoordinateFactory.toCoordinate(cells[0]);
+        Coordinate to = CoordinateFactory.toCoordinate(cells[1]);
+
+        Boundaries boundaries = BoundariesImpl.create(from, to);
+        sheet.addRange(name, boundaries);
+    }
+
+    @Override
+    public RangeGetters getRange(String name) {
+        return sheet.getRange(name);
+    }
+
+    @Override
+    public Set<RangeGetters> getRanges() {
+        return Collections.unmodifiableSet(sheet.getRanges());
     }
 
     @Override

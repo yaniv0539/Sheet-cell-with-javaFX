@@ -30,6 +30,8 @@ import sheet.cell.api.CellGetters;
 import sheet.coordinate.api.Coordinate;
 import sheet.coordinate.api.CoordinateGetters;
 import sheet.coordinate.impl.CoordinateFactory;
+import sheet.range.api.Range;
+import sheet.range.api.RangeGetters;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -155,6 +157,7 @@ public class AppController {
         this.currentSheet = engine.getSheetStatus();
         headerComponentController.clearVersionButton();
         headerComponentController.addMenuOptionToVersionSelection(String.valueOf(engine.getVersionsManagerStatus().getVersions().size()));
+        rangesComponentController.uploadRanges(engine.getRanges());
     }
 
     private void setSheet() {
@@ -296,5 +299,13 @@ public class AppController {
 
     public void resetCellsToDefault() {
         sheetComponentController.resetCellsToDefault();
+    }
+
+    public void addRange(String name, String boundaries) {
+        engine.addRange(name, boundaries);
+    }
+
+    public RangeGetters getRange(String name) {
+        return engine.getRange(name);
     }
 }

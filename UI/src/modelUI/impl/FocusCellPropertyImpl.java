@@ -23,7 +23,6 @@ public class FocusCellPropertyImpl implements FocusCellProperty {
     public StringProperty lastUpdateVersion;
     private ObservableList<Coordinate> dependenceOn;
     private ObservableList<Coordinate> influenceOn;
-    private StringProperty backgroundColor;
 
     public FocusCellPropertyImpl() {
         coordinate = new SimpleStringProperty("");
@@ -32,7 +31,6 @@ public class FocusCellPropertyImpl implements FocusCellProperty {
         lastUpdateVersion = new SimpleStringProperty("");
         dependenceOn = FXCollections.observableArrayList();
         influenceOn = FXCollections.observableArrayList();
-        backgroundColor = new SimpleStringProperty("WHITE");
     }
 
     @Override

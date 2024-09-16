@@ -2,19 +2,28 @@ package ranges;
 
 import app.AppController;
 import javafx.beans.property.BooleanProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import ranges.operations.add.AddRangeController;
+import sheet.range.api.RangeGetters;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Set;
 
 public class RangesController {
 
@@ -28,12 +37,18 @@ public class RangesController {
     private Button buttonDeleteRange;
 
     @FXML
-    private TableColumn<?, ?> tableActiveRanges;
+    private TableColumn<RangeGetters, String> tableActiveRanges;
 
     @FXML
-    private TableView<?> tableViewActiveRanges;
+    private TableView<RangeGetters> tableViewActiveRanges;
 
     private AppController mainController;
+
+    private ObservableList<RangeGetters> ranges;
+
+    public RangesController() {
+        ranges = FXCollections.observableArrayList();
+    }
 
     public void setMainController(AppController mainController) {
         this.mainController = mainController;
@@ -60,6 +75,10 @@ public class RangesController {
         fxmlLoader.setLocation(url);
         Parent popupRoot = fxmlLoader.load(url.openStream());
 
+        AddRangeController addRangeController = fxmlLoader.getController();
+
+        addRangeController.setMainController(this);
+
         Stage popupStage = new Stage();
         popupStage.initModality(Modality.APPLICATION_MODAL);
         popupStage.setTitle(title);
@@ -76,5 +95,18 @@ public class RangesController {
         buttonAddRange.disableProperty().bind(showRangesProperty.not());
         buttonDeleteRange.disableProperty().bind(showRangesProperty.not());
         tableViewActiveRanges.disableProperty().bind(showRangesProperty.not());
+        tableActiveRanges.setCellValueFactory(new PropertyValueFactory<>("name"));
+        tableViewActiveRanges.setItems(ranges);
+    }
+
+    public void addRange(String name, String boundaries) {
+        this.mainController.addRange(name, boundaries);
+        ranges.add(this.mainController.getRange(name));
+        tableViewActiveRanges.refresh();
+    }
+
+    public void uploadRanges(Set<RangeGetters> ranges) {
+        this.ranges.addAll(ranges);
+        tableViewActiveRanges.refresh();
     }
 }

@@ -26,7 +26,7 @@ public class Average extends UnaryExpression {
         if(input.getType() == DataType.STRING) {
 
             double sumOfNumericCells = (double) new Sum(new RawString((String) input.getValue())).evaluate().getValue();
-            Range range = sheetView.getRangeByName((String) input.getValue());
+            Range range = sheetView.getRange((String) input.getValue());
 
             if (range != null) {
                 double numberOfCells = range.toCoordinateCollection().stream()

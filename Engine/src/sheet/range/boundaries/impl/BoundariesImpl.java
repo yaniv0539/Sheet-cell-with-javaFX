@@ -1,39 +1,40 @@
 package sheet.range.boundaries.impl;
 
+import sheet.coordinate.api.Coordinate;
 import sheet.range.boundaries.api.Boundaries;
 
 import java.io.Serializable;
 
 public class BoundariesImpl implements Boundaries, Serializable {
-    private String from;
-    private String to;
+    private Coordinate from;
+    private Coordinate to;
 
-    private BoundariesImpl(String from, String to) {
+    private BoundariesImpl(Coordinate from, Coordinate to) {
         this.from = from;
         this.to = to;
     }
 
-    public static Boundaries create(String from, String to) {
+    public static Boundaries create(Coordinate from, Coordinate to) {
         return new BoundariesImpl(from, to);
     }
 
     @Override
-    public String getFrom() {
+    public Coordinate getFrom() {
         return this.from;
     }
 
     @Override
-    public void setFrom(String from) {
+    public void setFrom(Coordinate from) {
         this.from = from;
     }
 
     @Override
-    public String getTo() {
+    public Coordinate getTo() {
         return this.to;
     }
 
     @Override
-    public void setTo(String to) {
+    public void setTo(Coordinate to) {
         this.to = to;
     }
 }

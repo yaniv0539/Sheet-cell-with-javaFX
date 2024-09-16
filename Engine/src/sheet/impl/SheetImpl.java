@@ -13,10 +13,12 @@ import sheet.cell.api.CellGetters;
 import sheet.cell.impl.CellImpl;
 import sheet.coordinate.api.Coordinate;
 import sheet.coordinate.api.CoordinateGetters;
-import sheet.coordinate.impl.CoordinateFactory;
 import sheet.layout.api.Layout;
 import sheet.layout.api.LayoutGetters;
 import sheet.range.api.Range;
+import sheet.range.api.RangeGetters;
+import sheet.range.boundaries.api.Boundaries;
+import sheet.range.impl.RangeImpl;
 
 import java.io.*;
 import java.util.*;
@@ -109,10 +111,22 @@ public class SheetImpl implements Sheet, Serializable {
     }
 
     @Override
-    public void addRange(Range range) {
-        if (!ranges.add(range)) {
+    public void addRange(String name, Boundaries boundaries) {
+        isRangeInBoundaries(boundaries);
+
+        if (!ranges.add(RangeImpl.create(name, boundaries))) {
             throw new IllegalArgumentException("Range already exists in " + this.name);
         }
+    }
+
+    private void isRangeInBoundaries(Boundaries boundaries) {
+        try {
+            isCoordinateInBoundaries(boundaries.getFrom());
+            isCoordinateInBoundaries(boundaries.getTo());
+        } catch (Exception e) {
+            throw new IndexOutOfBoundsException("The range " + boundaries.getFrom() + ".." + boundaries.getTo() + " is not in sheet boundaries.");
+        }
+
     }
 
     @Override
@@ -366,17 +380,22 @@ public class SheetImpl implements Sheet, Serializable {
     }
 
     @Override
-    public Range getRangeByName(String name) {
+    public Range getRange(String name) {
 
         Range theRange;
 
         try{
-            theRange = ranges.stream().filter(range -> range.getName().equals(name.toLowerCase())).findFirst().get();
+            theRange = ranges.stream().filter(range -> range.getName().equals(name.toUpperCase())).findFirst().get();
         }catch (NoSuchElementException exception) {
             theRange = null;
         }
 
         return theRange;
+    }
+
+    @Override
+    public Set<Range> getRanges() {
+        return this.ranges;
     }
 
 }

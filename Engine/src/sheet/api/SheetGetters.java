@@ -7,8 +7,10 @@ import sheet.coordinate.api.Coordinate;
 import sheet.coordinate.api.CoordinateGetters;
 import sheet.layout.api.LayoutGetters;
 import sheet.range.api.Range;
+import sheet.range.api.RangeGetters;
 
 import java.util.Map;
+import java.util.Set;
 
 public interface SheetGetters {
     String getName();
@@ -18,5 +20,6 @@ public interface SheetGetters {
     int getNumberOfCellsThatChanged();
     Map<CoordinateGetters, CellGetters> getActiveCells();
     Data getCellData(String cellId);
-    Range getRangeByName(String rangeName);
+    Range getRange(String rangeName);
+    Set<? extends RangeGetters> getRanges();
 }
