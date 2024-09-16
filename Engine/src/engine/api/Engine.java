@@ -15,4 +15,6 @@ public interface Engine {
     void updateCellStatus(String cellName, String value);
     VersionManagerGetters getVersionsManagerStatus();
     void exit();
+
+    javafx.concurrent.Task<Boolean> loadFileTask(String path);
 }
