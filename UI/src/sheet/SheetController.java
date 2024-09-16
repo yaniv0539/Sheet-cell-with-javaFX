@@ -16,6 +16,7 @@ import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import modelUI.api.EffectiveValuesPoolPropertyReadOnly;
 import sheet.coordinate.api.Coordinate;
 import sheet.coordinate.impl.CoordinateFactory;
@@ -45,8 +46,6 @@ public class SheetController {
     }
 
     public ScrollPane getInitializedSheet(LayoutGetters layout) {
-        //TODO:SPLIT INTO SMALLER FUNCTIONS, JUST FOR FLOW.
-
         setLayoutGridPane(layout);
         //until here set the grid.
         setBindsTo();
@@ -58,9 +57,6 @@ public class SheetController {
 
         // Create a GridPane
         gridPane.setGridLinesVisible(true);  // Enable grid lines for visualization
-
-        //init the "dataBase" of effective values, text fields will bind to this.
-        //cellsValue = new StringProperty[rows + 1][columns + 1];
 
         // Add column constraints to match FXML configuration
         for (int col = 0; col <= layout.getColumns(); col++) {
@@ -114,7 +110,6 @@ public class SheetController {
                 // Set font size and alignment to match FXML
                 textField.setFont(Font.font("System", 12));
                 textField.setAlignment(Pos.CENTER);
-
                 // Dynamically set the content of the TextField
 
                 if (row == 0 && col > 0) {

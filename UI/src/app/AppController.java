@@ -6,18 +6,22 @@ import engine.impl.EngineImpl;
 import header.HeaderController;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ListChangeListener;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.Background;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import modelUI.api.EffectiveValuesPoolProperty;
 import modelUI.api.EffectiveValuesPoolPropertyReadOnly;
 import modelUI.api.FocusCellProperty;
 import modelUI.impl.EffectiveValuesPoolPropertyImpl;
 import modelUI.impl.FocusCellPropertyImpl;
+import progress.ProgressController;
 import ranges.RangesController;
 import sheet.SheetController;
 import sheet.api.SheetGetters;
@@ -46,6 +50,8 @@ public class AppController {
     private SimpleBooleanProperty showHeaders;
     private ScrollPane sheetComponent;
     private SheetController sheetComponentController;
+    private ProgressController progressComponentController;
+    private Stage loadingStage;
     private Stage primaryStage;
 
 
@@ -54,6 +60,7 @@ public class AppController {
     private EffectiveValuesPoolProperty effectiveValuesPool;
     private Engine engine;
 
+
     public AppController() {
         this.engine = EngineImpl.create();
         this.showHeaders = new SimpleBooleanProperty(false);
@@ -61,6 +68,8 @@ public class AppController {
         this.showCommands = new SimpleBooleanProperty(false);
         this.cellInFocus = new FocusCellPropertyImpl();
         this.effectiveValuesPool = new EffectiveValuesPoolPropertyImpl();
+        this.progressComponentController = new ProgressController();
+        this.loadingStage = new Stage();
     }
 
     @FXML
@@ -73,6 +82,7 @@ public class AppController {
             headerComponentController.init();
             commandsComponentController.init();
             rangesComponentController.init();
+            initLoadingStage();
 
             //cell in focus init
             cellInFocus.getDependOn().addListener((ListChangeListener<Coordinate>) change -> sheetComponentController.changeColorDependedCoordinate(change));
@@ -104,9 +114,39 @@ public class AppController {
         return primaryStage;
     }
 
+    private void initLoadingStage() {
+
+        loadingStage.initStyle(StageStyle.UNDECORATED);
+        loadingStage.initModality(Modality.APPLICATION_MODAL);
+        loadingStage.setScene(new Scene(progressComponentController.getProgressVbox()));
+    }
+
     public void uploadXml(String path)
     {
-        engine.readXMLInitFile(path);
+        Task<Boolean> FileTask = engine.loadFileTask(path);
+
+        progressComponentController.init(FileTask);
+
+        FileTask.setOnSucceeded(workerStateEvent -> {
+            loadingStage.close();
+            onFinishLoadingFile();
+        });
+
+        FileTask.setOnFailed(workerStateEvent -> {
+            loadingStage.close();
+            //do something
+        });
+
+        loadingStage.show();
+
+        new Thread(FileTask).start();
+
+        //old version.
+        // engine.readXMLInitFile(path);
+        //onFinishLoadingFile();
+    }
+
+    private void onFinishLoadingFile() {
         showHeaders.set(true);
         showRanges.set(true);
         headerComponentController.getSplitMenuButtonSelectVersion().setDisable(false);
