@@ -22,4 +22,6 @@ public interface Engine {
     RangeGetters getRange(String name);
     Set<RangeGetters> getRanges();
     void exit();
+
+    javafx.concurrent.Task<Boolean> loadFileTask(String path);
 }

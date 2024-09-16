@@ -8,6 +8,7 @@ import engine.version.manager.impl.VersionManagerImpl;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
+import javafx.concurrent.Task;
 import sheet.api.Sheet;
 
 import java.io.*;
@@ -107,6 +108,29 @@ public class EngineImpl implements Engine, Serializable {
     public VersionManagerGetters getVersionsManagerStatus() { return this.versionManager; }
 
     @Override
+    public Task<Boolean> loadFileTask(String path) {
+
+        return new Task<Boolean>() {
+            @Override
+            protected Boolean call() throws Exception {
+
+                for (int i = 0; i < 50; i++) {
+                    Thread.sleep(100);
+                    updateProgress(i,100);
+                    if(i == 10){
+                        updateMessage("Fetching...");
+                    }
+                    if(i == 40){
+                        updateMessage("Preparing data...");
+                        readXMLInitFile(path);
+                    }
+                }
+                return true;
+            }
+        };
+    }
+
+    @Override
     public void addRange(String name, String boundariesString) {
         if (boundariesString.trim().isEmpty()) {
             throw new IllegalArgumentException("Range name cannot be empty");
@@ -147,4 +171,5 @@ public class EngineImpl implements Engine, Serializable {
     private static boolean isValidLayout(LayoutGetters layout) {
         return !(layout == null || layout.getRows() > MAX_ROWS || layout.getColumns() > MAX_COLUMNS);
     }
+
 }
