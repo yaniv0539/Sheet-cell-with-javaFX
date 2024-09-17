@@ -18,6 +18,7 @@ import sheet.layout.api.LayoutGetters;
 import sheet.range.api.Range;
 import sheet.range.api.RangeGetters;
 import sheet.range.boundaries.api.Boundaries;
+import sheet.range.boundaries.api.BoundariesGetters;
 import sheet.range.impl.RangeImpl;
 
 import java.io.*;
@@ -119,7 +120,7 @@ public class SheetImpl implements Sheet, Serializable {
         }
     }
 
-    private void isRangeInBoundaries(Boundaries boundaries) {
+    private void isRangeInBoundaries(BoundariesGetters boundaries) {
         try {
             isCoordinateInBoundaries(boundaries.getFrom());
             isCoordinateInBoundaries(boundaries.getTo());

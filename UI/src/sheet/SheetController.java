@@ -29,6 +29,7 @@ import sheet.layout.api.LayoutGetters;
 import sheet.range.api.Range;
 import sheet.range.api.RangeGetters;
 import sheet.range.boundaries.api.Boundaries;
+import sheet.range.boundaries.api.BoundariesGetters;
 
 
 public class SheetController {
@@ -202,18 +203,6 @@ public class SheetController {
         }
     }
 
-//    private TextField targetTextField(Coordinate coordinate) {
-//        for (Node node : gridPane.getChildren()) {
-//            if(node instanceof TextField &&
-//                    GridPane.getRowIndex(node) != null && GridPane.getRowIndex(node) == coordinate.getRow() + 1 &&
-//                    GridPane.getColumnIndex(node) != null && GridPane.getColumnIndex(node) == coordinate.getCol() + 1)
-//            {
-//                return (TextField) node;  // Cast to TextField and return it
-//            }
-//        }
-//        return null;
-//    }
-
     public void changeColumnWidth(int column, int prefWidth) {
         gridPane.getColumnConstraints().get(column).setPrefWidth(prefWidth);
         gridPane.getColumnConstraints().get(column).setMinWidth(prefWidth);
@@ -283,7 +272,7 @@ public class SheetController {
     }
 
     public void paintRangeOnSheet(RangeGetters range, Color color) {
-        Boundaries boundaries = range.getBoundaries();
+        BoundariesGetters boundaries = range.getBoundaries();
         Coordinate to = boundaries.getTo();
         Coordinate from = boundaries.getFrom();
 

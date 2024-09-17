@@ -1,7 +1,7 @@
 package commands;
 
 import app.AppController;
-import javafx.application.Platform;
+import commands.operations.filter.FilterController;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -9,15 +9,23 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.Background;
 import javafx.scene.paint.Color;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import ranges.operations.add.AddRangeController;
+
+import java.io.IOException;
+import java.net.URL;
 
 
 public class CommandsController {
 
-    private static final String SET_COLUMN_SIZE_FXML_INCLUDE_RESOURCE = "visual/column/size/columnSize.fxml";
+    private static final String FILTER_POPUP_FXML_INCLUDE_RESOURCE = "operations/filter/filter.fxml";
 
     private AppController mainController;
 
@@ -48,6 +56,8 @@ public class CommandsController {
     private IntegerProperty heightProperty;
 
     private IntegerProperty widthProperty;
+
+    private Stage filterStage;
 
     public AppController getMainController() {
         return mainController;
@@ -129,8 +139,8 @@ public class CommandsController {
     }
 
     @FXML
-    void filterAction(ActionEvent event) {
-
+    void filterAction(ActionEvent event) throws IOException {
+        activateFilterPopup(FILTER_POPUP_FXML_INCLUDE_RESOURCE, "Filter");
     }
 
     @FXML
@@ -219,5 +229,26 @@ public class CommandsController {
 
     public void changeCellTextColor(Color color) {
         colorPickerTextColor.setValue(color);
+    }
+
+    private void activateFilterPopup(String resource, String title) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        URL url = getClass().getResource(resource);
+        fxmlLoader.setLocation(url);
+        Parent popupRoot = fxmlLoader.load(url.openStream());
+
+        FilterController filterController = fxmlLoader.getController();
+
+        filterController.setMainController(this);
+
+        this.filterStage = new Stage();
+        filterStage.initModality(Modality.APPLICATION_MODAL);
+        filterStage.setTitle(title);
+
+        Scene popupScene = new Scene(popupRoot, 700, 100);
+        filterStage.setResizable(false);
+        filterStage.setScene(popupScene);
+
+        filterStage.showAndWait();
     }
 }
