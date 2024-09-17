@@ -160,6 +160,11 @@ public class EngineImpl implements Engine, Serializable {
     }
 
     @Override
+    public void deleteRange(String rangeName) {
+        this.sheet.deleteRange(this.sheet.getRange(rangeName));
+    }
+
+    @Override
     public void exit() {}
 
     private static STLSheet deserializeFrom(InputStream inputStream) throws JAXBException {

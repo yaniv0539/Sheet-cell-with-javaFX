@@ -130,7 +130,7 @@ public class SheetImpl implements Sheet, Serializable {
     }
 
     @Override
-    public void removeRange(Range range) {
+    public void deleteRange(RangeGetters range) {
         ranges.remove(range);
     }
 

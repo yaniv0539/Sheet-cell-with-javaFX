@@ -8,7 +8,7 @@ import sheet.coordinate.api.Coordinate;
 import java.util.HashMap;
 import java.util.Map;
 
-public class EffectiveValuesPoolPropertyImpl implements EffectiveValuesPoolProperty {
+    public class EffectiveValuesPoolPropertyImpl implements EffectiveValuesPoolProperty {
 
     Map<Coordinate, StringProperty> effectiveValuesMap;
 
