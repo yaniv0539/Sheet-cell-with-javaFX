@@ -20,6 +20,6 @@ public interface SheetGetters {
     int getNumberOfCellsThatChanged();
     Map<CoordinateGetters, CellGetters> getActiveCells();
     Data getCellData(String cellId);
-    Range getRange(String rangeName);
+    RangeGetters getRange(String rangeName);
     Set<? extends RangeGetters> getRanges();
 }

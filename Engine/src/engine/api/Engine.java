@@ -21,7 +21,7 @@ public interface Engine {
     void addRange(String from, String to);
     RangeGetters getRange(String name);
     Set<RangeGetters> getRanges();
-    void exit();
-
+    void deleteRange(String name);
     javafx.concurrent.Task<Boolean> loadFileTask(String path);
+    void exit();
 }

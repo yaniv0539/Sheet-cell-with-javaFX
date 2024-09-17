@@ -6,6 +6,7 @@ import expression.api.Expression;
 import sheet.api.SheetGetters;
 import sheet.cell.api.CellGetters;
 import sheet.range.api.Range;
+import sheet.range.api.RangeGetters;
 
 import java.util.Objects;
 
@@ -25,7 +26,7 @@ public class Sum extends UnaryExpression {
 
         if(input.getType() == DataType.STRING) {
 
-            Range range = sheetView.getRange((String)input.getValue());
+            RangeGetters range = sheetView.getRange((String)input.getValue());
 
             if(range != null) {
                 double sum = range.toCoordinateCollection().stream()

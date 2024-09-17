@@ -11,6 +11,7 @@ import sheet.api.SheetGetters;
 import sheet.coordinate.api.Coordinate;
 import sheet.coordinate.impl.CoordinateFactory;
 import sheet.range.api.Range;
+import sheet.range.api.RangeGetters;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -144,7 +145,7 @@ public class OrignalValueUtilis {
                 if(rangeName.getType() == DataType.STRING){
 
                     String value1 = (String) rangeName.evaluate().getValue();
-                    Range r = sheetGetters.getRange(value1);
+                    RangeGetters r = sheetGetters.getRange(value1);
                     if (r != null) {
                         cellDependence.addAll(r.toCoordinateCollection());
                                 //.stream()

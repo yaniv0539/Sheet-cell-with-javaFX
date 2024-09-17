@@ -15,6 +15,7 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -23,12 +24,13 @@ import sheet.range.api.RangeGetters;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 public class RangesController {
 
     private static final String ADD_RANGE_POPUP_FXML_INCLUDE_RESOURCE = "operations/add/addRange.fxml";
-    private static final String DELETE_RANGE_POPUP_FXML_INCLUDE_RESOURCE = "operations/delete/deleteRange.fxml";
 
     @FXML
     private Button buttonAddRange;
@@ -46,6 +48,10 @@ public class RangesController {
 
     private ObservableList<RangeGetters> ranges;
 
+    private Stage popupStage;
+
+    private RangeGetters lastClickedItem = null;
+
     public RangesController() {
         ranges = FXCollections.observableArrayList();
     }
@@ -60,13 +66,18 @@ public class RangesController {
     }
 
     @FXML
-    void deleteRangeAction(ActionEvent event) throws IOException {
-        activateRangeAction(DELETE_RANGE_POPUP_FXML_INCLUDE_RESOURCE, "Delete Range");
-    }
-
-    @FXML
-    void showRangeAction(ActionEvent event) throws IOException {
-        // TODO: check if a range had been selected, if not throw exception. Else, color the selected range on board.
+    void deleteRangeAction(ActionEvent event) {
+        RangeGetters selectedRange = tableViewActiveRanges.getSelectionModel().getSelectedItem();
+        if (selectedRange != null) {
+            boolean isDeleted = this.mainController.deleteRange(selectedRange);
+            if (isDeleted) {
+                this.ranges.remove(selectedRange);
+            } else {
+                // TODO: Throw exception.
+            }
+        } else {
+            // TODO: Maybe exception.
+        }
     }
 
     void activateRangeAction(String resource, String title) throws IOException {
@@ -79,7 +90,7 @@ public class RangesController {
 
         addRangeController.setMainController(this);
 
-        Stage popupStage = new Stage();
+        this.popupStage = new Stage();
         popupStage.initModality(Modality.APPLICATION_MODAL);
         popupStage.setTitle(title);
 
@@ -92,16 +103,45 @@ public class RangesController {
 
     public void init() {
         BooleanProperty showRangesProperty = this.mainController.showRangesProperty();
+        Map<Integer, TableCell<RangeGetters, String>> cellMap = new HashMap<>();
+
         buttonAddRange.disableProperty().bind(showRangesProperty.not());
         buttonDeleteRange.disableProperty().bind(showRangesProperty.not());
         tableViewActiveRanges.disableProperty().bind(showRangesProperty.not());
+
         tableActiveRanges.setCellValueFactory(new PropertyValueFactory<>("name"));
+        tableViewActiveRanges.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            TableView.TableViewSelectionModel<RangeGetters> selectionModel = tableViewActiveRanges.getSelectionModel();
+            RangeGetters selectedItem = selectionModel.getSelectedItem();
+
+            if (selectedItem != null && newValue) {
+                this.mainController.paintRangeOnSheet(selectedItem, Color.rgb(255, 105, 180));
+            } else if (selectedItem != null) {
+                this.mainController.paintRangeOnSheet(selectedItem, Color.WHITE);
+            }
+        });
+        tableViewActiveRanges.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 1 && !event.isConsumed()) {
+                // Find the clicked row
+                TableView.TableViewSelectionModel<RangeGetters> selectionModel = tableViewActiveRanges.getSelectionModel();
+                RangeGetters selectedItem = selectionModel.getSelectedItem();
+
+                if (selectedItem != null) {
+                    if (lastClickedItem != null) {
+                        this.mainController.paintRangeOnSheet(lastClickedItem, Color.WHITE);
+                    }
+                    this.mainController.paintRangeOnSheet(selectedItem, Color.rgb(255, 105, 180));
+                    lastClickedItem = selectedItem;
+                }
+            }
+        });
         tableViewActiveRanges.setItems(ranges);
     }
 
     public void addRange(String name, String boundaries) {
         this.mainController.addRange(name, boundaries);
         ranges.add(this.mainController.getRange(name));
+        popupStage.close();
         tableViewActiveRanges.refresh();
     }
 
@@ -109,4 +149,7 @@ public class RangesController {
         this.ranges.addAll(ranges);
         tableViewActiveRanges.refresh();
     }
+
+
+
 }

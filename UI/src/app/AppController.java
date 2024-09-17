@@ -21,6 +21,7 @@ import modelUI.api.EffectiveValuesPoolPropertyReadOnly;
 import modelUI.api.FocusCellProperty;
 import modelUI.impl.EffectiveValuesPoolPropertyImpl;
 import modelUI.impl.FocusCellPropertyImpl;
+import org.glassfish.jaxb.core.v2.TODO;
 import progress.ProgressController;
 import ranges.RangesController;
 import sheet.SheetController;
@@ -307,5 +308,27 @@ public class AppController {
 
     public RangeGetters getRange(String name) {
         return engine.getRange(name);
+    }
+
+    public boolean deleteRange(RangeGetters range) {
+        if (!isRangeUsed(range)) {
+            engine.deleteRange(range.getName());
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private boolean isRangeUsed(RangeGetters range) {
+        for (CellGetters cell : this.currentSheet.getActiveCells().values()) {
+            if (cell.getOriginalValue().toUpperCase().contains(range.getName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void paintRangeOnSheet(RangeGetters range, Color color) {
+        this.sheetComponentController.paintRangeOnSheet(range, color);
     }
 }
