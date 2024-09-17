@@ -273,13 +273,13 @@ public class SheetController {
         return String.format("#%02X%02X%02X", red, green, blue);
     }
 
-    public void resetCellsToDefault() {
-        gridPane.getChildren().forEach(node -> {
-            if (node instanceof TextField) {
-                ((TextField) node).setStyle("-fx-text-fill: black;");
-                ((TextField) node).setBackground(Background.fill(Paint.valueOf("white")));
-            }
-        });
+    public void resetCellsToDefault(Coordinate focusrdCellCoordinate) {
+        TextField textField = cellsTextFieldMap.get(focusrdCellCoordinate);
+
+        if (textField != null) {
+            textField.setStyle("-fx-text-fill: black;");
+            textField.setBackground(Background.fill(Paint.valueOf("white")));
+        }
     }
 
     public void paintRangeOnSheet(RangeGetters range, Color color) {

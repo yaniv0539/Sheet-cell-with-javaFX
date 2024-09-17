@@ -299,7 +299,7 @@ public class AppController {
     }
 
     public void resetCellsToDefault() {
-        sheetComponentController.resetCellsToDefault();
+        sheetComponentController.resetCellsToDefault(CoordinateFactory.toCoordinate(cellInFocus.getCoordinate().get()));
     }
 
     public void addRange(String name, String boundaries) {
