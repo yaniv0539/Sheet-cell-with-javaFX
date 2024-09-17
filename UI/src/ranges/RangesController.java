@@ -115,7 +115,7 @@ public class RangesController {
             RangeGetters selectedItem = selectionModel.getSelectedItem();
 
             if (selectedItem != null && newValue) {
-                this.mainController.paintRangeOnSheet(selectedItem, Color.rgb(255, 105, 180));
+                this.mainController.paintRangeOnSheet(selectedItem, Color.rgb(251, 238, 166));
             } else if (selectedItem != null) {
                 this.mainController.paintRangeOnSheet(selectedItem, Color.WHITE);
             }
@@ -130,7 +130,7 @@ public class RangesController {
                     if (lastClickedItem != null) {
                         this.mainController.paintRangeOnSheet(lastClickedItem, Color.WHITE);
                     }
-                    this.mainController.paintRangeOnSheet(selectedItem, Color.rgb(255, 105, 180));
+                    this.mainController.paintRangeOnSheet(selectedItem, Color.rgb(251, 238, 166));
                     lastClickedItem = selectedItem;
                 }
             }
@@ -146,6 +146,7 @@ public class RangesController {
     }
 
     public void uploadRanges(Set<RangeGetters> ranges) {
+        this.ranges.clear();
         this.ranges.addAll(ranges);
         tableViewActiveRanges.refresh();
     }
