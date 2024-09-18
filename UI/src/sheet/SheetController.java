@@ -5,31 +5,25 @@ import javafx.collections.ListChangeListener;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
-import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.Skin;
 import javafx.scene.control.TextField;
-import javafx.scene.control.skin.TextFieldSkin;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.scene.text.TextFlow;
 import modelUI.api.EffectiveValuesPoolPropertyReadOnly;
 import sheet.coordinate.api.Coordinate;
 import sheet.coordinate.impl.CoordinateFactory;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 import sheet.layout.api.LayoutGetters;
-import sheet.range.api.Range;
 import sheet.range.api.RangeGetters;
 import sheet.range.boundaries.api.Boundaries;
-import sheet.range.boundaries.api.BoundariesGetters;
 
 
 public class SheetController {
@@ -50,10 +44,10 @@ public class SheetController {
         this.mainController = mainController;
     }
 
-    public ScrollPane getInitializedSheet(LayoutGetters layout) {
+    public ScrollPane getInitializedSheet(LayoutGetters layout, EffectiveValuesPoolPropertyReadOnly dataToView) {
         setLayoutGridPane(layout);
         //until here set the grid.
-        setBindsTo();
+        setBindsTo(dataToView);
         setScrollPane();
         return scrollPane;
     }
@@ -97,9 +91,8 @@ public class SheetController {
         }
     }
 
-    private void setBindsTo() {
+    private void setBindsTo(EffectiveValuesPoolPropertyReadOnly dataToView) {
 
-        EffectiveValuesPoolPropertyReadOnly dataToView = mainController.getEffectiveValuesPool();
         for (int row = 0; row < gridPane.getRowCount(); row++) {
             for (int col = 0; col < gridPane.getColumnCount(); col++) {
 
@@ -272,7 +265,7 @@ public class SheetController {
     }
 
     public void paintRangeOnSheet(RangeGetters range, Color color) {
-        BoundariesGetters boundaries = range.getBoundaries();
+        Boundaries boundaries = range.getBoundaries();
         Coordinate to = boundaries.getTo();
         Coordinate from = boundaries.getFrom();
 
@@ -286,6 +279,10 @@ public class SheetController {
                 }
             }
         }
+    }
+
+    public void filterRange(Boundaries boundariesToFilter, String filteringByColumn, List<String> filteringByValues) {
+
     }
 }
 

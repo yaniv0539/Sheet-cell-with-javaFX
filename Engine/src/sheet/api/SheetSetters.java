@@ -1,10 +1,8 @@
 package sheet.api;
 
 import sheet.coordinate.api.Coordinate;
-import sheet.range.api.Range;
 import sheet.range.api.RangeGetters;
 import sheet.range.boundaries.api.Boundaries;
-import sheet.range.boundaries.api.BoundariesGetters;
 
 import java.util.Map;
 

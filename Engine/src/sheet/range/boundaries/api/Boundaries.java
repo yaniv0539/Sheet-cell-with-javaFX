@@ -1,4 +1,8 @@
 package sheet.range.boundaries.api;
 
-public interface Boundaries extends BoundariesGetters, BoundariesSetters {
+import sheet.coordinate.api.Coordinate;
+
+public interface Boundaries {
+    Coordinate getFrom();
+    Coordinate getTo();
 }

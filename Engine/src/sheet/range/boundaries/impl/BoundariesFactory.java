@@ -2,9 +2,7 @@ package sheet.range.boundaries.impl;
 
 import sheet.coordinate.api.Coordinate;
 import sheet.coordinate.impl.CoordinateFactory;
-import sheet.coordinate.impl.CoordinateImpl;
 import sheet.range.boundaries.api.Boundaries;
-import sheet.range.boundaries.api.BoundariesGetters;
 
 import java.util.HashMap;
 import java.util.Map;
