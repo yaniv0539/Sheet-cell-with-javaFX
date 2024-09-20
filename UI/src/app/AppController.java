@@ -151,7 +151,6 @@ public class AppController {
     private void onFinishLoadingFile() {
         showHeaders.set(true);
         showRanges.set(true);
-        showCommands.set(true);
         headerComponentController.getSplitMenuButtonSelectVersion().setDisable(false);
         commandsComponentController.getButtonFilter().setDisable(false);
         setEffectiveValuesPoolProperty(engine.getSheetStatus(), this.effectiveValuesPool);
@@ -353,5 +352,9 @@ public class AppController {
 
     public void resetFilter() {
         onFinishLoadingFile();
+    }
+
+    public boolean isBoundariesValidForCurrentSheet(Boundaries boundaries) {
+        return currentSheet.isRangeInBoundaries(boundaries);
     }
 }

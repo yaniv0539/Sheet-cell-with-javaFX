@@ -269,7 +269,7 @@ public class CommandsController {
         filterStage.initModality(Modality.APPLICATION_MODAL);
         filterStage.setTitle(title);
 
-        Scene popupScene = new Scene(popupRoot, 700, 100);
+        Scene popupScene = new Scene(popupRoot, 770, 140);
         filterStage.setResizable(false);
         filterStage.setScene(popupScene);
 
@@ -280,5 +280,9 @@ public class CommandsController {
         this.mainController.getFilteredSheet(boundariesToFilter, filteringByColumn, filteringByValues);
         buttonFilter.setText("Reset Filter");
         filterStage.close();
+    }
+
+    public boolean isBoundariesValidForCurrentSheet(Boundaries boundaries) {
+        return this.mainController.isBoundariesValidForCurrentSheet(boundaries);
     }
 }

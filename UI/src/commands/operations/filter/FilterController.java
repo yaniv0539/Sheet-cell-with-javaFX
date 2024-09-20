@@ -26,7 +26,14 @@ public class FilterController {
     private Button buttonSubmit;
 
     @FXML
-    private TextField textFieldRange;
+    private TextField textFieldFrom;
+
+    @FXML
+    private TextField textFieldSeparator;
+
+    @FXML
+    private TextField textFieldTo;
+
 
     @FXML
     private TextField textFieldValues;
@@ -44,11 +51,12 @@ public class FilterController {
         comboBoxColumn1.setDisable(true);
         textFieldValues.setDisable(true);
         buttonSubmit.setDisable(true);
-        textFieldRange.textProperty().addListener((observableValue, oldValue, newValue) -> handleRangeValueChange(newValue));
+        textFieldFrom.textProperty().addListener((observableValue, oldValue, newValue) -> handleRangeValueChange(newValue));
+        textFieldTo.textProperty().addListener((observableValue, oldValue, newValue) -> handleRangeValueChange(newValue));
     }
 
     private void handleRangeValueChange(String newValue) {
-        if (!setColumnOptions(newValue)) {
+        if (!setColumnOptions(textFieldFrom.getText() + textFieldSeparator.getText() + textFieldTo.getText())) {
             comboBoxColumn1.setDisable(true);
             textFieldValues.setDisable(true);
             buttonSubmit.setDisable(true);
@@ -72,6 +80,11 @@ public class FilterController {
     private boolean setColumnOptions(String rangeValue) {
         try {
             boundariesToFilter = BoundariesFactory.toBoundaries(rangeValue);
+
+            if (!this.mainController.isBoundariesValidForCurrentSheet(boundariesToFilter)) {
+                return false;
+            }
+
             ObservableList<String> ranges = FXCollections.observableArrayList();
             for (int i = boundariesToFilter.getFrom().getCol(); i <= boundariesToFilter.getTo().getCol(); i++) {
                 char character = (char) ('A' + i); // Compute the character
