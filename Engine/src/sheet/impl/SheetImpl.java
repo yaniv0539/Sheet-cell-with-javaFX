@@ -12,7 +12,6 @@ import sheet.cell.api.Cell;
 import sheet.cell.api.CellGetters;
 import sheet.cell.impl.CellImpl;
 import sheet.coordinate.api.Coordinate;
-import sheet.coordinate.api.CoordinateGetters;
 import sheet.layout.api.Layout;
 import sheet.layout.api.LayoutGetters;
 import sheet.range.api.Range;
@@ -89,7 +88,7 @@ public class SheetImpl implements Sheet, Serializable {
     }
 
     @Override
-    public Map<CoordinateGetters, CellGetters> getActiveCells() {
+    public Map<Coordinate, CellGetters> getActiveCells() {
         return Collections.unmodifiableMap(this.activeCells);
     }
 

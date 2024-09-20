@@ -12,25 +12,27 @@ import javafx.concurrent.Task;
 import sheet.api.Sheet;
 
 import java.io.*;
-import java.util.Collections;
-import java.util.Set;
+import java.util.*;
 
 import engine.jaxb.generated.STLSheet;
 import sheet.api.SheetGetters;
+import sheet.cell.api.Cell;
 import sheet.cell.api.CellGetters;
 import sheet.coordinate.api.Coordinate;
 import sheet.coordinate.impl.CoordinateFactory;
+import sheet.impl.SheetImpl;
+import sheet.layout.api.Layout;
 import sheet.layout.api.LayoutGetters;
+import sheet.layout.impl.LayoutImpl;
 import sheet.range.api.RangeGetters;
 import sheet.range.boundaries.api.Boundaries;
-import sheet.range.boundaries.impl.BoundariesImpl;
+import sheet.range.boundaries.impl.BoundariesFactory;
 
 public class EngineImpl implements Engine, Serializable {
 
     private final static String JAXB_XML_GENERATED_PACKAGE_NAME = "engine.jaxb.generated";
     private final static int MAX_ROWS = 50;
     private final static int MAX_COLUMNS = 20;
-    private static final String CELL_RANGE_REGEX = "^[a-zA-Z]+\\d+\\.\\.[a-zA-Z]+\\d+$";
 
     private Sheet sheet;
     private final VersionManager versionManager;
@@ -131,22 +133,79 @@ public class EngineImpl implements Engine, Serializable {
     }
 
     @Override
+    public SheetGetters filter(Boundaries boundaries, String column, List<String> values) {
+
+        Coordinate to = boundaries.getTo();
+        Coordinate from = boundaries.getFrom();
+
+        Sheet newSheet = SheetImpl.create(copyLayout(this.sheet.getLayout()));
+
+        int columnInt = CoordinateFactory.parseColumnToInt(column) - 1;
+
+        Map<Integer, Integer> oldRowToNewRow = new HashMap<>();
+
+        int liftUpCellsCounter = 0;
+        int liftDownCellsCounter = 0;
+
+        for (int i = from.getRow(); i <= to.getRow(); i++) {
+            Cell cell = this.sheet.getCell(CoordinateFactory.createCoordinate(i, columnInt));
+            String effectiveValueStr;
+            if (cell == null) {
+                effectiveValueStr = "";
+            } else {
+                effectiveValueStr = cell.getEffectiveValue().toString();
+            }
+
+            if (values.contains(effectiveValueStr)) {
+                oldRowToNewRow.put(i, from.getRow() + liftDownCellsCounter);
+                liftDownCellsCounter++;
+            } else {
+                liftUpCellsCounter++;
+            }
+        }
+
+        this.sheet
+                .getActiveCells()
+                .keySet()
+                .stream()
+                .filter(coordinate -> coordinate.getRow() < from.getRow())
+                .forEach(oldCoordinate -> newSheet.setCell(oldCoordinate, this.sheet.getCell(oldCoordinate).getEffectiveValue().toString()));
+
+        this.sheet
+                .getActiveCells()
+                .keySet()
+                .stream()
+                .filter(coordinate -> coordinate.getRow() >= from.getRow() && coordinate.getRow() <= to.getRow())
+                .forEach(oldCoordinate -> {
+                    if (oldRowToNewRow.containsKey(oldCoordinate.getRow())) {
+                        Coordinate newCoordinate =
+                                CoordinateFactory.createCoordinate(
+                                        oldRowToNewRow.get(oldCoordinate.getRow()),
+                                        oldCoordinate.getCol());
+                        newSheet.setCell(newCoordinate, this.sheet.getCell(oldCoordinate).getEffectiveValue().toString());
+                    }
+                });
+
+        int finalLiftUpCellsCounter = liftUpCellsCounter;
+        this.sheet
+                .getActiveCells()
+                .keySet()
+                .stream()
+                .filter(coordinate -> coordinate.getRow() > to.getRow())
+                .forEach(oldCoordinate -> {
+                    Coordinate newCoordinate =
+                            CoordinateFactory.createCoordinate(
+                                    oldCoordinate.getRow() - finalLiftUpCellsCounter,
+                                         oldCoordinate.getCol());
+                    newSheet.setCell(newCoordinate, this.sheet.getCell(oldCoordinate).getEffectiveValue().toString());
+                });
+
+        return newSheet;
+    }
+
+    @Override
     public void addRange(String name, String boundariesString) {
-        if (boundariesString.trim().isEmpty()) {
-            throw new IllegalArgumentException("Range name cannot be empty");
-        }
-
-        if (!boundariesString.matches(CELL_RANGE_REGEX)) {
-            throw new NumberFormatException("Invalid range boundaries");
-        }
-
-        String[] cells = boundariesString.split("\\.\\.");
-
-        Coordinate from = CoordinateFactory.toCoordinate(cells[0]);
-        Coordinate to = CoordinateFactory.toCoordinate(cells[1]);
-
-        Boundaries boundaries = BoundariesImpl.create(from, to);
-        sheet.addRange(name, boundaries);
+        sheet.addRange(name, BoundariesFactory.toBoundaries(boundariesString));
     }
 
     @Override
@@ -175,6 +234,22 @@ public class EngineImpl implements Engine, Serializable {
 
     private static boolean isValidLayout(LayoutGetters layout) {
         return !(layout == null || layout.getRows() > MAX_ROWS || layout.getColumns() > MAX_COLUMNS);
+    }
+
+    private Layout copyLayout(LayoutGetters layout) {
+
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(baos);
+            oos.writeObject(layout);
+            oos.close();
+
+            ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(baos.toByteArray()));
+            return (LayoutImpl) ois.readObject();
+        } catch (Exception e) {
+            // deal with the runtime error that was discovered as part of invocation
+            throw new RuntimeException(e);
+        }
     }
 
 }

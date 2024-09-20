@@ -5,28 +5,23 @@ import javafx.collections.ListChangeListener;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
-import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.Skin;
 import javafx.scene.control.TextField;
-import javafx.scene.control.skin.TextFieldSkin;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.scene.text.TextFlow;
 import modelUI.api.EffectiveValuesPoolPropertyReadOnly;
 import sheet.coordinate.api.Coordinate;
 import sheet.coordinate.impl.CoordinateFactory;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 import sheet.layout.api.LayoutGetters;
-import sheet.range.api.Range;
 import sheet.range.api.RangeGetters;
 import sheet.range.boundaries.api.Boundaries;
 
@@ -49,10 +44,10 @@ public class SheetController {
         this.mainController = mainController;
     }
 
-    public ScrollPane getInitializedSheet(LayoutGetters layout) {
+    public ScrollPane getInitializedSheet(LayoutGetters layout, EffectiveValuesPoolPropertyReadOnly dataToView) {
         setLayoutGridPane(layout);
         //until here set the grid.
-        setBindsTo();
+        setBindsTo(dataToView);
         setScrollPane();
         return scrollPane;
     }
@@ -96,9 +91,8 @@ public class SheetController {
         }
     }
 
-    private void setBindsTo() {
+    private void setBindsTo(EffectiveValuesPoolPropertyReadOnly dataToView) {
 
-        EffectiveValuesPoolPropertyReadOnly dataToView = mainController.getEffectiveValuesPool();
         for (int row = 0; row < gridPane.getRowCount(); row++) {
             for (int col = 0; col < gridPane.getColumnCount(); col++) {
 
@@ -202,18 +196,6 @@ public class SheetController {
         }
     }
 
-//    private TextField targetTextField(Coordinate coordinate) {
-//        for (Node node : gridPane.getChildren()) {
-//            if(node instanceof TextField &&
-//                    GridPane.getRowIndex(node) != null && GridPane.getRowIndex(node) == coordinate.getRow() + 1 &&
-//                    GridPane.getColumnIndex(node) != null && GridPane.getColumnIndex(node) == coordinate.getCol() + 1)
-//            {
-//                return (TextField) node;  // Cast to TextField and return it
-//            }
-//        }
-//        return null;
-//    }
-
     public void changeColumnWidth(int column, int prefWidth) {
         gridPane.getColumnConstraints().get(column).setPrefWidth(prefWidth);
         gridPane.getColumnConstraints().get(column).setMinWidth(prefWidth);
@@ -297,6 +279,10 @@ public class SheetController {
                 }
             }
         }
+    }
+
+    public void filterRange(Boundaries boundariesToFilter, String filteringByColumn, List<String> filteringByValues) {
+
     }
 }
 

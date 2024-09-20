@@ -21,7 +21,6 @@ import modelUI.api.EffectiveValuesPoolPropertyReadOnly;
 import modelUI.api.FocusCellProperty;
 import modelUI.impl.EffectiveValuesPoolPropertyImpl;
 import modelUI.impl.FocusCellPropertyImpl;
-import org.glassfish.jaxb.core.v2.TODO;
 import progress.ProgressController;
 import ranges.RangesController;
 import sheet.SheetController;
@@ -29,12 +28,12 @@ import sheet.api.SheetGetters;
 import sheet.cell.api.Cell;
 import sheet.cell.api.CellGetters;
 import sheet.coordinate.api.Coordinate;
-import sheet.coordinate.api.CoordinateGetters;
 import sheet.coordinate.impl.CoordinateFactory;
-import sheet.range.api.Range;
 import sheet.range.api.RangeGetters;
+import sheet.range.boundaries.api.Boundaries;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -152,8 +151,10 @@ public class AppController {
     private void onFinishLoadingFile() {
         showHeaders.set(true);
         showRanges.set(true);
+        showCommands.set(true);
         headerComponentController.getSplitMenuButtonSelectVersion().setDisable(false);
-        setEffectiveValuesPoolProperty(engine.getSheetStatus());
+        commandsComponentController.getButtonFilter().setDisable(false);
+        setEffectiveValuesPoolProperty(engine.getSheetStatus(), this.effectiveValuesPool);
         setSheet();
         this.currentSheet = engine.getSheetStatus();
         headerComponentController.clearVersionButton();
@@ -164,14 +165,14 @@ public class AppController {
     private void setSheet() {
         sheetComponentController = new SheetController();
         sheetComponentController.setMainController(this);
-        sheetComponent = sheetComponentController.getInitializedSheet(engine.getSheetStatus().getLayout());
+        sheetComponent = sheetComponentController.getInitializedSheet(engine.getSheetStatus().getLayout(), effectiveValuesPool);
         appBorderPane.setCenter(sheetComponent);
     }
 
 
-    private void  setEffectiveValuesPoolProperty(SheetGetters sheetToView) {
+    private void setEffectiveValuesPoolProperty(SheetGetters sheetToView, EffectiveValuesPoolProperty effectiveValuesPool) {
 
-        Map<CoordinateGetters,CellGetters> map = sheetToView.getActiveCells();
+        Map<Coordinate,CellGetters> map = sheetToView.getActiveCells();
 
         for(int row = 0; row < sheetToView.getLayout().getRows(); row++) {
             for(int column = 0; column < sheetToView.getLayout().getColumns(); column++) {
@@ -224,7 +225,7 @@ public class AppController {
 
     public void updateCell() {
         engine.updateCellStatus(cellInFocus.getCoordinate().get(), cellInFocus.getOriginalValue().get());
-        setEffectiveValuesPoolProperty(engine.getSheetStatus());
+        setEffectiveValuesPoolProperty(engine.getSheetStatus(), this.effectiveValuesPool);
         //need to make in engine version manager, current version number.
         headerComponentController.addMenuOptionToVersionSelection(String.valueOf(engine.getVersionsManagerStatus().getVersions().size()));
 
@@ -238,7 +239,7 @@ public class AppController {
         showCommands.set(Integer.parseInt(numberOfVersion) == engine.getVersionsManagerStatus().getVersions().size());
         showRanges.set(Integer.parseInt(numberOfVersion) == engine.getVersionsManagerStatus().getVersions().size());
         showHeaders.set(Integer.parseInt(numberOfVersion) == engine.getVersionsManagerStatus().getVersions().size());
-        setEffectiveValuesPoolProperty(currentSheet);
+        setEffectiveValuesPoolProperty(currentSheet, this.effectiveValuesPool);
     }
 
     public void changeCommandsColumnWidth(double prefWidth) {
@@ -330,5 +331,27 @@ public class AppController {
 
     public void paintRangeOnSheet(RangeGetters range, Color color) {
         this.sheetComponentController.paintRangeOnSheet(range, color);
+    }
+
+    public void getFilteredSheet(Boundaries boundariesToFilter, String filteringByColumn, List<String> filteringByValues) {
+        SheetGetters filteredSheet = engine.filter(boundariesToFilter, filteringByColumn, filteringByValues);
+
+        EffectiveValuesPoolProperty effectiveValuesPoolProperty = new EffectiveValuesPoolPropertyImpl();
+        setEffectiveValuesPoolProperty(filteredSheet, effectiveValuesPoolProperty);
+
+        SheetController sheetComponentController = new SheetController();
+        sheetComponentController.setMainController(this);
+        ScrollPane sheetComponent = sheetComponentController.getInitializedSheet(filteredSheet.getLayout(), effectiveValuesPoolProperty);
+        appBorderPane.setCenter(sheetComponent);
+
+        showHeaders.set(false);
+        showRanges.set(false);
+        showCommands.set(false);
+        headerComponentController.getSplitMenuButtonSelectVersion().setDisable(true);
+        commandsComponentController.getButtonFilter().setDisable(false);
+    }
+
+    public void resetFilter() {
+        onFinishLoadingFile();
     }
 }

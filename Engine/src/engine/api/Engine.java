@@ -5,7 +5,9 @@ import sheet.api.SheetGetters;
 import sheet.cell.api.CellGetters;
 import sheet.range.api.Range;
 import sheet.range.api.RangeGetters;
+import sheet.range.boundaries.api.Boundaries;
 
+import java.util.List;
 import java.util.Set;
 
 public interface Engine {
@@ -23,5 +25,6 @@ public interface Engine {
     Set<RangeGetters> getRanges();
     void deleteRange(String name);
     javafx.concurrent.Task<Boolean> loadFileTask(String path);
+    SheetGetters filter(Boundaries boundaries, String column, List<String> values);
     void exit();
 }

@@ -1,7 +1,7 @@
 package commands;
 
 import app.AppController;
-import javafx.application.Platform;
+import commands.operations.filter.FilterController;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -9,15 +9,28 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.Background;
 import javafx.scene.paint.Color;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import modelUI.api.EffectiveValuesPoolProperty;
+import modelUI.impl.EffectiveValuesPoolPropertyImpl;
+import sheet.SheetController;
+import sheet.api.SheetGetters;
+import sheet.range.boundaries.api.Boundaries;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.List;
 
 
 public class CommandsController {
 
-    private static final String SET_COLUMN_SIZE_FXML_INCLUDE_RESOURCE = "visual/column/size/columnSize.fxml";
+    private static final String FILTER_POPUP_FXML_INCLUDE_RESOURCE = "operations/filter/filter.fxml";
 
     private AppController mainController;
 
@@ -48,6 +61,10 @@ public class CommandsController {
     private IntegerProperty heightProperty;
 
     private IntegerProperty widthProperty;
+
+    private Stage filterStage;
+
+    private boolean startFilter = true;
 
     public AppController getMainController() {
         return mainController;
@@ -93,6 +110,14 @@ public class CommandsController {
         return widthProperty;
     }
 
+    public Button getButtonFilter() {
+        return buttonFilter;
+    }
+
+    public Button getButtonSort() {
+        return buttonSort;
+    }
+
     public CommandsController() {
         heightProperty = new SimpleIntegerProperty();
         widthProperty = new SimpleIntegerProperty();
@@ -129,8 +154,15 @@ public class CommandsController {
     }
 
     @FXML
-    void filterAction(ActionEvent event) {
-
+    void filterAction(ActionEvent event) throws IOException {
+        if (startFilter) {
+            activateFilterPopup(FILTER_POPUP_FXML_INCLUDE_RESOURCE, "Filter");
+            startFilter = false;
+        } else {
+            mainController.resetFilter();
+            buttonFilter.setText("Filter");
+            startFilter = true;
+        }
     }
 
     @FXML
@@ -151,8 +183,9 @@ public class CommandsController {
     public void init() {
         BooleanProperty showCommandsProperty = this.mainController.showCommandsProperty();
         buttonResetToDefault.disableProperty().bind(showCommandsProperty.not());
-        buttonSort.disableProperty().bind(showCommandsProperty.not());
-        buttonFilter.disableProperty().bind(showCommandsProperty.not());
+        buttonSort.disableProperty().bind(mainController.showRangesProperty().not());
+        buttonFilter.setDisable(true);
+//        buttonFilter.disableProperty().bind(mainController.showRangesProperty().not());
         spinnerWidth.disableProperty().bind(showCommandsProperty.not());
         spinnerHeight.disableProperty().bind(showCommandsProperty.not());
         comboBoxAlignment.disableProperty().bind(showCommandsProperty.not());
@@ -219,5 +252,33 @@ public class CommandsController {
 
     public void changeCellTextColor(Color color) {
         colorPickerTextColor.setValue(color);
+    }
+
+    private void activateFilterPopup(String resource, String title) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        URL url = getClass().getResource(resource);
+        fxmlLoader.setLocation(url);
+        Parent popupRoot = fxmlLoader.load(url.openStream());
+
+        FilterController filterController = fxmlLoader.getController();
+
+        filterController.setMainController(this);
+        filterController.init();
+
+        this.filterStage = new Stage();
+        filterStage.initModality(Modality.APPLICATION_MODAL);
+        filterStage.setTitle(title);
+
+        Scene popupScene = new Scene(popupRoot, 700, 100);
+        filterStage.setResizable(false);
+        filterStage.setScene(popupScene);
+
+        filterStage.show();
+    }
+
+    public void filterRange(Boundaries boundariesToFilter, String filteringByColumn, List<String> filteringByValues) {
+        this.mainController.getFilteredSheet(boundariesToFilter, filteringByColumn, filteringByValues);
+        buttonFilter.setText("Reset Filter");
+        filterStage.close();
     }
 }
