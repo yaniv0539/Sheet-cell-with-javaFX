@@ -46,7 +46,7 @@ public class RangesController {
 
     private AppController mainController;
 
-    private ObservableList<RangeGetters> ranges;
+    private final ObservableList<RangeGetters> ranges;
 
     private Stage popupStage;
 

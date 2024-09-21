@@ -24,17 +24,9 @@ public class BoundariesImpl implements Boundaries, Serializable {
     }
 
     @Override
-    public void setFrom(Coordinate from) {
-        this.from = from;
-    }
-
-    @Override
     public Coordinate getTo() {
         return this.to;
     }
 
-    @Override
-    public void setTo(Coordinate to) {
-        this.to = to;
-    }
+
 }

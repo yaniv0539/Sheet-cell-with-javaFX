@@ -12,7 +12,6 @@ import sheet.cell.api.Cell;
 import sheet.cell.api.CellGetters;
 import sheet.cell.impl.CellImpl;
 import sheet.coordinate.api.Coordinate;
-import sheet.coordinate.api.CoordinateGetters;
 import sheet.layout.api.Layout;
 import sheet.layout.api.LayoutGetters;
 import sheet.range.api.Range;
@@ -89,7 +88,7 @@ public class SheetImpl implements Sheet, Serializable {
     }
 
     @Override
-    public Map<CoordinateGetters, CellGetters> getActiveCells() {
+    public Map<Coordinate, CellGetters> getActiveCells() {
         return Collections.unmodifiableMap(this.activeCells);
     }
 
@@ -119,14 +118,10 @@ public class SheetImpl implements Sheet, Serializable {
         }
     }
 
-    private void isRangeInBoundaries(Boundaries boundaries) {
-        try {
-            isCoordinateInBoundaries(boundaries.getFrom());
-            isCoordinateInBoundaries(boundaries.getTo());
-        } catch (Exception e) {
-            throw new IndexOutOfBoundsException("The range " + boundaries.getFrom() + ".." + boundaries.getTo() + " is not in sheet boundaries.");
-        }
-
+    @Override
+    public boolean isRangeInBoundaries(Boundaries boundaries) {
+        return isCoordinateInBoundaries(boundaries.getFrom()) && isCoordinateInBoundaries(boundaries.getTo());
+//        throw new IndexOutOfBoundsException("The range " + boundaries.getFrom() + ".." + boundaries.getTo() + " is not in sheet boundaries.");
     }
 
     @Override
@@ -141,7 +136,10 @@ public class SheetImpl implements Sheet, Serializable {
          Sum.sheetView = this;
          Average.sheetView = this;
 
-         isCoordinateInBoundaries(target);
+         if (!isCoordinateInBoundaries(target)) {
+             throw new IllegalArgumentException("Row or column out of bounds !");
+         }
+
          Cell updatedCell = CellImpl.create(target, version, originalValue);
          Cell previousCell =  insertCellToSheet(updatedCell);
 
@@ -239,7 +237,8 @@ public class SheetImpl implements Sheet, Serializable {
         updatedCellsCoordinates.push(coordinate);
     }
 
-    private boolean isCoordinateInBoundaries(Coordinate target) {
+    @Override
+    public boolean isCoordinateInBoundaries(Coordinate target) {
 
         if(!isRowInSheetBoundaries(target.getRow()) || !isColumnInSheetBoundaries(target.getCol())) {
             throw new IllegalArgumentException("Row or column out of bounds !");
