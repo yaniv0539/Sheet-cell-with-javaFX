@@ -12,6 +12,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -21,6 +22,8 @@ import modelUI.api.EffectiveValuesPoolPropertyReadOnly;
 import modelUI.api.FocusCellProperty;
 import modelUI.impl.EffectiveValuesPoolPropertyImpl;
 import modelUI.impl.FocusCellPropertyImpl;
+import modelUI.impl.VersionDesignManager;
+import org.glassfish.jaxb.core.v2.TODO;
 import progress.ProgressController;
 import ranges.RangesController;
 import sheet.SheetController;
@@ -29,6 +32,7 @@ import sheet.cell.api.Cell;
 import sheet.cell.api.CellGetters;
 import sheet.coordinate.api.Coordinate;
 import sheet.coordinate.impl.CoordinateFactory;
+import sheet.range.api.Range;
 import sheet.range.api.RangeGetters;
 import sheet.range.boundaries.api.Boundaries;
 
@@ -56,7 +60,7 @@ public class AppController {
     private Stage loadingStage;
     private Stage primaryStage;
 
-
+    private VersionDesignManager versionDesignManager;
     private FocusCellProperty cellInFocus;
     private SheetGetters currentSheet;
     private EffectiveValuesPoolProperty effectiveValuesPool;
@@ -72,6 +76,7 @@ public class AppController {
         this.effectiveValuesPool = new EffectiveValuesPoolPropertyImpl();
         this.progressComponentController = new ProgressController();
         this.loadingStage = new Stage();
+        this.versionDesignManager = new VersionDesignManager();
     }
 
     @FXML
@@ -142,10 +147,6 @@ public class AppController {
         loadingStage.show();
 
         new Thread(FileTask).start();
-
-        //old version.
-        // engine.readXMLInitFile(path);
-        //onFinishLoadingFile();
     }
 
     private void onFinishLoadingFile() {
@@ -159,6 +160,7 @@ public class AppController {
         headerComponentController.clearVersionButton();
         headerComponentController.addMenuOptionToVersionSelection(String.valueOf(engine.getVersionsManagerStatus().getVersions().size()));
         rangesComponentController.uploadRanges(engine.getRanges());
+        saveDesignVersion(sheetComponentController.getGridPane());
     }
 
     private void setSheet() {
@@ -225,9 +227,14 @@ public class AppController {
     public void updateCell() {
         engine.updateCellStatus(cellInFocus.getCoordinate().get(), cellInFocus.getOriginalValue().get());
         setEffectiveValuesPoolProperty(engine.getSheetStatus(), this.effectiveValuesPool);
+        saveDesignVersion(sheetComponentController.getGridPane());
         //need to make in engine version manager, current version number.
         headerComponentController.addMenuOptionToVersionSelection(String.valueOf(engine.getVersionsManagerStatus().getVersions().size()));
 
+    }
+
+    private void saveDesignVersion(GridPane gridPane) {
+        versionDesignManager.addVersion(gridPane);
     }
 
     public void viewSheetVersion(String numberOfVersion) {
@@ -239,6 +246,12 @@ public class AppController {
         showRanges.set(Integer.parseInt(numberOfVersion) == engine.getVersionsManagerStatus().getVersions().size());
         showHeaders.set(Integer.parseInt(numberOfVersion) == engine.getVersionsManagerStatus().getVersions().size());
         setEffectiveValuesPoolProperty(currentSheet, this.effectiveValuesPool);
+        resetSheetToVersionDesign(Integer.parseInt(numberOfVersion));
+    }
+
+    private void resetSheetToVersionDesign(int numberOfVersion) {
+
+        sheetComponentController.setGridPaneDesign(versionDesignManager.getVersionDesign(numberOfVersion));
     }
 
     public void changeCommandsColumnWidth(double prefWidth) {

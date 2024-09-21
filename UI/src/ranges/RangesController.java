@@ -150,7 +150,4 @@ public class RangesController {
         this.ranges.addAll(ranges);
         tableViewActiveRanges.refresh();
     }
-
-
-
 }

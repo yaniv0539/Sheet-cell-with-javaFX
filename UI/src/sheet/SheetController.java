@@ -13,6 +13,8 @@ import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import modelUI.api.EffectiveValuesPoolPropertyReadOnly;
+import modelUI.impl.TextFieldDesign;
+import modelUI.impl.VersionDesignManager;
 import sheet.coordinate.api.Coordinate;
 import sheet.coordinate.impl.CoordinateFactory;
 
@@ -34,6 +36,8 @@ public class SheetController {
     private GridPane gridPane;
     private final Map<Coordinate, TextField> cellsTextFieldMap = new HashMap<>();
     private final Map<Coordinate, Background> previousBackgrounds = new HashMap<>();
+    private int defaultRowHeight;
+    private int defaultColWidth;
 
     public SheetController() {
         scrollPane = new ScrollPane();
@@ -45,6 +49,8 @@ public class SheetController {
     }
 
     public ScrollPane getInitializedSheet(LayoutGetters layout, EffectiveValuesPoolPropertyReadOnly dataToView) {
+        this.defaultRowHeight = layout.getSize().getHeight();
+        this.defaultColWidth = layout.getSize().getWidth();
         setLayoutGridPane(layout);
         //until here set the grid.
         setBindsTo(dataToView);
@@ -239,7 +245,7 @@ public class SheetController {
     }
 
     public void changeCellBackgroundColor(Color color) {
-        Objects.requireNonNull(cellsTextFieldMap.get(CoordinateFactory.toCoordinate(mainController.getCellInFocus().getCoordinate().get()))).setBackground(Background.fill(color));
+        Objects.requireNonNull(cellsTextFieldMap.get(CoordinateFactory.toCoordinate(mainController.getCellInFocus().getCoordinate().get()))).setStyle("-fx-background-color: " + toHexString(color) + ";");
     }
 
     public void changeCellTextColor(Color color) {
@@ -283,6 +289,58 @@ public class SheetController {
 
     public void filterRange(Boundaries boundariesToFilter, String filteringByColumn, List<String> filteringByValues) {
 
+    }
+///Todo: the method that need to be deleted.
+    public void resetSheetToDefault() {
+        restRowsHeight();
+        resetColWidth();
+    }
+
+    private void restRowsHeight() {
+        for(int i = 1 ; i < gridPane.getRowCount(); i++){
+            changeRowHeight(i,defaultRowHeight);
+        }
+    }
+
+    private void resetColWidth() {
+        for(int i = 1 ; i < gridPane.getColumnCount(); i++){
+            changeColumnWidth(i,defaultColWidth);
+        }
+    }
+
+    public GridPane getGridPane() {
+     return gridPane;
+    }
+
+
+    public void setGridPaneDesign(VersionDesignManager.VersionDesign versionDesign) {
+        setNodeDesign(versionDesign.getCellDesignsVersion());
+        setColumnsDesign(versionDesign.getColumnsLayoutVersion());
+        setRowsDesign(versionDesign.getRowsLayoutVersion());
+    }
+
+    private void setRowsDesign(Map<Integer, Integer> rowsLayoutVersion) {
+        rowsLayoutVersion.forEach((index,rowHeight)->{
+            RowConstraints rowConstraints = gridPane.getRowConstraints().get(index);
+            rowConstraints.setPrefHeight(rowHeight);
+            rowConstraints.setMinHeight(rowHeight);
+            rowConstraints.setMaxHeight(rowHeight);
+        });
+    }
+
+    private void setColumnsDesign(Map<Integer, Integer> columnsLayoutVersion) {
+        columnsLayoutVersion.forEach((index,columnWidth)->{
+            ColumnConstraints columnConstraints = gridPane.getColumnConstraints().get(index);
+            columnConstraints.setPrefWidth(columnWidth);
+            columnConstraints.setMinWidth(columnWidth);
+            columnConstraints.setMaxWidth(columnWidth);
+        });
+    }
+
+    private void setNodeDesign(Map<Integer, TextFieldDesign> cellDesignsVersion) {
+        cellDesignsVersion.forEach((index, textFieldDesign) -> {
+            gridPane.getChildren().get(index).setStyle(textFieldDesign.getStyle());
+        });
     }
 }
 

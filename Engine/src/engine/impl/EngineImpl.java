@@ -117,8 +117,8 @@ public class EngineImpl implements Engine, Serializable {
             protected Boolean call() throws Exception {
 
                 for (int i = 0; i < 50; i++) {
-                    Thread.sleep(100);
-                    updateProgress(i,100);
+                    Thread.sleep(50);
+                    updateProgress(i,50);
                     if(i == 10){
                         updateMessage("Fetching...");
                     }
