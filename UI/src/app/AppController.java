@@ -31,7 +31,6 @@ import sheet.api.SheetGetters;
 import sheet.cell.api.Cell;
 import sheet.cell.api.CellGetters;
 import sheet.coordinate.api.Coordinate;
-import sheet.coordinate.api.CoordinateGetters;
 import sheet.coordinate.impl.CoordinateFactory;
 import sheet.range.api.Range;
 import sheet.range.api.RangeGetters;
@@ -174,7 +173,7 @@ public class AppController {
 
     private void setEffectiveValuesPoolProperty(SheetGetters sheetToView, EffectiveValuesPoolProperty effectiveValuesPool) {
 
-        Map<CoordinateGetters,CellGetters> map = sheetToView.getActiveCells();
+        Map<Coordinate,CellGetters> map = sheetToView.getActiveCells();
 
         for(int row = 0; row < sheetToView.getLayout().getRows(); row++) {
             for(int column = 0; column < sheetToView.getLayout().getColumns(); column++) {
