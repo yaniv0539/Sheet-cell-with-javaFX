@@ -205,7 +205,8 @@ public class AppController {
                 cellInFocus.setInfluenceOn(cell.getInfluenceOn().stream()
                         .map(CellGetters::getCoordinate)
                         .collect(Collectors.toSet()));
-            } else {
+                }
+            else {
                 cellInFocus.setOriginalValue("");
                 cellInFocus.setLastUpdateVersion("");
                 cellInFocus.setDependOn(new HashSet<>());
