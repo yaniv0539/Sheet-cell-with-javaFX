@@ -364,7 +364,15 @@ public class AppController {
     }
 
     public void resetFilter() {
-        onFinishLoadingFile();
+
+        viewSheetVersion(String.valueOf(currentSheet.getVersion()));
+        headerComponentController.getSplitMenuButtonSelectVersion().setDisable(false);
+//        showHeaders.set(true);
+//        showRanges.set(true);
+//        headerComponentController.getSplitMenuButtonSelectVersion().setDisable(false);
+//        commandsComponentController.getButtonFilter().setDisable(false);
+
+        appBorderPane.setCenter(sheetComponent);
     }
 
     public boolean isBoundariesValidForCurrentSheet(Boundaries boundaries) {
