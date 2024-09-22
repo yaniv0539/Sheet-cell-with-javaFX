@@ -166,41 +166,63 @@ public class EngineImpl implements Engine, Serializable {
             }
         }
 
-        this.sheet
-                .getActiveCells()
-                .keySet()
-                .stream()
-                .filter(coordinate -> coordinate.getRow() < from.getRow())
-                .forEach(oldCoordinate -> newSheet.setCell(oldCoordinate, sheetToFilter.getCell(oldCoordinate).getEffectiveValue().toString()));
 
+        //todo:itay filter version for exrecise demends.
         this.sheet
                 .getActiveCells()
                 .keySet()
-                .stream()
-                .filter(coordinate -> coordinate.getRow() >= from.getRow() && coordinate.getRow() <= to.getRow())
                 .forEach(oldCoordinate -> {
-                    if (oldRowToNewRow.containsKey(oldCoordinate.getRow())) {
-                        Coordinate newCoordinate =
-                                CoordinateFactory.createCoordinate(
-                                        oldRowToNewRow.get(oldCoordinate.getRow()),
-                                        oldCoordinate.getCol());
-                        newSheet.setCell(newCoordinate, sheetToFilter.getCell(oldCoordinate).getEffectiveValue().toString());
+                    if(oldCoordinate.getRow() < from.getRow() || oldCoordinate.getRow() > to.getRow() ||
+                            oldCoordinate.getCol() < from.getCol() || oldCoordinate.getCol() > to.getCol()){
+                        newSheet.setCell(oldCoordinate, sheetToFilter.getCell(oldCoordinate).getEffectiveValue().toString());
+                    }
+                    else{
+                        if(oldRowToNewRow.containsKey(oldCoordinate.getRow())){
+                            Coordinate newCoordinate =
+                                    CoordinateFactory.createCoordinate(
+                                            oldRowToNewRow.get(oldCoordinate.getRow()),
+                                            oldCoordinate.getCol());
+                            newSheet.setCell(newCoordinate, sheetToFilter.getCell(oldCoordinate).getEffectiveValue().toString());
+                        }
                     }
                 });
 
-        int finalLiftUpCellsCounter = liftUpCellsCounter;
-        this.sheet
-                .getActiveCells()
-                .keySet()
-                .stream()
-                .filter(coordinate -> coordinate.getRow() > to.getRow())
-                .forEach(oldCoordinate -> {
-                    Coordinate newCoordinate =
-                            CoordinateFactory.createCoordinate(
-                                    oldCoordinate.getRow() - finalLiftUpCellsCounter,
-                                         oldCoordinate.getCol());
-                    newSheet.setCell(newCoordinate, sheetToFilter.getCell(oldCoordinate).getEffectiveValue().toString());
-                });
+        //todo: this is yaniv version works like Gsheet.
+//        this.sheet
+//                .getActiveCells()
+//                .keySet()
+//                .stream()
+//                .filter(coordinate -> coordinate.getRow() < from.getRow() || coordinate.getRow() > to.getRow())
+//                .forEach(oldCoordinate -> newSheet.setCell(oldCoordinate, sheetToFilter.getCell(oldCoordinate).getEffectiveValue().toString()));
+//
+//        this.sheet
+//                .getActiveCells()
+//                .keySet()
+//                .stream()
+//                .filter(coordinate -> coordinate.getRow() >= from.getRow() && coordinate.getRow() <= to.getRow())
+//                .forEach(oldCoordinate -> {
+//                    if (oldRowToNewRow.containsKey(oldCoordinate.getRow())) {
+//                        Coordinate newCoordinate =
+//                                CoordinateFactory.createCoordinate(
+//                                        oldRowToNewRow.get(oldCoordinate.getRow()),
+//                                        oldCoordinate.getCol());
+//                        newSheet.setCell(newCoordinate, sheetToFilter.getCell(oldCoordinate).getEffectiveValue().toString());
+//                    }
+//                });
+        //        int finalLiftUpCellsCounter = liftUpCellsCounter;
+//        this.sheet
+//                .getActiveCells()
+//                .keySet()
+//                .stream()
+//                .filter(coordinate -> coordinate.getRow() > to.getRow())
+//                .forEach(oldCoordinate -> {
+//                    Coordinate newCoordinate =
+//                            CoordinateFactory.createCoordinate(
+//                                    oldCoordinate.getRow() - finalLiftUpCellsCounter,
+//                                         oldCoordinate.getCol());
+//                    newSheet.setCell(newCoordinate, sheetToFilter.getCell(oldCoordinate).getEffectiveValue().toString());
+//                });
+        //todo: until here
 
         return newSheet;
     }

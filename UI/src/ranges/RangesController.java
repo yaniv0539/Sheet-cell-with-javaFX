@@ -76,7 +76,7 @@ public class RangesController {
                 // TODO: Throw exception.
             }
         } else {
-            // TODO: Maybe exception.
+            // TODO: Maybe exception.itay: no need exeption
         }
     }
 
