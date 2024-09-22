@@ -65,6 +65,7 @@ public class AppController {
     private SheetGetters currentSheet;
     private EffectiveValuesPoolProperty effectiveValuesPool;
     private Engine engine;
+    private boolean OperationView;
 
 
     public AppController() {
@@ -77,6 +78,7 @@ public class AppController {
         this.progressComponentController = new ProgressController();
         this.loadingStage = new Stage();
         this.versionDesignManager = new VersionDesignManager();
+        OperationView = false;
     }
 
     @FXML
@@ -154,6 +156,7 @@ public class AppController {
         showRanges.set(true);
         headerComponentController.getSplitMenuButtonSelectVersion().setDisable(false);
         commandsComponentController.getButtonFilter().setDisable(false);
+        commandsComponentController.resetButtonFilter();
         setEffectiveValuesPoolProperty(engine.getSheetStatus(), this.effectiveValuesPool);
         setSheet();
         this.currentSheet = engine.getSheetStatus();
@@ -191,10 +194,9 @@ public class AppController {
 
     public void focusChanged(boolean newValue, Coordinate coordinate) {
 
-        showCommands.set(currentSheet.getVersion() == engine.getVersionsManagerStatus().getVersions().size());
-
-        if (newValue)
+        if (newValue && !OperationView )
         {
+            showCommands.set(currentSheet.getVersion() == engine.getVersionsManagerStatus().getVersions().size());
             Cell cell = currentSheet.getCell(coordinate);
             cellInFocus.setCoordinate(coordinate.toString());
 
@@ -226,6 +228,7 @@ public class AppController {
 
     public void updateCell() {
         engine.updateCellStatus(cellInFocus.getCoordinate().get(), cellInFocus.getOriginalValue().get());
+        this.currentSheet = engine.getSheetStatus();
         setEffectiveValuesPoolProperty(engine.getSheetStatus(), this.effectiveValuesPool);
         saveDesignVersion(sheetComponentController.getGridPane());
         //need to make in engine version manager, current version number.
@@ -346,7 +349,9 @@ public class AppController {
     }
 
     public void getFilteredSheet(Boundaries boundariesToFilter, String filteringByColumn, List<String> filteringByValues) {
-        SheetGetters filteredSheet = engine.filter(boundariesToFilter, filteringByColumn, filteringByValues);
+
+        OperationView = true;
+        SheetGetters filteredSheet = engine.filter(boundariesToFilter, filteringByColumn, filteringByValues, currentSheet.getVersion());
 
         EffectiveValuesPoolProperty effectiveValuesPoolProperty = new EffectiveValuesPoolPropertyImpl();
         setEffectiveValuesPoolProperty(filteredSheet, effectiveValuesPoolProperty);
@@ -365,6 +370,7 @@ public class AppController {
 
     public void resetFilter() {
 
+        OperationView = false;
         viewSheetVersion(String.valueOf(currentSheet.getVersion()));
         headerComponentController.getSplitMenuButtonSelectVersion().setDisable(false);
 //        showHeaders.set(true);

@@ -160,9 +160,12 @@ public class CommandsController {
             startFilter = false;
         } else {
             mainController.resetFilter();
-            buttonFilter.setText("Filter");
-            startFilter = true;
+            resetButtonFilter();
         }
+    }
+    public void resetButtonFilter(){
+        buttonFilter.setText("Filter");
+        startFilter = true;
     }
 
     @FXML

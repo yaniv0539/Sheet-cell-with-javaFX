@@ -133,12 +133,14 @@ public class EngineImpl implements Engine, Serializable {
     }
 
     @Override
-    public SheetGetters filter(Boundaries boundaries, String column, List<String> values) {
+    public SheetGetters filter(Boundaries boundaries, String column, List<String> values,int version) {
 
         Coordinate to = boundaries.getTo();
         Coordinate from = boundaries.getFrom();
 
-        Sheet newSheet = SheetImpl.create(copyLayout(this.sheet.getLayout()));
+        SheetGetters sheetToFilter = versionManager.getVersion(version);
+
+        Sheet newSheet = SheetImpl.create(copyLayout(sheetToFilter.getLayout())); //here need to bring the version we now look at.
 
         int columnInt = CoordinateFactory.parseColumnToInt(column) - 1;
 
@@ -148,7 +150,7 @@ public class EngineImpl implements Engine, Serializable {
         int liftDownCellsCounter = 0;
 
         for (int i = from.getRow(); i <= to.getRow(); i++) {
-            Cell cell = this.sheet.getCell(CoordinateFactory.createCoordinate(i, columnInt));
+            Cell cell = sheetToFilter.getCell(CoordinateFactory.createCoordinate(i, columnInt));
             String effectiveValueStr;
             if (cell == null) {
                 effectiveValueStr = "";
@@ -169,7 +171,7 @@ public class EngineImpl implements Engine, Serializable {
                 .keySet()
                 .stream()
                 .filter(coordinate -> coordinate.getRow() < from.getRow())
-                .forEach(oldCoordinate -> newSheet.setCell(oldCoordinate, this.sheet.getCell(oldCoordinate).getEffectiveValue().toString()));
+                .forEach(oldCoordinate -> newSheet.setCell(oldCoordinate, sheetToFilter.getCell(oldCoordinate).getEffectiveValue().toString()));
 
         this.sheet
                 .getActiveCells()
@@ -182,7 +184,7 @@ public class EngineImpl implements Engine, Serializable {
                                 CoordinateFactory.createCoordinate(
                                         oldRowToNewRow.get(oldCoordinate.getRow()),
                                         oldCoordinate.getCol());
-                        newSheet.setCell(newCoordinate, this.sheet.getCell(oldCoordinate).getEffectiveValue().toString());
+                        newSheet.setCell(newCoordinate, sheetToFilter.getCell(oldCoordinate).getEffectiveValue().toString());
                     }
                 });
 
@@ -197,7 +199,7 @@ public class EngineImpl implements Engine, Serializable {
                             CoordinateFactory.createCoordinate(
                                     oldCoordinate.getRow() - finalLiftUpCellsCounter,
                                          oldCoordinate.getCol());
-                    newSheet.setCell(newCoordinate, this.sheet.getCell(oldCoordinate).getEffectiveValue().toString());
+                    newSheet.setCell(newCoordinate, sheetToFilter.getCell(oldCoordinate).getEffectiveValue().toString());
                 });
 
         return newSheet;

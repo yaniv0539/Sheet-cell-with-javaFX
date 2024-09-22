@@ -25,6 +25,6 @@ public interface Engine {
     Set<RangeGetters> getRanges();
     void deleteRange(String name);
     javafx.concurrent.Task<Boolean> loadFileTask(String path);
-    SheetGetters filter(Boundaries boundaries, String column, List<String> values);
+    SheetGetters filter(Boundaries boundaries, String column, List<String> values,int version);
     void exit();
 }
