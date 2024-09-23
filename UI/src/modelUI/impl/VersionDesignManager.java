@@ -1,5 +1,6 @@
 package modelUI.impl;
 
+import app.AppController;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.GridPane;
@@ -12,6 +13,7 @@ import java.util.Map;
 public class VersionDesignManager {
 
     int numberOfVersions;
+    AppController mainController;
     Map<Integer,Map<Integer,TextFieldDesign>> cellsDesigns;
     Map<Integer,Map<Integer,Integer>> rowsLayouts;
     Map<Integer,Map<Integer,Integer>> columnsLayouts;
@@ -74,15 +76,20 @@ public class VersionDesignManager {
     }
 
     private void setCellsDesign(GridPane gridPane) {
+
         Map<Integer,TextFieldDesign> IndexNodeToCellDesign = new HashMap<>();
         for (int i = 0; i < gridPane.getChildren().size(); i++) {
             if (gridPane.getChildren().get(i) instanceof TextField tf) {
 
-                IndexNodeToCellDesign.put(i,new TextFieldDesign(tf.getStyle(),tf.getFont()));
+                IndexNodeToCellDesign.put(i,new TextFieldDesign(mainController.getBackground(tf),tf.getStyle(),tf.getFont()));
             }
         }
 
         cellsDesigns.put(numberOfVersions,IndexNodeToCellDesign);
+    }
+
+    public void setMainController(AppController mainController) {
+        this.mainController = mainController;
     }
 
     public VersionDesign getVersionDesign(int version){

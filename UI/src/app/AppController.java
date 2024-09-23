@@ -11,6 +11,7 @@ import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
@@ -87,6 +88,7 @@ public class AppController {
             headerComponentController.setMainController(this);
             commandsComponentController.setMainController(this);
             rangesComponentController.setMainController(this);
+            versionDesignManager.setMainController(this);
 
             headerComponentController.init();
             commandsComponentController.init();
@@ -383,5 +385,9 @@ public class AppController {
 
     public boolean isBoundariesValidForCurrentSheet(Boundaries boundaries) {
         return currentSheet.isRangeInBoundaries(boundaries);
+    }
+
+    public Color getBackground(TextField tf) {
+        return sheetComponentController.getTextFieldBackgroundColor(tf);
     }
 }

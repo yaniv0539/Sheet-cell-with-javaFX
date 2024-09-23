@@ -225,6 +225,7 @@ public class SheetController {
     }
 
     public Color getTextFieldBackgroundColor(TextField textField) {
+
         Background background = textField.getBackground();
         if (background != null && !background.getFills().isEmpty()) {
             for (BackgroundFill fill : background.getFills().reversed()) {
@@ -245,7 +246,11 @@ public class SheetController {
     }
 
     public void changeCellBackgroundColor(Color color) {
-        Objects.requireNonNull(cellsTextFieldMap.get(CoordinateFactory.toCoordinate(mainController.getCellInFocus().getCoordinate().get()))).setStyle("-fx-background-color: " + toHexString(color) + ";");
+        if(color != null)
+
+           //Objects.requireNonNull(cellsTextFieldMap.get(CoordinateFactory.toCoordinate(mainController.getCellInFocus().getCoordinate().get()))).setStyle("-fx-background-color: " + toHexString(color) + ";");
+             Objects.requireNonNull(cellsTextFieldMap.get(CoordinateFactory.toCoordinate(mainController.getCellInFocus().getCoordinate().get()))).setBackground(
+                     new Background(new BackgroundFill(color, CornerRadii.EMPTY, null)));
     }
 
     public void changeCellTextColor(Color color) {
@@ -266,7 +271,8 @@ public class SheetController {
 
         if (textField != null) {
             textField.setStyle("-fx-text-fill: black;");
-            textField.setBackground(Background.fill(Paint.valueOf("white")));
+            //textField.setStyle("-fx-background-color: white;");
+            textField.setBackground(new Background(new BackgroundFill(Paint.valueOf("white"), CornerRadii.EMPTY, null)));
         }
     }
 
@@ -339,7 +345,13 @@ public class SheetController {
 
     private void setNodeDesign(Map<Integer, TextFieldDesign> cellDesignsVersion) {
         cellDesignsVersion.forEach((index, textFieldDesign) -> {
-            gridPane.getChildren().get(index).setStyle(textFieldDesign.getStyle());
+            if(gridPane.getChildren().get(index) instanceof TextField)
+            {
+                TextField textField = (TextField) gridPane.getChildren().get(index);
+                textField.setStyle(textFieldDesign.getTextStyle());
+                textField.setBackground(new Background(new BackgroundFill(textFieldDesign.getBackgroundColor(),CornerRadii.EMPTY,null)));
+
+            }
         });
     }
 }

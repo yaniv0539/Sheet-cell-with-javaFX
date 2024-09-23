@@ -150,7 +150,8 @@ public class CommandsController {
 
     @FXML
     void backgroundColorAction(ActionEvent event) {
-        mainController.changeSheetCellBackgroundColor(colorPickerBackgroundColor.getValue());
+        //try to elimnate
+        //mainController.changeSheetCellBackgroundColor(colorPickerBackgroundColor.getValue());
     }
 
     @FXML
