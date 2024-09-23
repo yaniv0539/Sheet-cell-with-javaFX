@@ -4,6 +4,7 @@ import expression.api.Data;
 import expression.api.DataType;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class DataImpl implements Data, Serializable {
 
@@ -47,5 +48,18 @@ public class DataImpl implements Data, Serializable {
             return value.toString().toUpperCase();
         }
         return value.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DataImpl data = (DataImpl) o;
+        return type == data.type && Objects.equals(value, data.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(type, value);
     }
 }

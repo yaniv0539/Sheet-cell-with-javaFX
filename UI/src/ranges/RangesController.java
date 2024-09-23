@@ -76,7 +76,7 @@ public class RangesController {
                 // TODO: Throw exception.
             }
         } else {
-            // TODO: Maybe exception.
+            // TODO: Maybe exception.itay: no need exeption
         }
     }
 
@@ -110,31 +110,34 @@ public class RangesController {
         tableViewActiveRanges.disableProperty().bind(showRangesProperty.not());
 
         tableActiveRanges.setCellValueFactory(new PropertyValueFactory<>("name"));
+
         tableViewActiveRanges.focusedProperty().addListener((observable, oldValue, newValue) -> {
             TableView.TableViewSelectionModel<RangeGetters> selectionModel = tableViewActiveRanges.getSelectionModel();
             RangeGetters selectedItem = selectionModel.getSelectedItem();
 
-            if (selectedItem != null && newValue) {
-                this.mainController.paintRangeOnSheet(selectedItem, Color.rgb(251, 238, 166));
-            } else if (selectedItem != null) {
-                this.mainController.paintRangeOnSheet(selectedItem, Color.WHITE);
+            if (lastClickedItem != null && !newValue) {
+                this.mainController.resetRangeOnSheet(lastClickedItem);
+                selectionModel.clearSelection();
             }
         });
+
         tableViewActiveRanges.setOnMouseClicked(event -> {
-            if (event.getClickCount() == 1 && !event.isConsumed()) {
+           if (event.getClickCount() == 1 && !event.isConsumed()) {
                 // Find the clicked row
                 TableView.TableViewSelectionModel<RangeGetters> selectionModel = tableViewActiveRanges.getSelectionModel();
                 RangeGetters selectedItem = selectionModel.getSelectedItem();
 
                 if (selectedItem != null) {
                     if (lastClickedItem != null) {
-                        this.mainController.paintRangeOnSheet(lastClickedItem, Color.WHITE);
+                        //return all the cells in the range to the previuos background
+                        this.mainController.resetRangeOnSheet(lastClickedItem);
                     }
                     this.mainController.paintRangeOnSheet(selectedItem, Color.rgb(251, 238, 166));
                     lastClickedItem = selectedItem;
                 }
             }
         });
+
         tableViewActiveRanges.setItems(ranges);
     }
 
@@ -150,4 +153,5 @@ public class RangesController {
         this.ranges.addAll(ranges);
         tableViewActiveRanges.refresh();
     }
+
 }

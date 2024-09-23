@@ -150,7 +150,8 @@ public class CommandsController {
 
     @FXML
     void backgroundColorAction(ActionEvent event) {
-        mainController.changeSheetCellBackgroundColor(colorPickerBackgroundColor.getValue());
+        //try to elimnate
+        //mainController.changeSheetCellBackgroundColor(colorPickerBackgroundColor.getValue());
     }
 
     @FXML
@@ -160,9 +161,12 @@ public class CommandsController {
             startFilter = false;
         } else {
             mainController.resetFilter();
-            buttonFilter.setText("Filter");
-            startFilter = true;
+            resetButtonFilter();
         }
+    }
+    public void resetButtonFilter(){
+        buttonFilter.setText("Filter");
+        startFilter = true;
     }
 
     @FXML

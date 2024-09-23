@@ -12,4 +12,5 @@ public interface FocusCellPropertyWriteOnly {
     void setLastUpdateVersion(String lastUpdateVersion );
     void setDependOn(Collection<Coordinate> dependOn );
     void setInfluenceOn(Collection<Coordinate> influence );
+    void clear();
 }

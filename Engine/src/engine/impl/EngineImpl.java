@@ -133,12 +133,14 @@ public class EngineImpl implements Engine, Serializable {
     }
 
     @Override
-    public SheetGetters filter(Boundaries boundaries, String column, List<String> values) {
+    public SheetGetters filter(Boundaries boundaries, String column, List<String> values,int version) {
 
         Coordinate to = boundaries.getTo();
         Coordinate from = boundaries.getFrom();
 
-        Sheet newSheet = SheetImpl.create(copyLayout(this.sheet.getLayout()));
+        SheetGetters sheetToFilter = versionManager.getVersion(version);
+
+        Sheet newSheet = SheetImpl.create(copyLayout(sheetToFilter.getLayout())); //here need to bring the version we now look at.
 
         int columnInt = CoordinateFactory.parseColumnToInt(column) - 1;
 
@@ -148,7 +150,7 @@ public class EngineImpl implements Engine, Serializable {
         int liftDownCellsCounter = 0;
 
         for (int i = from.getRow(); i <= to.getRow(); i++) {
-            Cell cell = this.sheet.getCell(CoordinateFactory.createCoordinate(i, columnInt));
+            Cell cell = sheetToFilter.getCell(CoordinateFactory.createCoordinate(i, columnInt));
             String effectiveValueStr;
             if (cell == null) {
                 effectiveValueStr = "";
@@ -164,41 +166,63 @@ public class EngineImpl implements Engine, Serializable {
             }
         }
 
-        this.sheet
-                .getActiveCells()
-                .keySet()
-                .stream()
-                .filter(coordinate -> coordinate.getRow() < from.getRow())
-                .forEach(oldCoordinate -> newSheet.setCell(oldCoordinate, this.sheet.getCell(oldCoordinate).getEffectiveValue().toString()));
 
+        //todo:itay filter version for exrecise demends.
         this.sheet
                 .getActiveCells()
                 .keySet()
-                .stream()
-                .filter(coordinate -> coordinate.getRow() >= from.getRow() && coordinate.getRow() <= to.getRow())
                 .forEach(oldCoordinate -> {
-                    if (oldRowToNewRow.containsKey(oldCoordinate.getRow())) {
-                        Coordinate newCoordinate =
-                                CoordinateFactory.createCoordinate(
-                                        oldRowToNewRow.get(oldCoordinate.getRow()),
-                                        oldCoordinate.getCol());
-                        newSheet.setCell(newCoordinate, this.sheet.getCell(oldCoordinate).getEffectiveValue().toString());
+                    if(oldCoordinate.getRow() < from.getRow() || oldCoordinate.getRow() > to.getRow() ||
+                            oldCoordinate.getCol() < from.getCol() || oldCoordinate.getCol() > to.getCol()){
+                        newSheet.setCell(oldCoordinate, sheetToFilter.getCell(oldCoordinate).getEffectiveValue().toString());
+                    }
+                    else{
+                        if(oldRowToNewRow.containsKey(oldCoordinate.getRow())){
+                            Coordinate newCoordinate =
+                                    CoordinateFactory.createCoordinate(
+                                            oldRowToNewRow.get(oldCoordinate.getRow()),
+                                            oldCoordinate.getCol());
+                            newSheet.setCell(newCoordinate, sheetToFilter.getCell(oldCoordinate).getEffectiveValue().toString());
+                        }
                     }
                 });
 
-        int finalLiftUpCellsCounter = liftUpCellsCounter;
-        this.sheet
-                .getActiveCells()
-                .keySet()
-                .stream()
-                .filter(coordinate -> coordinate.getRow() > to.getRow())
-                .forEach(oldCoordinate -> {
-                    Coordinate newCoordinate =
-                            CoordinateFactory.createCoordinate(
-                                    oldCoordinate.getRow() - finalLiftUpCellsCounter,
-                                         oldCoordinate.getCol());
-                    newSheet.setCell(newCoordinate, this.sheet.getCell(oldCoordinate).getEffectiveValue().toString());
-                });
+        //todo: this is yaniv version works like Gsheet.
+//        this.sheet
+//                .getActiveCells()
+//                .keySet()
+//                .stream()
+//                .filter(coordinate -> coordinate.getRow() < from.getRow() || coordinate.getRow() > to.getRow())
+//                .forEach(oldCoordinate -> newSheet.setCell(oldCoordinate, sheetToFilter.getCell(oldCoordinate).getEffectiveValue().toString()));
+//
+//        this.sheet
+//                .getActiveCells()
+//                .keySet()
+//                .stream()
+//                .filter(coordinate -> coordinate.getRow() >= from.getRow() && coordinate.getRow() <= to.getRow())
+//                .forEach(oldCoordinate -> {
+//                    if (oldRowToNewRow.containsKey(oldCoordinate.getRow())) {
+//                        Coordinate newCoordinate =
+//                                CoordinateFactory.createCoordinate(
+//                                        oldRowToNewRow.get(oldCoordinate.getRow()),
+//                                        oldCoordinate.getCol());
+//                        newSheet.setCell(newCoordinate, sheetToFilter.getCell(oldCoordinate).getEffectiveValue().toString());
+//                    }
+//                });
+        //        int finalLiftUpCellsCounter = liftUpCellsCounter;
+//        this.sheet
+//                .getActiveCells()
+//                .keySet()
+//                .stream()
+//                .filter(coordinate -> coordinate.getRow() > to.getRow())
+//                .forEach(oldCoordinate -> {
+//                    Coordinate newCoordinate =
+//                            CoordinateFactory.createCoordinate(
+//                                    oldCoordinate.getRow() - finalLiftUpCellsCounter,
+//                                         oldCoordinate.getCol());
+//                    newSheet.setCell(newCoordinate, sheetToFilter.getCell(oldCoordinate).getEffectiveValue().toString());
+//                });
+        //todo: until here
 
         return newSheet;
     }

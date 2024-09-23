@@ -1,24 +1,32 @@
 package modelUI.impl;
 
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 
 public class TextFieldDesign {
 
-    String style;
+    Color backgroundColor;
+    String textStyle;
     Font textFont;
 
     public TextFieldDesign() {}
 
-    public TextFieldDesign(String style, Font textFont) {
-        this.style = style;
+    public TextFieldDesign(Color backgroundColor,String textStyle, Font textFont) {
+        this.backgroundColor = backgroundColor;
+        this.textStyle = textStyle;
         this.textFont = textFont;
     }
 
-    public String getStyle() {
-        return style;
+    public String getTextStyle() {
+        return textStyle;
     }
 
     public Font getTextFont() {
         return textFont;
+    }
+
+    public Color getBackgroundColor() {
+        return backgroundColor;
     }
 }

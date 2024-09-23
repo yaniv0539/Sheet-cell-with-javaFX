@@ -93,4 +93,14 @@ public class FocusCellPropertyImpl implements FocusCellProperty {
         this.influenceOn.addAll(influenceOn);
 
     }
+
+    @Override
+    public void clear() {
+        coordinate.set("");
+        originalValue.set("");
+        effectiveValue.set("");
+        lastUpdateVersion.set("");
+        setDependOn(new HashSet<>());
+        setInfluenceOn(new HashSet<>());
+    }
 }

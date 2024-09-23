@@ -22,7 +22,7 @@ public class Sum extends UnaryExpression {
     @Override
     protected Data dynamicEvaluate(Data input) {
 
-        Data data = new DataImpl(DataType.UNKNOWN,Double.NaN);;
+        Data data = new DataImpl(DataType.UNKNOWN,Double.NaN);
 
         if(input.getType() == DataType.STRING) {
 
@@ -33,11 +33,14 @@ public class Sum extends UnaryExpression {
                         .map(coordinate -> sheetView.getCell(coordinate))
                         .filter(Objects::nonNull)
                         .map(CellGetters::getEffectiveValue)
-                        .filter(dataInCell -> dataInCell.getType() == DataType.NUMERIC)
+                        .filter(dataInCell -> dataInCell.getType() == DataType.NUMERIC || dataInCell.equals(new DataImpl(DataType.UNKNOWN,Double.NaN)))
                         .mapToDouble(dataInCell-> (double)dataInCell.getValue())
                         .sum();
 
-                data = new DataImpl(DataType.NUMERIC,sum);
+                if(!Double.isNaN(sum)) {
+                    data = new DataImpl(DataType.NUMERIC,sum);
+                }
+
             }
         }
 
