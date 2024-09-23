@@ -24,7 +24,6 @@ import modelUI.api.FocusCellProperty;
 import modelUI.impl.EffectiveValuesPoolPropertyImpl;
 import modelUI.impl.FocusCellPropertyImpl;
 import modelUI.impl.VersionDesignManager;
-import org.glassfish.jaxb.core.v2.TODO;
 import progress.ProgressController;
 import ranges.RangesController;
 import sheet.SheetController;
@@ -33,7 +32,6 @@ import sheet.cell.api.Cell;
 import sheet.cell.api.CellGetters;
 import sheet.coordinate.api.Coordinate;
 import sheet.coordinate.impl.CoordinateFactory;
-import sheet.range.api.Range;
 import sheet.range.api.RangeGetters;
 import sheet.range.boundaries.api.Boundaries;
 
@@ -388,6 +386,10 @@ public class AppController {
     }
 
     public Color getBackground(TextField tf) {
-        return sheetComponentController.getTextFieldBackgroundColor(tf);
+        return sheetComponentController.getTextFieldBackgroundColor(tf.getBackground());
+    }
+
+    public void resetRangeOnSheet(RangeGetters selectedItem) {
+        sheetComponentController.resetRangeOnSheet(selectedItem);
     }
 }
