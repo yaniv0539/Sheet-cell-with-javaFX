@@ -2,6 +2,7 @@ package commands;
 
 import app.AppController;
 import commands.operations.filter.FilterController;
+import commands.operations.sort.SortController;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -31,6 +32,7 @@ import java.util.List;
 public class CommandsController {
 
     private static final String FILTER_POPUP_FXML_INCLUDE_RESOURCE = "operations/filter/filter.fxml";
+    private static final String SORT_POPUP_FXML_INCLUDE_RESOURCE = "operations/sort/sort.fxml";
 
     private AppController mainController;
 
@@ -63,8 +65,10 @@ public class CommandsController {
     private IntegerProperty widthProperty;
 
     private Stage filterStage;
+    private Stage sortStage;
 
     private boolean startFilter = true;
+    private boolean startSort = true;
 
     public AppController getMainController() {
         return mainController;
@@ -170,14 +174,51 @@ public class CommandsController {
     }
 
     @FXML
+    void sortAction(ActionEvent event) throws IOException{
+        if (startSort) {
+            activateSortPopup(SORT_POPUP_FXML_INCLUDE_RESOURCE, "Sort");
+            startSort = false;
+        } else {
+            mainController.resetSort();
+            resetButtonSort();
+        }
+    }
+
+    private void activateSortPopup(String resource, String title) throws IOException {
+
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        URL url = getClass().getResource(resource);
+        fxmlLoader.setLocation(url);
+        Parent popupRoot = fxmlLoader.load(url.openStream());
+
+        SortController sortController = fxmlLoader.getController();
+
+        sortController.setMainController(this);
+        sortController.init();
+
+        this.sortStage = new Stage();
+        sortStage.initModality(Modality.APPLICATION_MODAL);
+        sortStage.setTitle(title);
+
+        Scene popupScene = new Scene(popupRoot, 770, 140);
+        sortStage.setResizable(false);
+        sortStage.setScene(popupScene);
+
+        sortStage.show();
+
+    }
+
+    private void resetButtonSort() {
+        buttonSort.setText("Sort");
+        startSort = true;
+    }
+
+    @FXML
     void resetToDefaultAction(ActionEvent event) {
         mainController.resetCellsToDefault();
     }
 
-    @FXML
-    void sortAction(ActionEvent event) {
 
-    }
 
     @FXML
     void textColorAction(ActionEvent event) {
@@ -187,7 +228,7 @@ public class CommandsController {
     public void init() {
         BooleanProperty showCommandsProperty = this.mainController.showCommandsProperty();
         buttonResetToDefault.disableProperty().bind(showCommandsProperty.not());
-        buttonSort.disableProperty().bind(mainController.showRangesProperty().not());
+        buttonSort.setDisable(true);
         buttonFilter.setDisable(true);
 //        buttonFilter.disableProperty().bind(mainController.showRangesProperty().not());
         spinnerWidth.disableProperty().bind(showCommandsProperty.not());

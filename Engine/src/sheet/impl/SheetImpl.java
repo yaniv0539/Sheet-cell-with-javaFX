@@ -12,6 +12,7 @@ import sheet.cell.api.Cell;
 import sheet.cell.api.CellGetters;
 import sheet.cell.impl.CellImpl;
 import sheet.coordinate.api.Coordinate;
+import sheet.coordinate.impl.CoordinateFactory;
 import sheet.layout.api.Layout;
 import sheet.layout.api.LayoutGetters;
 import sheet.range.api.Range;
@@ -397,4 +398,26 @@ public class SheetImpl implements Sheet, Serializable {
         return this.ranges;
     }
 
+    @Override
+    public List<List<CellGetters>> getCellInRange(int startRow, int endRow, int startCol, int endCol) {
+        List<List<CellGetters>> cellsInRange = new ArrayList<>();
+
+        for (int row = startRow; row <= endRow; row++) {
+            List<CellGetters> rowCellsInRange = new ArrayList<>();
+            for (int col = startCol; col <= endCol; col++) {
+                Cell cell = getCell(CoordinateFactory.createCoordinate(row, col));
+                if(cell != null){
+                    rowCellsInRange.add(cell);
+                }
+                else{
+                    rowCellsInRange.add(CellImpl.create(CoordinateFactory.createCoordinate(row, col),
+                            version, DataImpl.empty));
+                }
+
+            }
+            cellsInRange.add(rowCellsInRange);
+        }
+
+        return cellsInRange;
+    }
 }

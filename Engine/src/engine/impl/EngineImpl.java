@@ -168,7 +168,7 @@ public class EngineImpl implements Engine, Serializable {
 
 
         //todo:itay filter version for exrecise demends.
-        this.sheet
+        sheetToFilter
                 .getActiveCells()
                 .keySet()
                 .forEach(oldCoordinate -> {
@@ -228,6 +228,143 @@ public class EngineImpl implements Engine, Serializable {
     }
 
     @Override
+    public SheetGetters sortSheet(Boundaries boundaries, List<String> columns, int version) {
+
+        Coordinate from = boundaries.getFrom();
+        Coordinate to = boundaries.getTo();
+
+        int startRow = from.getRow();
+        int endRow = to.getRow();
+        int startCol = from.getCol();
+        int endCol = to.getCol();
+
+        SheetGetters sheetToFilter = versionManager.getVersion(version);
+
+        Sheet newSheet = SheetImpl.create(copyLayout(sheetToFilter.getLayout()));
+        //get data in range from the sheet;
+        List<List<CellGetters>> dataToSort = sheetToFilter.getCellInRange(startRow,endRow,startCol,endCol);
+        List<Integer> columnsByInt = columnsToIntList(columns);
+        
+        //if all columns integer; else exception
+        for (int col : columnsByInt) {
+            boolean allNumeric = dataToSort.stream()
+                    .map(row -> row.get(col - startCol).getEffectiveValue().toString())  // Get the value in the current column
+                    .allMatch(this::isNumeric);  // Check if the value is numeric
+
+            if (!allNumeric) {
+                throw new IllegalArgumentException("Column " + (col + 1) + " contains non-numeric values");
+            }
+        }
+        
+        //stableSort();
+        dataToSort.sort(createComparator(columnsByInt, startCol));
+
+        //put data into sheet;
+        sheetToFilter
+                .getActiveCells()
+                .keySet()
+                .forEach(coordinate -> {
+                    if(coordinate.getRow() < from.getRow() || coordinate.getRow() > to.getRow() ||
+                            coordinate.getCol() < from.getCol() || coordinate.getCol() > to.getCol()){
+                        newSheet.setCell(coordinate, sheetToFilter.getCell(coordinate).getEffectiveValue().toString());
+                    }
+                    else{ //it means the coordinate is in the sorted range
+                        newSheet.setCell(coordinate,
+                                dataToSort.get(coordinate.getRow() - startRow)
+                                                .get(coordinate.getCol() - startCol)
+                                                    .getEffectiveValue().toString());
+                    }
+                });
+
+        return newSheet;
+    }
+
+    @Override
+    public List<List<CellGetters>> sortCellsInRange(Boundaries boundaries, List<String> columns, int version) {
+        Coordinate from = boundaries.getFrom();
+        Coordinate to = boundaries.getTo();
+
+        int startRow = from.getRow();
+        int endRow = to.getRow();
+        int startCol = from.getCol();
+        int endCol = to.getCol();
+
+        SheetGetters sheetToFilter = versionManager.getVersion(version);
+        List<List<CellGetters>> dataToSort = sheetToFilter.getCellInRange(startRow,endRow,startCol,endCol);
+        List<Integer> columnsByInt = columnsToIntList(columns);
+        dataToSort.sort(createComparator(columnsByInt, startCol));
+
+        return dataToSort;
+    }
+
+    //sort function helper
+    private Comparator<List<CellGetters>> createComparator(List<Integer> sortByColumns, int startCol) {
+        Comparator<List<CellGetters>> comparator = (row1, row2) -> 0;
+
+        for (int col : sortByColumns) {
+            Comparator<List<CellGetters>> columnComparator = (row1, row2) -> {
+
+                String value1 = row1.get(col - startCol).getEffectiveValue().toString();
+                String value2 = row2.get(col - startCol).getEffectiveValue().toString();
+
+                //knowing it is double.
+                return Double.compare(Double.parseDouble(value1), Double.parseDouble(value2));
+
+                // If both values are numeric, compare them as doubles, extend to lexigrhaphic sort.
+//                if (isNumeric(value1) && isNumeric(value2)) {
+//                    return Double.compare(Double.parseDouble(value1), Double.parseDouble(value2));
+//                } else {
+//                    return value1.compareTo(value2);  // Lexicographic comparison for non-numeric
+//                }
+            };
+
+            // Combine comparators in a stable way (order of columns matters)
+            comparator = comparator.thenComparing(columnComparator);
+        }
+
+        return comparator;
+    }
+
+    private List<Integer> columnsToIntList(List<String> columns) {
+        List<Integer> columnsByInt = new ArrayList<>();
+        for (String column : columns) {
+            columnsByInt.add(CoordinateFactory.parseColumnToInt(column) - 1);
+        }
+
+        return columnsByInt;
+    }
+
+    private boolean isNumeric(String value) {
+        try {
+            Double.parseDouble(value);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    @Override
     public void addRange(String name, String boundariesString) {
         sheet.addRange(name, BoundariesFactory.toBoundaries(boundariesString));
     }
@@ -275,5 +412,4 @@ public class EngineImpl implements Engine, Serializable {
             throw new RuntimeException(e);
         }
     }
-
 }

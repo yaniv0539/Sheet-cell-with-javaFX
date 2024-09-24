@@ -156,6 +156,7 @@ public class AppController {
         showRanges.set(true);
         headerComponentController.getSplitMenuButtonSelectVersion().setDisable(false);
         commandsComponentController.getButtonFilter().setDisable(false);
+        commandsComponentController.getButtonSort().setDisable(false);
         commandsComponentController.resetButtonFilter();
         setEffectiveValuesPoolProperty(engine.getSheetStatus(), this.effectiveValuesPool);
         setSheet();
@@ -391,5 +392,12 @@ public class AppController {
 
     public void resetRangeOnSheet(RangeGetters selectedItem) {
         sheetComponentController.resetRangeOnSheet(selectedItem);
+    }
+
+    public void resetSort() {
+        OperationView = false;
+        viewSheetVersion(String.valueOf(currentSheet.getVersion()));
+        headerComponentController.getSplitMenuButtonSelectVersion().setDisable(false);
+        appBorderPane.setCenter(sheetComponent);
     }
 }
