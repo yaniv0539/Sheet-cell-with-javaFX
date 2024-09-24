@@ -23,6 +23,7 @@ import modelUI.api.EffectiveValuesPoolPropertyReadOnly;
 import modelUI.api.FocusCellProperty;
 import modelUI.impl.EffectiveValuesPoolPropertyImpl;
 import modelUI.impl.FocusCellPropertyImpl;
+import modelUI.impl.TextFieldDesign;
 import modelUI.impl.VersionDesignManager;
 import progress.ProgressController;
 import ranges.RangesController;
@@ -380,6 +381,47 @@ public class AppController {
 //        commandsComponentController.getButtonFilter().setDisable(false);
 
         appBorderPane.setCenter(sheetComponent);
+    }
+    public void getSortedSheet(Boundaries boundariesToSort, List<String> sortingByColumns) {
+
+        OperationView = true;
+
+
+        SheetGetters sortedSheet = engine.sortSheet(boundariesToSort, sortingByColumns, currentSheet.getVersion());
+
+        EffectiveValuesPoolProperty effectiveValuesPoolProperty = new EffectiveValuesPoolPropertyImpl();
+        setEffectiveValuesPoolProperty(sortedSheet, effectiveValuesPoolProperty);
+
+        SheetController sortedSheetComponentController = new SheetController();
+        sortedSheetComponentController.setMainController(this);
+        ScrollPane sheetComponent = sortedSheetComponentController.getInitializedSheet(sortedSheet.getLayout(),effectiveValuesPoolProperty);
+
+        //design the cells
+        List<List<CellGetters>> sortedCellsInRange = engine.sortCellsInRange(boundariesToSort, sortingByColumns, currentSheet.getVersion());
+        VersionDesignManager.VersionDesign design = versionDesignManager.getVersionDesign(currentSheet.getVersion());
+
+        for (int row = boundariesToSort.getFrom().getRow(); row < boundariesToSort.getTo().getRow() ; row++) {
+
+            List<CellGetters> sortedCells = sortedCellsInRange.get(row - boundariesToSort.getFrom().getRow());
+            
+            for (int col = boundariesToSort.getFrom().getCol(); col < boundariesToSort.getTo().getCol(); col++) {
+                Coordinate dest = CoordinateFactory.createCoordinate(row, col);
+                Coordinate source = sortedCells.get(col - boundariesToSort.getFrom().getCol()).getCoordinate();
+                int indexDesign = sortedSheetComponentController.getIndexDesign(source);
+
+                sortedSheetComponentController.setCoordinateDesign(dest,design.getCellDesignsVersion()
+                        .get(indexDesign));
+
+            }
+        }
+        //finish design
+        appBorderPane.setCenter(sheetComponent);
+
+        showHeaders.set(false);
+        showRanges.set(false);
+        showCommands.set(false);
+        headerComponentController.getSplitMenuButtonSelectVersion().setDisable(true);
+        commandsComponentController.getButtonSort().setDisable(false);
     }
 
     public boolean isBoundariesValidForCurrentSheet(Boundaries boundaries) {

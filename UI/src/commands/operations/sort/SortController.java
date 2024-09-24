@@ -7,6 +7,12 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
+import sheet.coordinate.api.Coordinate;
+import sheet.coordinate.impl.CoordinateFactory;
+import sheet.range.boundaries.api.Boundaries;
+import sheet.range.boundaries.impl.BoundariesImpl;
+
+import java.util.List;
 
 public class SortController {
 
@@ -28,7 +34,13 @@ public class SortController {
 
     @FXML
     void buttonSortAction(ActionEvent event) {
+        //hardcoded test
+        Coordinate from = CoordinateFactory.createCoordinate(2,1);
+        Coordinate to = CoordinateFactory.createCoordinate(5,4);
+        Boundaries b =  BoundariesImpl.create(from,to);
+        List<String> columToSort = List.of("C");
 
+        mainController.sortRange(b,columToSort);
     }
 
     @FXML

@@ -410,8 +410,9 @@ public class SheetImpl implements Sheet, Serializable {
                     rowCellsInRange.add(cell);
                 }
                 else{
-                    rowCellsInRange.add(CellImpl.create(CoordinateFactory.createCoordinate(row, col),
-                            version, DataImpl.empty));
+                    Cell dummyCell = CellImpl.create(CoordinateFactory.createCoordinate(row, col), version, DataImpl.empty);
+                    dummyCell.computeEffectiveValue();
+                    rowCellsInRange.add(dummyCell);
                 }
 
             }

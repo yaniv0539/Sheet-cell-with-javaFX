@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import sheet.coordinate.impl.CoordinateImpl;
 import sheet.layout.api.LayoutGetters;
 import sheet.range.api.RangeGetters;
 import sheet.range.boundaries.api.Boundaries;
@@ -302,9 +303,7 @@ public class SheetController {
             for (int j = from.getCol(); j <= to.getCol(); j++) {
                 TextField textField = cellsTextFieldMap.get(CoordinateFactory.createCoordinate(i, j));
                 if (textField != null) {
-                    // BackgroundFill backgroundFill = new BackgroundFill(getTextFieldBackgroundColor(previousBackgrounds.get(CoordinateFactory.createCoordinate(i,j))), CornerRadii.EMPTY, null);
-                    //Background background = new Background(backgroundFill);
-                    //textField.setBackground(background);
+
                     textField.setBackground(previousBackgrounds.get(CoordinateFactory.createCoordinate(i,j)));
                 }
             }
@@ -374,24 +373,39 @@ public class SheetController {
         });
     }
 
-    public void setBorderStyle(Coordinate coordinate, String s) {
-        cellsTextFieldMap.get(coordinate).setStyle(s);
-    }
-    public void clearBorderOfRange(RangeGetters range) {
-        int startRow = range.getBoundaries().getFrom().getRow();
-        int endRow = range.getBoundaries().getTo().getRow();
-        int startColumn = range.getBoundaries().getFrom().getCol();
-        int endColumn = range.getBoundaries().getTo().getCol();
+    public void setCoordinateDesign(Coordinate coordinateToDesign,TextFieldDesign design) {
+        int row = coordinateToDesign.getRow();
+        int col = coordinateToDesign.getCol();
 
-        for (int row = startRow; row <= endRow; row++) {
-            for (int col = startColumn; col <= endColumn; col++) {
-                TextField cell = cellsTextFieldMap.get(CoordinateFactory.createCoordinate(row, col));
-                if (cell != null) {
-                    cell.setStyle(cell.getStyle().replaceAll("-fx-border-color:.*?;", "")
-                            .replaceAll("-fx-border-width:.*?;", ""));
+        gridPane.getChildren().stream()
+                .filter(node -> node instanceof TextField)
+                .filter(tf-> GridPane.getColumnIndex(tf) != null && GridPane.getRowIndex(tf) != null
+                        && GridPane.getColumnIndex(tf) == col + 1  && GridPane.getRowIndex(tf) == row + 1 )
+                .findFirst()
+                .ifPresent(tf -> {
+                    TextField textField = (TextField) tf;
+                    textField.setStyle(design.getTextStyle());
+                    textField.setBackground(new Background(new BackgroundFill(design.getBackgroundColor(),CornerRadii.EMPTY,null)));
+
+                });
+
+    }
+
+    public int getIndexDesign(Coordinate coordinate) {
+        int row = coordinate.getRow();
+        int col = coordinate.getCol();
+
+        for(int i = 1 ; i < gridPane.getChildren().size(); i++) {
+            if (gridPane.getChildren().get(i) instanceof TextField tf) {
+                if(GridPane.getColumnIndex(tf) != null && GridPane.getRowIndex(tf) != null
+                        && GridPane.getColumnIndex(tf) == col + 1 && GridPane.getRowIndex(tf) == row + 1){
+                    return i;
                 }
+
+
             }
         }
+        return -1;
     }
 
 }

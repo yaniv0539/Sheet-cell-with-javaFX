@@ -24,9 +24,11 @@ import sheet.impl.SheetImpl;
 import sheet.layout.api.Layout;
 import sheet.layout.api.LayoutGetters;
 import sheet.layout.impl.LayoutImpl;
+import sheet.range.api.Range;
 import sheet.range.api.RangeGetters;
 import sheet.range.boundaries.api.Boundaries;
 import sheet.range.boundaries.impl.BoundariesFactory;
+import sheet.range.impl.RangeImpl;
 
 public class EngineImpl implements Engine, Serializable {
 
@@ -252,7 +254,7 @@ public class EngineImpl implements Engine, Serializable {
                     .allMatch(this::isNumeric);  // Check if the value is numeric
 
             if (!allNumeric) {
-                throw new IllegalArgumentException("Column " + (col + 1) + " contains non-numeric values");
+                throw new IllegalArgumentException("Column " + (char)('A' + col) + " contains non-numeric values");
             }
         }
         
@@ -262,18 +264,25 @@ public class EngineImpl implements Engine, Serializable {
         //put data into sheet;
         sheetToFilter
                 .getActiveCells()
-                .keySet()
+                .keySet().stream()
+                .filter(coordinate -> coordinate.getRow() < from.getRow() || coordinate.getRow() > to.getRow() ||
+                        coordinate.getCol() < from.getCol() || coordinate.getCol() > to.getCol())
+                .forEach(coordinate -> { newSheet.setCell(coordinate, sheetToFilter.getCell(coordinate).getEffectiveValue().toString());
+
+//                    else{ //it means the coordinate is in the sorted range
+//                        newSheet.setCell(coordinate,
+//                                dataToSort.get(coordinate.getRow() - startRow)
+//                                                .get(coordinate.getCol() - startCol)
+//                                                    .getEffectiveValue().toString());
+//                    }
+                });
+
+        RangeImpl.create("dummy",boundaries).toCoordinateCollection().stream()
                 .forEach(coordinate -> {
-                    if(coordinate.getRow() < from.getRow() || coordinate.getRow() > to.getRow() ||
-                            coordinate.getCol() < from.getCol() || coordinate.getCol() > to.getCol()){
-                        newSheet.setCell(coordinate, sheetToFilter.getCell(coordinate).getEffectiveValue().toString());
-                    }
-                    else{ //it means the coordinate is in the sorted range
-                        newSheet.setCell(coordinate,
-                                dataToSort.get(coordinate.getRow() - startRow)
-                                                .get(coordinate.getCol() - startCol)
-                                                    .getEffectiveValue().toString());
-                    }
+                    newSheet.setCell(coordinate,
+                            dataToSort.get(coordinate.getRow() - startRow)
+                                    .get(coordinate.getCol() - startCol)
+                                    .getEffectiveValue().toString());
                 });
 
         return newSheet;

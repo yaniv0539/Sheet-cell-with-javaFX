@@ -18,10 +18,6 @@ import javafx.scene.control.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import modelUI.api.EffectiveValuesPoolProperty;
-import modelUI.impl.EffectiveValuesPoolPropertyImpl;
-import sheet.SheetController;
-import sheet.api.SheetGetters;
 import sheet.range.boundaries.api.Boundaries;
 
 import java.io.IOException;
@@ -326,6 +322,12 @@ public class CommandsController {
         buttonFilter.setText("Reset Filter");
         filterStage.close();
     }
+    public void sortRange(Boundaries boundariesToFilter, List<String> sortingByColumns) {
+        this.mainController.getSortedSheet(boundariesToFilter, sortingByColumns);
+        buttonSort.setText("Reset Sort");
+        sortStage.close();
+    }
+
 
     public boolean isBoundariesValidForCurrentSheet(Boundaries boundaries) {
         return this.mainController.isBoundariesValidForCurrentSheet(boundaries);
