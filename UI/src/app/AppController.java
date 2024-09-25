@@ -9,12 +9,13 @@ import javafx.collections.ListChangeListener;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -159,13 +160,16 @@ public class AppController {
         commandsComponentController.getButtonFilter().setDisable(false);
         commandsComponentController.getButtonSort().setDisable(false);
         commandsComponentController.resetButtonFilter();
+        commandsComponentController.resetButtonSort();
         setEffectiveValuesPoolProperty(engine.getSheetStatus(), this.effectiveValuesPool);
         setSheet();
         this.currentSheet = engine.getSheetStatus();
         headerComponentController.clearVersionButton();
         headerComponentController.addMenuOptionToVersionSelection(String.valueOf(engine.getVersionsManagerStatus().getVersions().size()));
         rangesComponentController.uploadRanges(engine.getRanges());
+        versionDesignManager.clear();
         saveDesignVersion(sheetComponentController.getGridPane());
+        versionDesignManager.addVersion();
     }
 
     private void setSheet() {
@@ -232,14 +236,14 @@ public class AppController {
         engine.updateCellStatus(cellInFocus.getCoordinate().get(), cellInFocus.getOriginalValue().get());
         this.currentSheet = engine.getSheetStatus();
         setEffectiveValuesPoolProperty(engine.getSheetStatus(), this.effectiveValuesPool);
-        saveDesignVersion(sheetComponentController.getGridPane());
+        versionDesignManager.addVersion();
         //need to make in engine version manager, current version number.
         headerComponentController.addMenuOptionToVersionSelection(String.valueOf(engine.getVersionsManagerStatus().getVersions().size()));
 
     }
 
     private void saveDesignVersion(GridPane gridPane) {
-        versionDesignManager.addVersion(gridPane);
+        versionDesignManager.saveVersionDesign(gridPane);
     }
 
     public void viewSheetVersion(String numberOfVersion) {
@@ -255,7 +259,9 @@ public class AppController {
     }
 
     private void resetSheetToVersionDesign(int numberOfVersion) {
-
+        if(numberOfVersion == engine.getVersionsManagerStatus().getVersions().size()){
+            numberOfVersion++;
+        }
         sheetComponentController.setGridPaneDesign(versionDesignManager.getVersionDesign(numberOfVersion));
     }
 
@@ -287,6 +293,8 @@ public class AppController {
                                         .getCoordinate()
                                         .get()));
         sheetComponentController.changeColumnWidth(column, prefWidth);
+        //itay change for saving on edit version the design
+        versionDesignManager.getVersionDesign(currentSheet.getVersion()+1).getColumnsLayoutVersion().put(column,prefWidth);
     }
 
     public void changeSheetRowHeight(int prefHeight) {
@@ -296,6 +304,8 @@ public class AppController {
                                 .getCoordinate()
                                 .get());
         sheetComponentController.changeRowHeight(row, prefHeight);
+        //itay change for saving on edit version the design
+        versionDesignManager.getVersionDesign(currentSheet.getVersion()+1).getRowsLayoutVersion().put(row,prefHeight);
     }
 
     public void alignCells(Pos pos) {
@@ -306,19 +316,50 @@ public class AppController {
                                         .getCoordinate()
                                         .get()));
         sheetComponentController.changeColumnAlignment(column, pos);
+
+        //itay change for saving on edit version the design
+        for (int i = 0; i < sheetComponentController.getGridPane().getChildren().size(); i++) {
+            Node node = sheetComponentController.getGridPane().getChildren().get(i);
+            Integer colIndex = GridPane.getColumnIndex(node);
+            Integer rowIndex = GridPane.getRowIndex(node);
+            if (node instanceof TextField && colIndex == column && rowIndex != 0) {
+
+                versionDesignManager.getVersionDesign(currentSheet.getVersion() + 1).getCellDesignsVersion()
+                        .compute(i, (k, textFieldDesign) -> new TextFieldDesign(textFieldDesign.getBackgroundColor(), textFieldDesign.getTextStyle(), pos));
+            }
+        }
     }
 
     public void changeSheetCellBackgroundColor(Color color) {
         sheetComponentController.changeCellBackgroundColor(color);
+
+        //itay change for saving on edit version the design
+
+        versionDesignManager.getVersionDesign(currentSheet.getVersion() + 1).getCellDesignsVersion()
+                .compute(sheetComponentController.getIndexDesign(CoordinateFactory.toCoordinate(cellInFocus.getCoordinate().get()))
+                        , (k, textFieldDesign) -> new TextFieldDesign(color, textFieldDesign.getTextStyle(), textFieldDesign.getTextAlignment()));
+
+
     }
 
     public void changeSheetTextColor(Color color) {
         sheetComponentController.changeCellTextColor(color);
+        //itay change for saving on edit version the design
+
+        versionDesignManager.getVersionDesign(currentSheet.getVersion() + 1).getCellDesignsVersion()
+                .compute(sheetComponentController.getIndexDesign(CoordinateFactory.toCoordinate(cellInFocus.getCoordinate().get()))
+                        , (k, textFieldDesign) -> new TextFieldDesign(textFieldDesign.getBackgroundColor(), "-fx-text-fill: " + sheetComponentController.toHexString(color) + ";", textFieldDesign.getTextAlignment()));
     }
 
     public void resetCellsToDefault() {
-        sheetComponentController.resetCellsToDefault(CoordinateFactory.toCoordinate(cellInFocus.getCoordinate().get()));
+       // sheetComponentController.resetCellsToDefault(CoordinateFactory.toCoordinate(cellInFocus.getCoordinate().get()));
+        Coordinate cellToDefault = CoordinateFactory.toCoordinate(cellInFocus.getCoordinate().get());
+        changeSheetCellBackgroundColor(Color.WHITE);
+        changeCommandsCellTextColor(Color.BLACK);
     }
+
+
+
 
     public void addRange(String name, String boundaries) {
         engine.addRange(name, boundaries);
@@ -382,10 +423,10 @@ public class AppController {
 
         appBorderPane.setCenter(sheetComponent);
     }
+
     public void getSortedSheet(Boundaries boundariesToSort, List<String> sortingByColumns) {
 
         OperationView = true;
-
 
         SheetGetters sortedSheet = engine.sortSheet(boundariesToSort, sortingByColumns, currentSheet.getVersion());
 
@@ -397,14 +438,22 @@ public class AppController {
         ScrollPane sheetComponent = sortedSheetComponentController.getInitializedSheet(sortedSheet.getLayout(),effectiveValuesPoolProperty);
 
         //design the cells
+        VersionDesignManager.VersionDesign design;
         List<List<CellGetters>> sortedCellsInRange = engine.sortCellsInRange(boundariesToSort, sortingByColumns, currentSheet.getVersion());
-        VersionDesignManager.VersionDesign design = versionDesignManager.getVersionDesign(currentSheet.getVersion());
+        if(currentSheet.getVersion() == engine.getVersionsManagerStatus().getVersions().size()){
+            design = versionDesignManager.getVersionDesign(currentSheet.getVersion() + 1 );
+        }else{
+            design = versionDesignManager.getVersionDesign(currentSheet.getVersion());
+        }
 
-        for (int row = boundariesToSort.getFrom().getRow(); row < boundariesToSort.getTo().getRow() ; row++) {
+        sortedSheetComponentController.setColumnsDesign(design.getColumnsLayoutVersion());
+        sortedSheetComponentController.setRowsDesign(design.getRowsLayoutVersion());
+
+        for (int row = boundariesToSort.getFrom().getRow(); row <= boundariesToSort.getTo().getRow() ; row++) {
 
             List<CellGetters> sortedCells = sortedCellsInRange.get(row - boundariesToSort.getFrom().getRow());
             
-            for (int col = boundariesToSort.getFrom().getCol(); col < boundariesToSort.getTo().getCol(); col++) {
+            for (int col = boundariesToSort.getFrom().getCol(); col <= boundariesToSort.getTo().getCol(); col++) {
                 Coordinate dest = CoordinateFactory.createCoordinate(row, col);
                 Coordinate source = sortedCells.get(col - boundariesToSort.getFrom().getCol()).getCoordinate();
                 int indexDesign = sortedSheetComponentController.getIndexDesign(source);
@@ -439,6 +488,7 @@ public class AppController {
     public void resetSort() {
         OperationView = false;
         viewSheetVersion(String.valueOf(currentSheet.getVersion()));
+
         headerComponentController.getSplitMenuButtonSelectVersion().setDisable(false);
         appBorderPane.setCenter(sheetComponent);
     }

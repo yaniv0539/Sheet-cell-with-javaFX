@@ -248,8 +248,6 @@ public class SheetController {
 
     public void changeCellBackgroundColor(Color color) {
         if(color != null)
-
-           //Objects.requireNonNull(cellsTextFieldMap.get(CoordinateFactory.toCoordinate(mainController.getCellInFocus().getCoordinate().get()))).setStyle("-fx-background-color: " + toHexString(color) + ";");
              Objects.requireNonNull(cellsTextFieldMap.get(CoordinateFactory.toCoordinate(mainController.getCellInFocus().getCoordinate().get()))).setBackground(
                      new Background(new BackgroundFill(color, CornerRadii.EMPTY, null)));
     }
@@ -259,7 +257,7 @@ public class SheetController {
             Objects.requireNonNull(cellsTextFieldMap.get(CoordinateFactory.toCoordinate(mainController.getCellInFocus().getCoordinate().get()))).setStyle("-fx-text-fill: " + toHexString(color) + ";");
     }
 
-    private String toHexString(Color color) {
+    public String toHexString(Color color) {
         int red = (int) (color.getRed() * 255);
         int green = (int) (color.getGreen() * 255);
         int blue = (int) (color.getBlue() * 255);
@@ -343,7 +341,7 @@ public class SheetController {
         setRowsDesign(versionDesign.getRowsLayoutVersion());
     }
 
-    private void setRowsDesign(Map<Integer, Integer> rowsLayoutVersion) {
+    public void setRowsDesign(Map<Integer, Integer> rowsLayoutVersion) {
         rowsLayoutVersion.forEach((index,rowHeight)->{
             RowConstraints rowConstraints = gridPane.getRowConstraints().get(index);
             rowConstraints.setPrefHeight(rowHeight);
@@ -352,7 +350,7 @@ public class SheetController {
         });
     }
 
-    private void setColumnsDesign(Map<Integer, Integer> columnsLayoutVersion) {
+    public void setColumnsDesign(Map<Integer, Integer> columnsLayoutVersion) {
         columnsLayoutVersion.forEach((index,columnWidth)->{
             ColumnConstraints columnConstraints = gridPane.getColumnConstraints().get(index);
             columnConstraints.setPrefWidth(columnWidth);
@@ -361,14 +359,14 @@ public class SheetController {
         });
     }
 
-    private void setNodeDesign(Map<Integer, TextFieldDesign> cellDesignsVersion) {
+    public void setNodeDesign(Map<Integer, TextFieldDesign> cellDesignsVersion) {
         cellDesignsVersion.forEach((index, textFieldDesign) -> {
             if(gridPane.getChildren().get(index) instanceof TextField)
             {
                 TextField textField = (TextField) gridPane.getChildren().get(index);
                 textField.setStyle(textFieldDesign.getTextStyle());
                 textField.setBackground(new Background(new BackgroundFill(textFieldDesign.getBackgroundColor(),CornerRadii.EMPTY,null)));
-
+                textField.setAlignment(textFieldDesign.getTextAlignment());
             }
         });
     }
@@ -386,7 +384,7 @@ public class SheetController {
                     TextField textField = (TextField) tf;
                     textField.setStyle(design.getTextStyle());
                     textField.setBackground(new Background(new BackgroundFill(design.getBackgroundColor(),CornerRadii.EMPTY,null)));
-
+                    textField.setAlignment(design.getTextAlignment());
                 });
 
     }
@@ -401,10 +399,9 @@ public class SheetController {
                         && GridPane.getColumnIndex(tf) == col + 1 && GridPane.getRowIndex(tf) == row + 1){
                     return i;
                 }
-
-
             }
         }
+        //should not get here.
         return -1;
     }
 

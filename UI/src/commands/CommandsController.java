@@ -204,7 +204,7 @@ public class CommandsController {
 
     }
 
-    private void resetButtonSort() {
+    public void resetButtonSort() {
         buttonSort.setText("Sort");
         startSort = true;
     }
@@ -213,8 +213,6 @@ public class CommandsController {
     void resetToDefaultAction(ActionEvent event) {
         mainController.resetCellsToDefault();
     }
-
-
 
     @FXML
     void textColorAction(ActionEvent event) {
@@ -226,7 +224,6 @@ public class CommandsController {
         buttonResetToDefault.disableProperty().bind(showCommandsProperty.not());
         buttonSort.setDisable(true);
         buttonFilter.setDisable(true);
-//        buttonFilter.disableProperty().bind(mainController.showRangesProperty().not());
         spinnerWidth.disableProperty().bind(showCommandsProperty.not());
         spinnerHeight.disableProperty().bind(showCommandsProperty.not());
         comboBoxAlignment.disableProperty().bind(showCommandsProperty.not());
@@ -241,8 +238,8 @@ public class CommandsController {
         // column width picker
         SpinnerValueFactory<Integer> widthValueFactory =
                 new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 1000, 0, 1);
-        spinnerWidth.setValueFactory(widthValueFactory);
 
+        spinnerWidth.setValueFactory(widthValueFactory);
         spinnerWidth
                 .valueProperty()
                 .addListener((observable, oldValue, newValue) -> mainController.changeSheetColumnWidth(newValue));
