@@ -78,4 +78,7 @@ public class CoordinateFactory {
         return result;
     }
 
+    public static boolean isGreaterThen(Coordinate to, Coordinate from) {
+        return (to.getRow() >= from.getRow()) && (to.getCol() >= from.getCol());
+    }
 }

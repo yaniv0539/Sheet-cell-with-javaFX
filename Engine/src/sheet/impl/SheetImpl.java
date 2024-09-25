@@ -121,7 +121,9 @@ public class SheetImpl implements Sheet, Serializable {
 
     @Override
     public boolean isRangeInBoundaries(Boundaries boundaries) {
-        return isCoordinateInBoundaries(boundaries.getFrom()) && isCoordinateInBoundaries(boundaries.getTo());
+
+        return (isCoordinateInBoundaries(boundaries.getFrom()) && isCoordinateInBoundaries(boundaries.getTo())
+                 && CoordinateFactory.isGreaterThen(boundaries.getTo(),boundaries.getFrom()));
 //        throw new IndexOutOfBoundsException("The range " + boundaries.getFrom() + ".." + boundaries.getTo() + " is not in sheet boundaries.");
     }
 
@@ -242,7 +244,7 @@ public class SheetImpl implements Sheet, Serializable {
     public boolean isCoordinateInBoundaries(Coordinate target) {
 
         if(!isRowInSheetBoundaries(target.getRow()) || !isColumnInSheetBoundaries(target.getCol())) {
-            throw new IllegalArgumentException("Row or column out of bounds !");
+            throw new IllegalArgumentException(target.toString() + "is out of bounds !");
         }
 
         return true;

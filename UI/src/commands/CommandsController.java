@@ -261,15 +261,6 @@ public class CommandsController {
         colorPickerTextColor
                 .valueProperty()
                 .addListener((observableValue, oldValue, newValue) -> mainController.changeSheetTextColor(newValue));
-
-//        // set initial values
-//        Platform.runLater(() -> {
-//            comboBoxAlignment.getSelectionModel().selectFirst();
-//
-//            spinnerWidth.getValueFactory().setValue(100);
-//
-//            spinnerHeight.getValueFactory().setValue(40);
-//        });
     }
 
     public void changeColumnWidth(int prefWidth) {
