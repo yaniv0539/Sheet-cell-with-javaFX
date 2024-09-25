@@ -24,7 +24,7 @@
   </rowConstraints>
    <children>
       <Button fx:id="buttonSort" alignment="CENTER" mnemonicParsing="false" onAction="#buttonSortAction" prefHeight="26.0" prefWidth="107.0" text="Sort" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-      <HBox fx:id="HBoxColumnsCheckBox" prefHeight="94.0" prefWidth="512.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+      <HBox fx:id="HBoxColumnsCheckBox" alignment="CENTER_LEFT" prefHeight="94.0" prefWidth="512.0" spacing="20.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
       <Label fx:id="labelRange" prefHeight="39.0" prefWidth="130.0" text="Range:">
          <font>
             <Font size="13.0" />
@@ -33,17 +33,26 @@
             <Insets bottom="10.0" left="10.0" right="10.0" top="20.0" />
          </GridPane.margin>
       </Label>
-      <TextField fx:id="textFieldRange" maxHeight="-Infinity" maxWidth="-Infinity" onAction="#textFieldRangeAction" onKeyTyped="#textFieldRangeKeyTyped" prefHeight="26.0" prefWidth="135.0" promptText="example: a2..e6" GridPane.columnIndex="1">
-         <cursor>
-            <Cursor fx:constant="TEXT" />
-         </cursor>
-         <opaqueInsets>
-            <Insets />
-         </opaqueInsets>
+      <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1">
          <GridPane.margin>
             <Insets bottom="10.0" left="10.0" right="10.0" top="20.0" />
          </GridPane.margin>
-      </TextField>
+         <children>
+            <TextField fx:id="textFieldRange" maxHeight="-Infinity" maxWidth="-Infinity" onAction="#textFieldRangeAction" onKeyTyped="#textFieldRangeKeyTyped" prefHeight="26.0" prefWidth="135.0" promptText="example: a2..e6">
+               <cursor>
+                  <Cursor fx:constant="TEXT" />
+               </cursor>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+            </TextField>
+            <Button fx:id="buttonGetColumns" mnemonicParsing="false" onAction="#buttonGetColumnsAction" text="get numeric columns">
+               <HBox.margin>
+                  <Insets left="30.0" />
+               </HBox.margin>
+            </Button>
+         </children>
+      </HBox>
       <Label fx:id="labelSelectColumn" alignment="CENTER" prefHeight="67.0" prefWidth="154.0" text="select columns (Consider the order of choice):" wrapText="true" GridPane.rowIndex="1">
          <GridPane.margin>
             <Insets bottom="10.0" left="10.0" right="10.0" top="20.0" />

@@ -423,4 +423,19 @@ public class SheetImpl implements Sheet, Serializable {
 
         return cellsInRange;
     }
+
+    @Override
+    public boolean isColumnNumericInRange(int column, int startRow, int endRow) {
+
+        for (int row = startRow; row <= endRow; row++) {
+            String value = activeCells.get(CoordinateFactory.createCoordinate(row, column)).getEffectiveValue().toString();
+            try{
+                Double.parseDouble(value);
+            }catch (NumberFormatException exception) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }

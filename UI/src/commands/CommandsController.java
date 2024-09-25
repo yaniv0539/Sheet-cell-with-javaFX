@@ -5,6 +5,7 @@ import commands.operations.filter.FilterController;
 import commands.operations.sort.SortController;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -18,6 +19,7 @@ import javafx.scene.control.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import sheet.range.boundaries.api.Boundaries;
 
 import java.io.IOException;
@@ -65,6 +67,8 @@ public class CommandsController {
 
     private boolean startFilter = true;
     private boolean startSort = true;
+    private BooleanProperty isSortPopupClosed = new SimpleBooleanProperty(false);
+    private BooleanProperty isFilterPopupClosed = new SimpleBooleanProperty(false);
 
     public AppController getMainController() {
         return mainController;
@@ -195,6 +199,7 @@ public class CommandsController {
         this.sortStage = new Stage();
         sortStage.initModality(Modality.APPLICATION_MODAL);
         sortStage.setTitle(title);
+        sortStage.setOnCloseRequest((WindowEvent event) -> startSort = true);
 
         Scene popupScene = new Scene(popupRoot, 770, 140);
         sortStage.setResizable(false);
@@ -297,6 +302,7 @@ public class CommandsController {
         this.filterStage = new Stage();
         filterStage.initModality(Modality.APPLICATION_MODAL);
         filterStage.setTitle(title);
+        filterStage.setOnCloseRequest((WindowEvent event) -> startFilter = true);
 
         Scene popupScene = new Scene(popupRoot, 770, 140);
         filterStage.setResizable(false);
@@ -319,5 +325,9 @@ public class CommandsController {
 
     public boolean isBoundariesValidForCurrentSheet(Boundaries boundaries) {
         return this.mainController.isBoundariesValidForCurrentSheet(boundaries);
+    }
+
+    public boolean isNumericColumn(int column, int startRow, int endRow) {
+        return mainController.isNumericColumn(column,startRow,endRow);
     }
 }

@@ -492,4 +492,8 @@ public class AppController {
         headerComponentController.getSplitMenuButtonSelectVersion().setDisable(false);
         appBorderPane.setCenter(sheetComponent);
     }
+
+    public boolean isNumericColumn(int column, int startRow, int endRow) {
+        return currentSheet.isColumnNumericInRange(column,startRow,endRow);
+    }
 }
