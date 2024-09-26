@@ -537,4 +537,8 @@ public class AppController {
     public boolean isNumericColumn(int column, int startRow, int endRow) {
         return currentSheet.isColumnNumericInRange(column,startRow,endRow);
     }
+
+    public List<String> getColumnUniqueValuesInRange(int column, int startRow, int endRow) {
+        return currentSheet.getColumnUniqueValuesInRange(column,startRow,endRow);
+    }
 }

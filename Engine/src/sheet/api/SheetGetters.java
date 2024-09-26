@@ -28,4 +28,6 @@ public interface SheetGetters {
     List<List<CellGetters>> getCellInRange(int startRow, int endRow, int startCol, int endCol);
 
     boolean isColumnNumericInRange(int column, int startRow, int endRow);
+
+    List<String> getColumnUniqueValuesInRange(int column, int startRow, int endRow);
 }

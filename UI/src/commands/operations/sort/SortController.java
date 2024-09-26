@@ -6,6 +6,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import sheet.coordinate.api.Coordinate;
 import sheet.coordinate.impl.CoordinateFactory;
@@ -19,7 +20,7 @@ import java.util.List;
 public class SortController {
 
     @FXML
-    private HBox HBoxColumnsCheckBox;
+    private FlowPane flowPaneColumns;
 
     @FXML
     private Button buttonGetColumns;
@@ -83,7 +84,7 @@ public class SortController {
     @FXML
     void buttonGetColumnsAction(ActionEvent event) {
        //to add check box to the hbox.
-        HBoxColumnsCheckBox.getChildren().clear();
+        flowPaneColumns.getChildren().clear();
         anyChecked.setValue(false);
         columToSort.clear();
         Boundaries boundariesToSort = BoundariesFactory.toBoundaries(textFieldRange.getText());
@@ -94,7 +95,7 @@ public class SortController {
                 String column = String.valueOf(character);
                 CheckBox checkBox = new CheckBox(column);
                 checkBox.selectedProperty().addListener((observable,oldValue,newValue) -> this.handleCheckBoxSelect(column,newValue));
-                HBoxColumnsCheckBox.getChildren().add(checkBox);
+                flowPaneColumns.getChildren().add(checkBox);
             }
         }
     }

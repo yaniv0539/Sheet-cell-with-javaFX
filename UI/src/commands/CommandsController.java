@@ -16,6 +16,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -202,7 +203,7 @@ public class CommandsController {
         sortStage.setOnCloseRequest((WindowEvent event) -> startSort = true);
 
         Scene popupScene = new Scene(popupRoot, 770, 140);
-        sortStage.setResizable(false);
+        sortStage.setResizable(true);
         sortStage.setScene(popupScene);
 
         sortStage.show();
@@ -304,10 +305,9 @@ public class CommandsController {
         filterStage.setTitle(title);
         filterStage.setOnCloseRequest((WindowEvent event) -> startFilter = true);
 
-        Scene popupScene = new Scene(popupRoot, 770, 140);
-        filterStage.setResizable(false);
+        Scene popupScene = new Scene(popupRoot, 770, 220);
+        filterStage.setResizable(true);
         filterStage.setScene(popupScene);
-
         filterStage.show();
     }
 
@@ -329,5 +329,9 @@ public class CommandsController {
 
     public boolean isNumericColumn(int column, int startRow, int endRow) {
         return mainController.isNumericColumn(column,startRow,endRow);
+    }
+
+    public List<String> getColumnUniqueValuesInRange(int column, int startRow, int endRow) {
+        return mainController.getColumnUniqueValuesInRange(column, startRow,endRow);
     }
 }

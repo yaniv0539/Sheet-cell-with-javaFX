@@ -428,14 +428,35 @@ public class SheetImpl implements Sheet, Serializable {
     public boolean isColumnNumericInRange(int column, int startRow, int endRow) {
 
         for (int row = startRow; row <= endRow; row++) {
-            String value = activeCells.get(CoordinateFactory.createCoordinate(row, column)).getEffectiveValue().toString();
+            CellGetters cell = activeCells.get(CoordinateFactory.createCoordinate(row, column));
+            String value;
+            if(cell !=null){
+                value = cell.getEffectiveValue().toString();
+            }
+            else{
+                value = "";
+            }
+
             try{
                 Double.parseDouble(value);
             }catch (NumberFormatException exception) {
+                //maybe throw exception with that coordinate.
                 return false;
             }
         }
 
         return true;
+    }
+
+    @Override
+    public List<String> getColumnUniqueValuesInRange(int column, int startRow, int endRow) {
+        List<String> uniqueValues = new ArrayList<>();
+        for (int row = startRow; row <= endRow; row++) {
+            CellGetters cell = activeCells.get(CoordinateFactory.createCoordinate(row, column));
+            if(cell != null){
+                uniqueValues.add(cell.getEffectiveValue().toString());
+            }
+        }
+        return uniqueValues;
     }
 }
