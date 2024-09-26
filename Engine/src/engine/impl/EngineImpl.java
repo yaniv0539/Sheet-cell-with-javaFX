@@ -353,25 +353,41 @@ public class EngineImpl implements Engine, Serializable {
     }
 
 
+    @Override
+    public Map<Coordinate, Coordinate> filteredMap(Boundaries boundariesToFilter, String filteringByColumn, List<String> filteringByValues, int version) {
 
+        Coordinate to = boundariesToFilter.getTo();
+        Coordinate from = boundariesToFilter.getFrom();
 
+        SheetGetters sheetToFilter = versionManager.getVersion(version);
 
+        int columnInt = CoordinateFactory.parseColumnToInt(filteringByColumn) - 1;
 
+        Map<Coordinate, Coordinate> oldCoordToNewCoord = new HashMap<>();
 
+        int liftDownCellsCounter = 0;
 
+        for (int i = from.getRow(); i <= to.getRow(); i++) {
+            Cell cell = sheetToFilter.getCell(CoordinateFactory.createCoordinate(i, columnInt));
+            String effectiveValueStr;
+            if (cell == null) {
+                effectiveValueStr = "";
+            } else {
+                effectiveValueStr = cell.getEffectiveValue().toString();
+            }
 
+            if (filteringByValues.contains(effectiveValueStr)) {
+                for(int col = from.getCol(); col <= to.getCol(); col++) {
+                    Coordinate oldCoord = CoordinateFactory.createCoordinate(i, col);
+                    Coordinate newCoord = CoordinateFactory.createCoordinate(from.getRow() +liftDownCellsCounter, col);
+                    oldCoordToNewCoord.put(oldCoord, newCoord);
+                }
+                liftDownCellsCounter++;
+            }
+        }
 
-
-
-
-
-
-
-
-
-
-
-
+        return oldCoordToNewCoord;
+    }
 
     @Override
     public void addRange(String name, String boundariesString) {

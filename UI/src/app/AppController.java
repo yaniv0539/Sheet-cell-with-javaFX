@@ -400,9 +400,38 @@ public class AppController {
         EffectiveValuesPoolProperty effectiveValuesPoolProperty = new EffectiveValuesPoolPropertyImpl();
         setEffectiveValuesPoolProperty(filteredSheet, effectiveValuesPoolProperty);
 
-        SheetController sheetComponentController = new SheetController();
-        sheetComponentController.setMainController(this);
-        ScrollPane sheetComponent = sheetComponentController.getInitializedSheet(filteredSheet.getLayout(), effectiveValuesPoolProperty);
+        SheetController filteredSheetComponentController = new SheetController();
+        filteredSheetComponentController.setMainController(this);
+        ScrollPane sheetComponent = filteredSheetComponentController.getInitializedSheet(filteredSheet.getLayout(), effectiveValuesPoolProperty);
+
+        //design
+        VersionDesignManager.VersionDesign design;
+
+        if(currentSheet.getVersion() == engine.getVersionsManagerStatus().getVersions().size()){
+            design = versionDesignManager.getVersionDesign(currentSheet.getVersion() + 1 );
+        }else{
+            design = versionDesignManager.getVersionDesign(currentSheet.getVersion());
+        }
+
+        filteredSheetComponentController.setColumnsDesign(design.getColumnsLayoutVersion());
+        filteredSheetComponentController.setRowsDesign(design.getRowsLayoutVersion());
+
+        Map<Coordinate,Coordinate> oldToNew = engine.filteredMap(boundariesToFilter, filteringByColumn, filteringByValues, currentSheet.getVersion());
+
+        oldToNew.forEach((coordinateWithDesign,coordinateToDesign) -> {
+            int indexDesign = filteredSheetComponentController.getIndexDesign(coordinateWithDesign);
+            filteredSheetComponentController.setCoordinateDesign(coordinateToDesign,design.getCellDesignsVersion()
+                    .get(indexDesign));
+
+        });
+
+
+
+
+
+
+
+        //design
         appBorderPane.setCenter(sheetComponent);
 
         showHeaders.set(false);
@@ -440,7 +469,7 @@ public class AppController {
 
         //design the cells
         VersionDesignManager.VersionDesign design;
-        List<List<CellGetters>> sortedCellsInRange = engine.sortCellsInRange(boundariesToSort, sortingByColumns, currentSheet.getVersion());
+
 
         if(currentSheet.getVersion() == engine.getVersionsManagerStatus().getVersions().size()){
             design = versionDesignManager.getVersionDesign(currentSheet.getVersion() + 1 );
@@ -451,6 +480,7 @@ public class AppController {
         sortedSheetComponentController.setColumnsDesign(design.getColumnsLayoutVersion());
         sortedSheetComponentController.setRowsDesign(design.getRowsLayoutVersion());
 
+        List<List<CellGetters>> sortedCellsInRange = engine.sortCellsInRange(boundariesToSort, sortingByColumns, currentSheet.getVersion());
 
         for(int row = 0; row <= sortedSheet.getLayout().getRows() ; row++){
             List<CellGetters> sortedCells = new ArrayList<>();
@@ -463,6 +493,7 @@ public class AppController {
                 int indexDesign;
                 if(row >= boundariesToSort.getFrom().getRow() && row <= boundariesToSort.getTo().getRow() &&
                         col >= boundariesToSort.getFrom().getCol() && col <= boundariesToSort.getTo().getCol()){
+
                     Coordinate source = sortedCells.get(col - boundariesToSort.getFrom().getCol()).getCoordinate();
                     indexDesign = sortedSheetComponentController.getIndexDesign(source);
 
@@ -479,31 +510,6 @@ public class AppController {
             }
         }
 
-
-
-
-
-
-
-
-
-
-
-
-//        for (int row = boundariesToSort.getFrom().getRow(); row <= boundariesToSort.getTo().getRow() ; row++) {
-//
-//            List<CellGetters> sortedCells = sortedCellsInRange.get(row - boundariesToSort.getFrom().getRow());
-//
-//            for (int col = boundariesToSort.getFrom().getCol(); col <= boundariesToSort.getTo().getCol(); col++) {
-//                Coordinate dest = CoordinateFactory.createCoordinate(row, col);
-//                Coordinate source = sortedCells.get(col - boundariesToSort.getFrom().getCol()).getCoordinate();
-//                int indexDesign = sortedSheetComponentController.getIndexDesign(source);
-//
-//                sortedSheetComponentController.setCoordinateDesign(dest,design.getCellDesignsVersion()
-//                        .get(indexDesign));
-//
-//            }
-//        }
         //finish design
         appBorderPane.setCenter(sheetComponent);
 
