@@ -337,6 +337,7 @@ public class AppController {
                         , (k, textFieldDesign) -> new TextFieldDesign(color, textFieldDesign.getTextStyle(), textFieldDesign.getTextAlignment()));
 
 
+
     }
 
     public void changeSheetTextColor(Color color) {
@@ -350,8 +351,8 @@ public class AppController {
 
     public void resetCellsToDefault() {
        // sheetComponentController.resetCellsToDefault(CoordinateFactory.toCoordinate(cellInFocus.getCoordinate().get()));
-        Coordinate cellToDefault = CoordinateFactory.toCoordinate(cellInFocus.getCoordinate().get());
-        changeSheetCellBackgroundColor(Color.WHITE);
+        //Coordinate cellToDefault = CoordinateFactory.toCoordinate(cellInFocus.getCoordinate().get());
+        changeCommandsCellBackgroundColor(Color.WHITE);
         changeCommandsCellTextColor(Color.BLACK);
     }
 
