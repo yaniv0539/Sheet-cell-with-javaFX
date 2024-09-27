@@ -2,6 +2,7 @@ package sheet.impl;
 
 import expression.api.Data;
 import expression.api.DataType;
+import expression.api.Expression;
 import expression.impl.Average;
 import expression.impl.DataImpl;
 import expression.impl.Ref;
@@ -22,6 +23,8 @@ import sheet.range.impl.RangeImpl;
 
 import java.io.*;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class SheetImpl implements Sheet, Serializable {
@@ -112,7 +115,9 @@ public class SheetImpl implements Sheet, Serializable {
 
     @Override
     public void addRange(String name, Boundaries boundaries) {
-        isRangeInBoundaries(boundaries);
+        if(!isRangeInBoundaries(boundaries)){
+            throw new IndexOutOfBoundsException("first coordinate" + boundaries.getFrom() + " < " + boundaries.getTo());
+        }
 
         if (!ranges.add(RangeImpl.create(name, boundaries))) {
             throw new IllegalArgumentException("Range already exists in " + this.name);
@@ -458,5 +463,36 @@ public class SheetImpl implements Sheet, Serializable {
             }
         }
         return uniqueValues;
+    }
+
+
+    @Override
+    public Collection<Coordinate> rangeUses(RangeGetters range) {
+
+        Set<String> validFirstStrings = Set.of("sum", "average");
+        List<Coordinate> coordinatesThatUseRange = new ArrayList<>();
+        String regex = "\\{([a-zA-Z]+),(.+)\\}";// {sum,grades}
+
+        // Compile the regex and match against the input
+        Pattern pattern = Pattern.compile(regex);
+
+        this.activeCells.values().forEach(cell -> {
+            Matcher matcher = pattern.matcher(cell.getOriginalValue());
+
+            // If it matches the pattern
+            if (matcher.matches()) {
+                String firstString = matcher.group(1);
+                String secondString = matcher.group(2);
+
+                // Check if the first string is within the valid set
+                if (validFirstStrings.contains(firstString.toLowerCase())) {
+                    if (secondString.toUpperCase().equals(range.getName())) {
+                        coordinatesThatUseRange.add(cell.getCoordinate());
+                    }
+                }
+            }
+        });
+
+        return coordinatesThatUseRange;
     }
 }

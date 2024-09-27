@@ -15,7 +15,6 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -37,10 +36,7 @@ import sheet.coordinate.impl.CoordinateFactory;
 import sheet.range.api.RangeGetters;
 import sheet.range.boundaries.api.Boundaries;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class AppController {
@@ -370,22 +366,19 @@ public class AppController {
         return engine.getRange(name);
     }
 
-    public boolean deleteRange(RangeGetters range) {
-        if (!isRangeUsed(range)) {
+    public void deleteRange(RangeGetters range) throws Exception {
+
+        Collection<Coordinate> coordinates = rangeUses(range);
+        if (coordinates.isEmpty()) {
             engine.deleteRange(range.getName());
-            return true;
         } else {
-            return false;
+            throw new Exception("cells depend on range: " + coordinates.toString());
         }
     }
 
-    private boolean isRangeUsed(RangeGetters range) {
-        for (CellGetters cell : this.currentSheet.getActiveCells().values()) {
-            if (cell.getOriginalValue().toUpperCase().contains(range.getName())) {
-                return true;
-            }
-        }
-        return false;
+    private Collection<Coordinate> rangeUses(RangeGetters range) {
+
+        return this.currentSheet.rangeUses(range);
     }
 
     public void paintRangeOnSheet(RangeGetters range, Color color) {

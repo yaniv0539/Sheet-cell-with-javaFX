@@ -8,6 +8,7 @@ import sheet.layout.api.LayoutGetters;
 import sheet.range.api.RangeGetters;
 import sheet.range.boundaries.api.Boundaries;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -30,4 +31,6 @@ public interface SheetGetters {
     boolean isColumnNumericInRange(int column, int startRow, int endRow);
 
     List<String> getColumnUniqueValuesInRange(int column, int startRow, int endRow);
+
+    Collection<Coordinate> rangeUses(RangeGetters range);
 }
