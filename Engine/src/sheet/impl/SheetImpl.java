@@ -116,12 +116,13 @@ public class SheetImpl implements Sheet, Serializable {
     @Override
     public void addRange(String name, Boundaries boundaries) {
         if(!isRangeInBoundaries(boundaries)){
-            throw new IndexOutOfBoundsException("first coordinate" + boundaries.getFrom() + " < " + boundaries.getTo());
+            throw new IndexOutOfBoundsException("first coordinate " + boundaries.getFrom() + " < " + boundaries.getTo() + " last coordinate in " + name+ "\n" +
+                                                "Range format:<top-left-cell>..<bottom-right-cell>");
         }
         ///itay change
         RangeImpl range = RangeImpl.create(name, boundaries);
         if (!ranges.add(range)) {
-            throw new IllegalArgumentException("Range already exists in " + this.name);
+            throw new IllegalArgumentException("Range " +"\""+name+"\""+ " already exists in " + "\""+this.name+"\"");
         }
         //itay change
         this.rangeUses(range).forEach(coordinate -> {
@@ -254,7 +255,7 @@ public class SheetImpl implements Sheet, Serializable {
     public boolean isCoordinateInBoundaries(Coordinate target) {
 
         if(!isRowInSheetBoundaries(target.getRow()) || !isColumnInSheetBoundaries(target.getCol())) {
-            throw new IllegalArgumentException(target.toString() + "is out of bounds !");
+            throw new IllegalArgumentException(target.toString() + " is out of bounds !");
         }
 
         return true;
@@ -499,5 +500,17 @@ public class SheetImpl implements Sheet, Serializable {
         });
 
         return coordinatesThatUseRange;
+    }
+
+    @Override
+    public void addRangeForXml(String rangeName, Boundaries boundaries) {
+        if(!isRangeInBoundaries(boundaries)){
+            throw new IndexOutOfBoundsException("first coordinate" + boundaries.getFrom() + " < " + boundaries.getTo());
+        }
+        ///itay change
+        RangeImpl range = RangeImpl.create(name, boundaries);
+        if (!ranges.add(range)) {
+            throw new IllegalArgumentException("Range already exists in " + this.name);
+        }
     }
 }

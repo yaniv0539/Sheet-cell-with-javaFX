@@ -4,6 +4,7 @@ import commands.CommandsController;
 import engine.api.Engine;
 import engine.impl.EngineImpl;
 import header.HeaderController;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ListChangeListener;
 import javafx.concurrent.Task;
@@ -11,7 +12,9 @@ import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -142,7 +145,8 @@ public class AppController {
 
         FileTask.setOnFailed(workerStateEvent -> {
             loadingStage.close();
-            //do something
+            Throwable exception = FileTask.getException();
+            Platform.runLater(()->showAlertPopup(exception));
         });
 
         loadingStage.show();
@@ -556,5 +560,33 @@ public class AppController {
 
     public List<String> getColumnUniqueValuesInRange(int column, int startRow, int endRow) {
         return currentSheet.getColumnUniqueValuesInRange(column,startRow,endRow);
+    }
+
+    public void showAlertPopup(Throwable exception) {
+        // Create a new alert dialog for the error
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText("An Error Occurred While Loading the File");
+        TextArea textArea = new TextArea();
+        if (exception != null) {
+            textArea.setText(exception.getMessage());
+        } else {
+            textArea.setText("An unknown error occurred.");
+        }
+        textArea.setWrapText(true);
+        textArea.setEditable(false);
+
+        // Allow TextArea to expand dynamically with the window
+        VBox content = new VBox(textArea);
+        content.setPrefSize(300, 200);  // Adjust the size of the popup window
+
+        // Add the TextArea to the Alert dialog
+        alert.getDialogPane().setContent(content);
+
+        // Make the dialog non-resizable if needed
+        alert.initStyle(StageStyle.DECORATED);
+
+        alert.showAndWait();  // Display the popup
+
     }
 }

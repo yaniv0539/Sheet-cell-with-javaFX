@@ -62,7 +62,8 @@ public class EngineImpl implements Engine, Serializable {
             Sheet sheet = STLSheetToSheet.generate(stlSheet);
 
             if (!isValidLayout(sheet.getLayout())) {
-                throw new IndexOutOfBoundsException("Layout is invalid");
+                throw new IndexOutOfBoundsException("Layout is invalid !" + "\n" +
+                        "valid scale: rows <= 50 , columns <= 20");
             }
 
             this.sheet = sheet;
