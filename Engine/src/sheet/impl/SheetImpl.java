@@ -118,10 +118,15 @@ public class SheetImpl implements Sheet, Serializable {
         if(!isRangeInBoundaries(boundaries)){
             throw new IndexOutOfBoundsException("first coordinate" + boundaries.getFrom() + " < " + boundaries.getTo());
         }
-
-        if (!ranges.add(RangeImpl.create(name, boundaries))) {
+        ///itay change
+        RangeImpl range = RangeImpl.create(name, boundaries);
+        if (!ranges.add(range)) {
             throw new IllegalArgumentException("Range already exists in " + this.name);
         }
+        //itay change
+        this.rangeUses(range).forEach(coordinate -> {
+            this.setCell(coordinate, activeCells.get(coordinate).getOriginalValue());
+        });
     }
 
     @Override
