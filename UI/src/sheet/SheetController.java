@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import sheet.coordinate.impl.CoordinateImpl;
 import sheet.layout.api.LayoutGetters;
 import sheet.range.api.RangeGetters;
 import sheet.range.boundaries.api.Boundaries;
@@ -247,8 +248,6 @@ public class SheetController {
 
     public void changeCellBackgroundColor(Color color) {
         if(color != null)
-
-           //Objects.requireNonNull(cellsTextFieldMap.get(CoordinateFactory.toCoordinate(mainController.getCellInFocus().getCoordinate().get()))).setStyle("-fx-background-color: " + toHexString(color) + ";");
              Objects.requireNonNull(cellsTextFieldMap.get(CoordinateFactory.toCoordinate(mainController.getCellInFocus().getCoordinate().get()))).setBackground(
                      new Background(new BackgroundFill(color, CornerRadii.EMPTY, null)));
     }
@@ -258,7 +257,7 @@ public class SheetController {
             Objects.requireNonNull(cellsTextFieldMap.get(CoordinateFactory.toCoordinate(mainController.getCellInFocus().getCoordinate().get()))).setStyle("-fx-text-fill: " + toHexString(color) + ";");
     }
 
-    private String toHexString(Color color) {
+    public String toHexString(Color color) {
         int red = (int) (color.getRed() * 255);
         int green = (int) (color.getGreen() * 255);
         int blue = (int) (color.getBlue() * 255);
@@ -302,9 +301,7 @@ public class SheetController {
             for (int j = from.getCol(); j <= to.getCol(); j++) {
                 TextField textField = cellsTextFieldMap.get(CoordinateFactory.createCoordinate(i, j));
                 if (textField != null) {
-                    // BackgroundFill backgroundFill = new BackgroundFill(getTextFieldBackgroundColor(previousBackgrounds.get(CoordinateFactory.createCoordinate(i,j))), CornerRadii.EMPTY, null);
-                    //Background background = new Background(backgroundFill);
-                    //textField.setBackground(background);
+
                     textField.setBackground(previousBackgrounds.get(CoordinateFactory.createCoordinate(i,j)));
                 }
             }
@@ -344,7 +341,7 @@ public class SheetController {
         setRowsDesign(versionDesign.getRowsLayoutVersion());
     }
 
-    private void setRowsDesign(Map<Integer, Integer> rowsLayoutVersion) {
+    public void setRowsDesign(Map<Integer, Integer> rowsLayoutVersion) {
         rowsLayoutVersion.forEach((index,rowHeight)->{
             RowConstraints rowConstraints = gridPane.getRowConstraints().get(index);
             rowConstraints.setPrefHeight(rowHeight);
@@ -353,7 +350,7 @@ public class SheetController {
         });
     }
 
-    private void setColumnsDesign(Map<Integer, Integer> columnsLayoutVersion) {
+    public void setColumnsDesign(Map<Integer, Integer> columnsLayoutVersion) {
         columnsLayoutVersion.forEach((index,columnWidth)->{
             ColumnConstraints columnConstraints = gridPane.getColumnConstraints().get(index);
             columnConstraints.setPrefWidth(columnWidth);
@@ -362,36 +359,50 @@ public class SheetController {
         });
     }
 
-    private void setNodeDesign(Map<Integer, TextFieldDesign> cellDesignsVersion) {
+    public void setNodeDesign(Map<Integer, TextFieldDesign> cellDesignsVersion) {
         cellDesignsVersion.forEach((index, textFieldDesign) -> {
             if(gridPane.getChildren().get(index) instanceof TextField)
             {
                 TextField textField = (TextField) gridPane.getChildren().get(index);
                 textField.setStyle(textFieldDesign.getTextStyle());
                 textField.setBackground(new Background(new BackgroundFill(textFieldDesign.getBackgroundColor(),CornerRadii.EMPTY,null)));
-
+                textField.setAlignment(textFieldDesign.getTextAlignment());
             }
         });
     }
 
-    public void setBorderStyle(Coordinate coordinate, String s) {
-        cellsTextFieldMap.get(coordinate).setStyle(s);
-    }
-    public void clearBorderOfRange(RangeGetters range) {
-        int startRow = range.getBoundaries().getFrom().getRow();
-        int endRow = range.getBoundaries().getTo().getRow();
-        int startColumn = range.getBoundaries().getFrom().getCol();
-        int endColumn = range.getBoundaries().getTo().getCol();
+    public void setCoordinateDesign(Coordinate coordinateToDesign,TextFieldDesign design) {
+        int row = coordinateToDesign.getRow();
+        int col = coordinateToDesign.getCol();
 
-        for (int row = startRow; row <= endRow; row++) {
-            for (int col = startColumn; col <= endColumn; col++) {
-                TextField cell = cellsTextFieldMap.get(CoordinateFactory.createCoordinate(row, col));
-                if (cell != null) {
-                    cell.setStyle(cell.getStyle().replaceAll("-fx-border-color:.*?;", "")
-                            .replaceAll("-fx-border-width:.*?;", ""));
+        gridPane.getChildren().stream()
+                .filter(node -> node instanceof TextField)
+                .filter(tf-> GridPane.getColumnIndex(tf) != null && GridPane.getRowIndex(tf) != null
+                        && GridPane.getColumnIndex(tf) == col + 1  && GridPane.getRowIndex(tf) == row + 1 )
+                .findFirst()
+                .ifPresent(tf -> {
+                    TextField textField = (TextField) tf;
+                    textField.setStyle(design.getTextStyle());
+                    textField.setBackground(new Background(new BackgroundFill(design.getBackgroundColor(),CornerRadii.EMPTY,null)));
+                    textField.setAlignment(design.getTextAlignment());
+                });
+
+    }
+
+    public int getIndexDesign(Coordinate coordinate) {
+        int row = coordinate.getRow();
+        int col = coordinate.getCol();
+
+        for(int i = 1 ; i < gridPane.getChildren().size(); i++) {
+            if (gridPane.getChildren().get(i) instanceof TextField tf) {
+                if(GridPane.getColumnIndex(tf) != null && GridPane.getRowIndex(tf) != null
+                        && GridPane.getColumnIndex(tf) == col + 1 && GridPane.getRowIndex(tf) == row + 1){
+                    return i;
                 }
             }
         }
+        //should not get here.
+        return -1;
     }
 
 }

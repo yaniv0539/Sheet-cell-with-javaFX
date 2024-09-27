@@ -68,15 +68,16 @@ public class RangesController {
     @FXML
     void deleteRangeAction(ActionEvent event) {
         RangeGetters selectedRange = tableViewActiveRanges.getSelectionModel().getSelectedItem();
-        if (selectedRange != null) {
-            boolean isDeleted = this.mainController.deleteRange(selectedRange);
-            if (isDeleted) {
+        try{
+            if (selectedRange != null) {
+                this.mainController.deleteRange(selectedRange);
                 this.ranges.remove(selectedRange);
-            } else {
-                // TODO: Throw exception.
             }
-        } else {
-            // TODO: Maybe exception.itay: no need exeption
+
+        }
+        catch(Exception e){
+            //alert popup
+            System.out.println(e.getMessage());
         }
     }
 
@@ -117,7 +118,7 @@ public class RangesController {
 
             if (lastClickedItem != null && !newValue) {
                 this.mainController.resetRangeOnSheet(lastClickedItem);
-                selectionModel.clearSelection();
+                //selectionModel.clearSelection();
             }
         });
 

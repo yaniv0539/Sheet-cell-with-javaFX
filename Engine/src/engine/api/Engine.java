@@ -3,11 +3,13 @@ package engine.api;
 import engine.version.manager.api.VersionManagerGetters;
 import sheet.api.SheetGetters;
 import sheet.cell.api.CellGetters;
+import sheet.coordinate.api.Coordinate;
 import sheet.range.api.Range;
 import sheet.range.api.RangeGetters;
 import sheet.range.boundaries.api.Boundaries;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public interface Engine {
@@ -26,5 +28,10 @@ public interface Engine {
     void deleteRange(String name);
     javafx.concurrent.Task<Boolean> loadFileTask(String path);
     SheetGetters filter(Boundaries boundaries, String column, List<String> values,int version);
+    SheetGetters sortSheet(Boundaries boundaries, List<String> column, int version);
+    List<List<CellGetters>> sortCellsInRange(Boundaries boundaries, List<String> column, int version);
     void exit();
+
+    Map<Coordinate, Coordinate> filteredMap(Boundaries boundariesToFilter, String filteringByColumn, List<String> filteringByValues, int version);
+
 }

@@ -2,8 +2,10 @@ package commands;
 
 import app.AppController;
 import commands.operations.filter.FilterController;
+import commands.operations.sort.SortController;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -14,13 +16,11 @@ import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import modelUI.api.EffectiveValuesPoolProperty;
-import modelUI.impl.EffectiveValuesPoolPropertyImpl;
-import sheet.SheetController;
-import sheet.api.SheetGetters;
+import javafx.stage.WindowEvent;
 import sheet.range.boundaries.api.Boundaries;
 
 import java.io.IOException;
@@ -31,6 +31,7 @@ import java.util.List;
 public class CommandsController {
 
     private static final String FILTER_POPUP_FXML_INCLUDE_RESOURCE = "operations/filter/filter.fxml";
+    private static final String SORT_POPUP_FXML_INCLUDE_RESOURCE = "operations/sort/sort.fxml";
 
     private AppController mainController;
 
@@ -63,8 +64,12 @@ public class CommandsController {
     private IntegerProperty widthProperty;
 
     private Stage filterStage;
+    private Stage sortStage;
 
     private boolean startFilter = true;
+    private boolean startSort = true;
+    private BooleanProperty isSortPopupClosed = new SimpleBooleanProperty(false);
+    private BooleanProperty isFilterPopupClosed = new SimpleBooleanProperty(false);
 
     public AppController getMainController() {
         return mainController;
@@ -170,13 +175,49 @@ public class CommandsController {
     }
 
     @FXML
-    void resetToDefaultAction(ActionEvent event) {
-        mainController.resetCellsToDefault();
+    void sortAction(ActionEvent event) throws IOException{
+        if (startSort) {
+            activateSortPopup(SORT_POPUP_FXML_INCLUDE_RESOURCE, "Sort");
+            startSort = false;
+        } else {
+            mainController.resetSort();
+            resetButtonSort();
+        }
+    }
+
+    private void activateSortPopup(String resource, String title) throws IOException {
+
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        URL url = getClass().getResource(resource);
+        fxmlLoader.setLocation(url);
+        Parent popupRoot = fxmlLoader.load(url.openStream());
+
+        SortController sortController = fxmlLoader.getController();
+
+        sortController.setMainController(this);
+        sortController.init();
+
+        this.sortStage = new Stage();
+        sortStage.initModality(Modality.APPLICATION_MODAL);
+        sortStage.setTitle(title);
+        sortStage.setOnCloseRequest((WindowEvent event) -> startSort = true);
+
+        Scene popupScene = new Scene(popupRoot, 770, 140);
+        sortStage.setResizable(true);
+        sortStage.setScene(popupScene);
+
+        sortStage.show();
+
+    }
+
+    public void resetButtonSort() {
+        buttonSort.setText("Sort");
+        startSort = true;
     }
 
     @FXML
-    void sortAction(ActionEvent event) {
-
+    void resetToDefaultAction(ActionEvent event) {
+        mainController.resetCellsToDefault();
     }
 
     @FXML
@@ -187,9 +228,8 @@ public class CommandsController {
     public void init() {
         BooleanProperty showCommandsProperty = this.mainController.showCommandsProperty();
         buttonResetToDefault.disableProperty().bind(showCommandsProperty.not());
-        buttonSort.disableProperty().bind(mainController.showRangesProperty().not());
+        buttonSort.setDisable(true);
         buttonFilter.setDisable(true);
-//        buttonFilter.disableProperty().bind(mainController.showRangesProperty().not());
         spinnerWidth.disableProperty().bind(showCommandsProperty.not());
         spinnerHeight.disableProperty().bind(showCommandsProperty.not());
         comboBoxAlignment.disableProperty().bind(showCommandsProperty.not());
@@ -204,8 +244,8 @@ public class CommandsController {
         // column width picker
         SpinnerValueFactory<Integer> widthValueFactory =
                 new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 1000, 0, 1);
-        spinnerWidth.setValueFactory(widthValueFactory);
 
+        spinnerWidth.setValueFactory(widthValueFactory);
         spinnerWidth
                 .valueProperty()
                 .addListener((observable, oldValue, newValue) -> mainController.changeSheetColumnWidth(newValue));
@@ -227,15 +267,6 @@ public class CommandsController {
         colorPickerTextColor
                 .valueProperty()
                 .addListener((observableValue, oldValue, newValue) -> mainController.changeSheetTextColor(newValue));
-
-//        // set initial values
-//        Platform.runLater(() -> {
-//            comboBoxAlignment.getSelectionModel().selectFirst();
-//
-//            spinnerWidth.getValueFactory().setValue(100);
-//
-//            spinnerHeight.getValueFactory().setValue(40);
-//        });
     }
 
     public void changeColumnWidth(int prefWidth) {
@@ -272,11 +303,11 @@ public class CommandsController {
         this.filterStage = new Stage();
         filterStage.initModality(Modality.APPLICATION_MODAL);
         filterStage.setTitle(title);
+        filterStage.setOnCloseRequest((WindowEvent event) -> startFilter = true);
 
-        Scene popupScene = new Scene(popupRoot, 770, 140);
-        filterStage.setResizable(false);
+        Scene popupScene = new Scene(popupRoot, 770, 220);
+        filterStage.setResizable(true);
         filterStage.setScene(popupScene);
-
         filterStage.show();
     }
 
@@ -285,8 +316,22 @@ public class CommandsController {
         buttonFilter.setText("Reset Filter");
         filterStage.close();
     }
+    public void sortRange(Boundaries boundariesToFilter, List<String> sortingByColumns) {
+        this.mainController.getSortedSheet(boundariesToFilter, sortingByColumns);
+        buttonSort.setText("Reset Sort");
+        sortStage.close();
+    }
+
 
     public boolean isBoundariesValidForCurrentSheet(Boundaries boundaries) {
         return this.mainController.isBoundariesValidForCurrentSheet(boundaries);
+    }
+
+    public boolean isNumericColumn(int column, int startRow, int endRow) {
+        return mainController.isNumericColumn(column,startRow,endRow);
+    }
+
+    public List<String> getColumnUniqueValuesInRange(int column, int startRow, int endRow) {
+        return mainController.getColumnUniqueValuesInRange(column, startRow,endRow);
     }
 }

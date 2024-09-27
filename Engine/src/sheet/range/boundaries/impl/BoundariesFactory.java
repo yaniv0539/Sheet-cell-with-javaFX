@@ -37,4 +37,8 @@ public class BoundariesFactory {
 
         return BoundariesFactory.createBoundaries(from, to);
     }
+    public static boolean isValidBoundariesFormat(String boundariesName) {
+        return boundariesName.matches(CELL_RANGE_REGEX);
+    }
+
 }

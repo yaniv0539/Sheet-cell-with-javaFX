@@ -9,11 +9,11 @@ import javafx.collections.ListChangeListener;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -23,6 +23,7 @@ import modelUI.api.EffectiveValuesPoolPropertyReadOnly;
 import modelUI.api.FocusCellProperty;
 import modelUI.impl.EffectiveValuesPoolPropertyImpl;
 import modelUI.impl.FocusCellPropertyImpl;
+import modelUI.impl.TextFieldDesign;
 import modelUI.impl.VersionDesignManager;
 import progress.ProgressController;
 import ranges.RangesController;
@@ -35,9 +36,7 @@ import sheet.coordinate.impl.CoordinateFactory;
 import sheet.range.api.RangeGetters;
 import sheet.range.boundaries.api.Boundaries;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class AppController {
@@ -156,14 +155,18 @@ public class AppController {
         showRanges.set(true);
         headerComponentController.getSplitMenuButtonSelectVersion().setDisable(false);
         commandsComponentController.getButtonFilter().setDisable(false);
+        commandsComponentController.getButtonSort().setDisable(false);
         commandsComponentController.resetButtonFilter();
+        commandsComponentController.resetButtonSort();
         setEffectiveValuesPoolProperty(engine.getSheetStatus(), this.effectiveValuesPool);
         setSheet();
         this.currentSheet = engine.getSheetStatus();
         headerComponentController.clearVersionButton();
         headerComponentController.addMenuOptionToVersionSelection(String.valueOf(engine.getVersionsManagerStatus().getVersions().size()));
         rangesComponentController.uploadRanges(engine.getRanges());
+        versionDesignManager.clear();
         saveDesignVersion(sheetComponentController.getGridPane());
+        versionDesignManager.addVersion();
     }
 
     private void setSheet() {
@@ -230,14 +233,14 @@ public class AppController {
         engine.updateCellStatus(cellInFocus.getCoordinate().get(), cellInFocus.getOriginalValue().get());
         this.currentSheet = engine.getSheetStatus();
         setEffectiveValuesPoolProperty(engine.getSheetStatus(), this.effectiveValuesPool);
-        saveDesignVersion(sheetComponentController.getGridPane());
+        versionDesignManager.addVersion();
         //need to make in engine version manager, current version number.
         headerComponentController.addMenuOptionToVersionSelection(String.valueOf(engine.getVersionsManagerStatus().getVersions().size()));
 
     }
 
     private void saveDesignVersion(GridPane gridPane) {
-        versionDesignManager.addVersion(gridPane);
+        versionDesignManager.saveVersionDesign(gridPane);
     }
 
     public void viewSheetVersion(String numberOfVersion) {
@@ -253,7 +256,9 @@ public class AppController {
     }
 
     private void resetSheetToVersionDesign(int numberOfVersion) {
-
+        if(numberOfVersion == engine.getVersionsManagerStatus().getVersions().size()){
+            numberOfVersion++;
+        }
         sheetComponentController.setGridPaneDesign(versionDesignManager.getVersionDesign(numberOfVersion));
     }
 
@@ -285,6 +290,8 @@ public class AppController {
                                         .getCoordinate()
                                         .get()));
         sheetComponentController.changeColumnWidth(column, prefWidth);
+        //itay change for saving on edit version the design
+        versionDesignManager.getVersionDesign(currentSheet.getVersion()+1).getColumnsLayoutVersion().put(column,prefWidth);
     }
 
     public void changeSheetRowHeight(int prefHeight) {
@@ -294,6 +301,8 @@ public class AppController {
                                 .getCoordinate()
                                 .get());
         sheetComponentController.changeRowHeight(row, prefHeight);
+        //itay change for saving on edit version the design
+        versionDesignManager.getVersionDesign(currentSheet.getVersion()+1).getRowsLayoutVersion().put(row,prefHeight);
     }
 
     public void alignCells(Pos pos) {
@@ -304,44 +313,79 @@ public class AppController {
                                         .getCoordinate()
                                         .get()));
         sheetComponentController.changeColumnAlignment(column, pos);
+
+        //itay change for saving on edit version the design
+        for (int i = 0; i < sheetComponentController.getGridPane().getChildren().size(); i++) {
+            Node node = sheetComponentController.getGridPane().getChildren().get(i);
+            Integer colIndex = GridPane.getColumnIndex(node);
+            Integer rowIndex = GridPane.getRowIndex(node);
+            if (node instanceof TextField && colIndex == column && rowIndex != 0) {
+
+                versionDesignManager.getVersionDesign(currentSheet.getVersion() + 1).getCellDesignsVersion()
+                        .compute(i, (k, textFieldDesign) -> new TextFieldDesign(textFieldDesign.getBackgroundColor(), textFieldDesign.getTextStyle(), pos));
+            }
+        }
     }
 
     public void changeSheetCellBackgroundColor(Color color) {
         sheetComponentController.changeCellBackgroundColor(color);
+
+        //itay change for saving on edit version the design
+
+        versionDesignManager.getVersionDesign(currentSheet.getVersion() + 1).getCellDesignsVersion()
+                .compute(sheetComponentController.getIndexDesign(CoordinateFactory.toCoordinate(cellInFocus.getCoordinate().get()))
+                        , (k, textFieldDesign) -> new TextFieldDesign(color, textFieldDesign.getTextStyle(), textFieldDesign.getTextAlignment()));
+
+
+
     }
 
     public void changeSheetTextColor(Color color) {
         sheetComponentController.changeCellTextColor(color);
+        //itay change for saving on edit version the design
+
+        versionDesignManager.getVersionDesign(currentSheet.getVersion() + 1).getCellDesignsVersion()
+                .compute(sheetComponentController.getIndexDesign(CoordinateFactory.toCoordinate(cellInFocus.getCoordinate().get()))
+                        , (k, textFieldDesign) -> new TextFieldDesign(textFieldDesign.getBackgroundColor(), "-fx-text-fill: " + sheetComponentController.toHexString(color) + ";", textFieldDesign.getTextAlignment()));
     }
 
     public void resetCellsToDefault() {
-        sheetComponentController.resetCellsToDefault(CoordinateFactory.toCoordinate(cellInFocus.getCoordinate().get()));
+       // sheetComponentController.resetCellsToDefault(CoordinateFactory.toCoordinate(cellInFocus.getCoordinate().get()));
+        //Coordinate cellToDefault = CoordinateFactory.toCoordinate(cellInFocus.getCoordinate().get());
+        changeCommandsCellBackgroundColor(Color.WHITE);
+        changeCommandsCellTextColor(Color.BLACK);
     }
+
+
+
 
     public void addRange(String name, String boundaries) {
         engine.addRange(name, boundaries);
+
+        this.currentSheet = engine.getSheetStatus();
+        setEffectiveValuesPoolProperty(engine.getSheetStatus(), this.effectiveValuesPool);
+        versionDesignManager.addVersion();
+        //need to make in engine version manager, current version number.
+        headerComponentController.addMenuOptionToVersionSelection(String.valueOf(engine.getVersionsManagerStatus().getVersions().size()));
     }
 
     public RangeGetters getRange(String name) {
         return engine.getRange(name);
     }
 
-    public boolean deleteRange(RangeGetters range) {
-        if (!isRangeUsed(range)) {
+    public void deleteRange(RangeGetters range) throws Exception {
+
+        Collection<Coordinate> coordinates = rangeUses(range);
+        if (coordinates.isEmpty()) {
             engine.deleteRange(range.getName());
-            return true;
         } else {
-            return false;
+            throw new Exception("cells depend on range: " + coordinates.toString());
         }
     }
 
-    private boolean isRangeUsed(RangeGetters range) {
-        for (CellGetters cell : this.currentSheet.getActiveCells().values()) {
-            if (cell.getOriginalValue().toUpperCase().contains(range.getName())) {
-                return true;
-            }
-        }
-        return false;
+    private Collection<Coordinate> rangeUses(RangeGetters range) {
+
+        return this.currentSheet.rangeUses(range);
     }
 
     public void paintRangeOnSheet(RangeGetters range, Color color) {
@@ -356,9 +400,48 @@ public class AppController {
         EffectiveValuesPoolProperty effectiveValuesPoolProperty = new EffectiveValuesPoolPropertyImpl();
         setEffectiveValuesPoolProperty(filteredSheet, effectiveValuesPoolProperty);
 
-        SheetController sheetComponentController = new SheetController();
-        sheetComponentController.setMainController(this);
-        ScrollPane sheetComponent = sheetComponentController.getInitializedSheet(filteredSheet.getLayout(), effectiveValuesPoolProperty);
+        SheetController filteredSheetComponentController = new SheetController();
+        filteredSheetComponentController.setMainController(this);
+        ScrollPane sheetComponent = filteredSheetComponentController.getInitializedSheet(filteredSheet.getLayout(), effectiveValuesPoolProperty);
+
+        //design
+        VersionDesignManager.VersionDesign design;
+
+        if(currentSheet.getVersion() == engine.getVersionsManagerStatus().getVersions().size()){
+            design = versionDesignManager.getVersionDesign(currentSheet.getVersion() + 1 );
+        }else{
+            design = versionDesignManager.getVersionDesign(currentSheet.getVersion());
+        }
+
+        filteredSheetComponentController.setColumnsDesign(design.getColumnsLayoutVersion());
+        filteredSheetComponentController.setRowsDesign(design.getRowsLayoutVersion());
+
+        Map<Coordinate,Coordinate> oldToNew = engine.filteredMap(boundariesToFilter, filteringByColumn, filteringByValues, currentSheet.getVersion());
+        // design on range works
+        oldToNew.forEach((coordinateWithDesign,coordinateToDesign) -> {
+            int indexDesign = filteredSheetComponentController.getIndexDesign(coordinateWithDesign);
+
+            filteredSheetComponentController.setCoordinateDesign(coordinateToDesign,design.getCellDesignsVersion()
+                    .get(indexDesign));
+
+        });
+
+        //design the out of range cells
+        for (int row = 0; row <= filteredSheet.getLayout().getRows() ; row++) {
+            for (int col = 0;col <= filteredSheet.getLayout().getColumns() ; col++) {
+                int indexDesign;
+                if(row < boundariesToFilter.getFrom().getRow() || row > boundariesToFilter.getTo().getRow() ||
+                        col < boundariesToFilter.getFrom().getCol() || col > boundariesToFilter.getTo().getCol()){
+
+                    Coordinate coordinate = CoordinateFactory.createCoordinate(row,col);
+                    indexDesign = filteredSheetComponentController.getIndexDesign(coordinate);
+                    filteredSheetComponentController.setCoordinateDesign(coordinate,design.getCellDesignsVersion()
+                            .get(indexDesign));
+                }
+            }
+        }
+
+        //design
         appBorderPane.setCenter(sheetComponent);
 
         showHeaders.set(false);
@@ -381,6 +464,72 @@ public class AppController {
         appBorderPane.setCenter(sheetComponent);
     }
 
+    public void getSortedSheet(Boundaries boundariesToSort, List<String> sortingByColumns) {
+
+        OperationView = true;
+
+        SheetGetters sortedSheet = engine.sortSheet(boundariesToSort, sortingByColumns, currentSheet.getVersion());
+
+        EffectiveValuesPoolProperty effectiveValuesPoolProperty = new EffectiveValuesPoolPropertyImpl();
+        setEffectiveValuesPoolProperty(sortedSheet, effectiveValuesPoolProperty);
+
+        SheetController sortedSheetComponentController = new SheetController();
+        sortedSheetComponentController.setMainController(this);
+        ScrollPane sheetComponent = sortedSheetComponentController.getInitializedSheet(sortedSheet.getLayout(),effectiveValuesPoolProperty);
+
+        //design the cells
+        VersionDesignManager.VersionDesign design;
+
+
+        if(currentSheet.getVersion() == engine.getVersionsManagerStatus().getVersions().size()){
+            design = versionDesignManager.getVersionDesign(currentSheet.getVersion() + 1 );
+        }else{
+            design = versionDesignManager.getVersionDesign(currentSheet.getVersion());
+        }
+
+        sortedSheetComponentController.setColumnsDesign(design.getColumnsLayoutVersion());
+        sortedSheetComponentController.setRowsDesign(design.getRowsLayoutVersion());
+
+        List<List<CellGetters>> sortedCellsInRange = engine.sortCellsInRange(boundariesToSort, sortingByColumns, currentSheet.getVersion());
+
+        for(int row = 0; row <= sortedSheet.getLayout().getRows() ; row++){
+            List<CellGetters> sortedCells = new ArrayList<>();
+            if(row >= boundariesToSort.getFrom().getRow() && row <= boundariesToSort.getTo().getRow()){
+                 sortedCells = sortedCellsInRange.get(row - boundariesToSort.getFrom().getRow());
+            }
+
+            for(int col = 0; col <= sortedSheet.getLayout().getColumns() ; col++){
+                Coordinate dest = CoordinateFactory.createCoordinate(row, col);
+                int indexDesign;
+                if(row >= boundariesToSort.getFrom().getRow() && row <= boundariesToSort.getTo().getRow() &&
+                        col >= boundariesToSort.getFrom().getCol() && col <= boundariesToSort.getTo().getCol()){
+
+                    Coordinate source = sortedCells.get(col - boundariesToSort.getFrom().getCol()).getCoordinate();
+                    indexDesign = sortedSheetComponentController.getIndexDesign(source);
+
+                    sortedSheetComponentController.setCoordinateDesign(dest,design.getCellDesignsVersion()
+                            .get(indexDesign));
+
+                }
+                else{
+                    indexDesign = sortedSheetComponentController.getIndexDesign(dest);
+                    sortedSheetComponentController.setCoordinateDesign(dest,design.getCellDesignsVersion()
+                            .get(indexDesign));
+                }
+
+            }
+        }
+
+        //finish design
+        appBorderPane.setCenter(sheetComponent);
+
+        showHeaders.set(false);
+        showRanges.set(false);
+        showCommands.set(false);
+        headerComponentController.getSplitMenuButtonSelectVersion().setDisable(true);
+        commandsComponentController.getButtonSort().setDisable(false);
+    }
+
     public boolean isBoundariesValidForCurrentSheet(Boundaries boundaries) {
         return currentSheet.isRangeInBoundaries(boundaries);
     }
@@ -391,5 +540,21 @@ public class AppController {
 
     public void resetRangeOnSheet(RangeGetters selectedItem) {
         sheetComponentController.resetRangeOnSheet(selectedItem);
+    }
+
+    public void resetSort() {
+        OperationView = false;
+        viewSheetVersion(String.valueOf(currentSheet.getVersion()));
+
+        headerComponentController.getSplitMenuButtonSelectVersion().setDisable(false);
+        appBorderPane.setCenter(sheetComponent);
+    }
+
+    public boolean isNumericColumn(int column, int startRow, int endRow) {
+        return currentSheet.isColumnNumericInRange(column,startRow,endRow);
+    }
+
+    public List<String> getColumnUniqueValuesInRange(int column, int startRow, int endRow) {
+        return currentSheet.getColumnUniqueValuesInRange(column,startRow,endRow);
     }
 }

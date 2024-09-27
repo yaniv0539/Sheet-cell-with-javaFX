@@ -2,6 +2,7 @@ package sheet.impl;
 
 import expression.api.Data;
 import expression.api.DataType;
+import expression.api.Expression;
 import expression.impl.Average;
 import expression.impl.DataImpl;
 import expression.impl.Ref;
@@ -12,6 +13,7 @@ import sheet.cell.api.Cell;
 import sheet.cell.api.CellGetters;
 import sheet.cell.impl.CellImpl;
 import sheet.coordinate.api.Coordinate;
+import sheet.coordinate.impl.CoordinateFactory;
 import sheet.layout.api.Layout;
 import sheet.layout.api.LayoutGetters;
 import sheet.range.api.Range;
@@ -21,6 +23,8 @@ import sheet.range.impl.RangeImpl;
 
 import java.io.*;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class SheetImpl implements Sheet, Serializable {
@@ -111,16 +115,25 @@ public class SheetImpl implements Sheet, Serializable {
 
     @Override
     public void addRange(String name, Boundaries boundaries) {
-        isRangeInBoundaries(boundaries);
-
-        if (!ranges.add(RangeImpl.create(name, boundaries))) {
+        if(!isRangeInBoundaries(boundaries)){
+            throw new IndexOutOfBoundsException("first coordinate" + boundaries.getFrom() + " < " + boundaries.getTo());
+        }
+        ///itay change
+        RangeImpl range = RangeImpl.create(name, boundaries);
+        if (!ranges.add(range)) {
             throw new IllegalArgumentException("Range already exists in " + this.name);
         }
+        //itay change
+        this.rangeUses(range).forEach(coordinate -> {
+            this.setCell(coordinate, activeCells.get(coordinate).getOriginalValue());
+        });
     }
 
     @Override
     public boolean isRangeInBoundaries(Boundaries boundaries) {
-        return isCoordinateInBoundaries(boundaries.getFrom()) && isCoordinateInBoundaries(boundaries.getTo());
+
+        return (isCoordinateInBoundaries(boundaries.getFrom()) && isCoordinateInBoundaries(boundaries.getTo())
+                 && CoordinateFactory.isGreaterThen(boundaries.getTo(),boundaries.getFrom()));
 //        throw new IndexOutOfBoundsException("The range " + boundaries.getFrom() + ".." + boundaries.getTo() + " is not in sheet boundaries.");
     }
 
@@ -241,7 +254,7 @@ public class SheetImpl implements Sheet, Serializable {
     public boolean isCoordinateInBoundaries(Coordinate target) {
 
         if(!isRowInSheetBoundaries(target.getRow()) || !isColumnInSheetBoundaries(target.getCol())) {
-            throw new IllegalArgumentException("Row or column out of bounds !");
+            throw new IllegalArgumentException(target.toString() + "is out of bounds !");
         }
 
         return true;
@@ -397,4 +410,94 @@ public class SheetImpl implements Sheet, Serializable {
         return this.ranges;
     }
 
+    @Override
+    public List<List<CellGetters>> getCellInRange(int startRow, int endRow, int startCol, int endCol) {
+        List<List<CellGetters>> cellsInRange = new ArrayList<>();
+
+        for (int row = startRow; row <= endRow; row++) {
+            List<CellGetters> rowCellsInRange = new ArrayList<>();
+            for (int col = startCol; col <= endCol; col++) {
+                Cell cell = getCell(CoordinateFactory.createCoordinate(row, col));
+                if(cell != null){
+                    rowCellsInRange.add(cell);
+                }
+                else{
+                    Cell dummyCell = CellImpl.create(CoordinateFactory.createCoordinate(row, col), version, DataImpl.empty);
+                    dummyCell.computeEffectiveValue();
+                    rowCellsInRange.add(dummyCell);
+                }
+
+            }
+            cellsInRange.add(rowCellsInRange);
+        }
+
+        return cellsInRange;
+    }
+
+    @Override
+    public boolean isColumnNumericInRange(int column, int startRow, int endRow) {
+
+        for (int row = startRow; row <= endRow; row++) {
+            CellGetters cell = activeCells.get(CoordinateFactory.createCoordinate(row, column));
+            String value;
+            if(cell !=null){
+                value = cell.getEffectiveValue().toString();
+            }
+            else{
+                value = "";
+            }
+
+            try{
+                Double.parseDouble(value);
+            }catch (NumberFormatException exception) {
+                //maybe throw exception with that coordinate.
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    @Override
+    public List<String> getColumnUniqueValuesInRange(int column, int startRow, int endRow) {
+        List<String> uniqueValues = new ArrayList<>();
+        for (int row = startRow; row <= endRow; row++) {
+            CellGetters cell = activeCells.get(CoordinateFactory.createCoordinate(row, column));
+            if(cell != null && !uniqueValues.contains(cell.getEffectiveValue().toString())){
+                uniqueValues.add(cell.getEffectiveValue().toString());
+            }
+        }
+        return uniqueValues;
+    }
+
+
+    @Override
+    public Collection<Coordinate> rangeUses(RangeGetters range) {
+
+        Set<String> validFirstStrings = Set.of("sum", "average");
+        List<Coordinate> coordinatesThatUseRange = new ArrayList<>();
+        String regex = "\\{([a-zA-Z]+),(.+)\\}";// {sum,grades}
+
+        // Compile the regex and match against the input
+        Pattern pattern = Pattern.compile(regex);
+
+        this.activeCells.values().forEach(cell -> {
+            Matcher matcher = pattern.matcher(cell.getOriginalValue());
+
+            // If it matches the pattern
+            if (matcher.matches()) {
+                String firstString = matcher.group(1);
+                String secondString = matcher.group(2);
+
+                // Check if the first string is within the valid set
+                if (validFirstStrings.contains(firstString.toLowerCase())) {
+                    if (secondString.toUpperCase().equals(range.getName())) {
+                        coordinatesThatUseRange.add(cell.getCoordinate());
+                    }
+                }
+            }
+        });
+
+        return coordinatesThatUseRange;
+    }
 }
