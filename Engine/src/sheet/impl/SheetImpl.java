@@ -453,7 +453,7 @@ public class SheetImpl implements Sheet, Serializable {
         List<String> uniqueValues = new ArrayList<>();
         for (int row = startRow; row <= endRow; row++) {
             CellGetters cell = activeCells.get(CoordinateFactory.createCoordinate(row, column));
-            if(cell != null){
+            if(cell != null && !uniqueValues.contains(cell.getEffectiveValue().toString())){
                 uniqueValues.add(cell.getEffectiveValue().toString());
             }
         }
