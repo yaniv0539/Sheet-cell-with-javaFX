@@ -417,19 +417,29 @@ public class AppController {
         filteredSheetComponentController.setRowsDesign(design.getRowsLayoutVersion());
 
         Map<Coordinate,Coordinate> oldToNew = engine.filteredMap(boundariesToFilter, filteringByColumn, filteringByValues, currentSheet.getVersion());
-
+        // design on range works
         oldToNew.forEach((coordinateWithDesign,coordinateToDesign) -> {
             int indexDesign = filteredSheetComponentController.getIndexDesign(coordinateWithDesign);
+
             filteredSheetComponentController.setCoordinateDesign(coordinateToDesign,design.getCellDesignsVersion()
                     .get(indexDesign));
 
         });
 
+        //design the out of range cells
+        for (int row = 0; row <= filteredSheet.getLayout().getRows() ; row++) {
+            for (int col = 0;col <= filteredSheet.getLayout().getColumns() ; col++) {
+                int indexDesign;
+                if(row < boundariesToFilter.getFrom().getRow() || row > boundariesToFilter.getTo().getRow() ||
+                        col < boundariesToFilter.getFrom().getCol() || col > boundariesToFilter.getTo().getCol()){
 
-
-
-
-
+                    Coordinate coordinate = CoordinateFactory.createCoordinate(row,col);
+                    indexDesign = filteredSheetComponentController.getIndexDesign(coordinate);
+                    filteredSheetComponentController.setCoordinateDesign(coordinate,design.getCellDesignsVersion()
+                            .get(indexDesign));
+                }
+            }
+        }
 
         //design
         appBorderPane.setCenter(sheetComponent);

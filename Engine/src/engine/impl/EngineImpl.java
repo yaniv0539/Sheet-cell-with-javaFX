@@ -5,6 +5,8 @@ import engine.jaxb.parser.STLSheetToSheet;
 import engine.version.manager.api.VersionManager;
 import engine.version.manager.api.VersionManagerGetters;
 import engine.version.manager.impl.VersionManagerImpl;
+import expression.api.Data;
+import expression.impl.DataImpl;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
