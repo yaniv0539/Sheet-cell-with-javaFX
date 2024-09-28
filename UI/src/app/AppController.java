@@ -234,13 +234,16 @@ public class AppController {
     }
 
     public void updateCell() {
-        engine.updateCellStatus(cellInFocus.getCoordinate().get(), cellInFocus.getOriginalValue().get());
-        this.currentSheet = engine.getSheetStatus();
-        setEffectiveValuesPoolProperty(engine.getSheetStatus(), this.effectiveValuesPool);
-        versionDesignManager.addVersion();
-        //need to make in engine version manager, current version number.
-        headerComponentController.addMenuOptionToVersionSelection(String.valueOf(engine.getVersionsManagerStatus().getVersions().size()));
-
+        try{
+            engine.updateCellStatus(cellInFocus.getCoordinate().get(), cellInFocus.getOriginalValue().get());
+            this.currentSheet = engine.getSheetStatus();
+            setEffectiveValuesPoolProperty(engine.getSheetStatus(), this.effectiveValuesPool);
+            versionDesignManager.addVersion();
+            //need to make in engine version manager, current version number.
+            headerComponentController.addMenuOptionToVersionSelection(String.valueOf(engine.getVersionsManagerStatus().getVersions().size()));
+        }catch(Exception e){
+            showAlertPopup(e, "updating cell " + "\"" + cellInFocus.getCoordinate().get() + "\"");
+        }
     }
 
     private void saveDesignVersion(GridPane gridPane) {

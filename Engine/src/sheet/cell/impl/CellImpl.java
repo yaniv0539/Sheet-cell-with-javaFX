@@ -24,7 +24,7 @@ public class CellImpl implements Cell, Serializable {
     private CellImpl(Coordinate coordinate, int version, String originalValue) {
 
         if (coordinate == null) {
-            throw new IllegalArgumentException("Coordinate cannot be null");
+            throw new IllegalArgumentException("Coordinate cannot be null!");
         }
 
         this.coordinate = coordinate;

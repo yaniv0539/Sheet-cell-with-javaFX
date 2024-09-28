@@ -352,6 +352,7 @@ public class SheetImpl implements Sheet, Serializable {
         Cell toReplace = activeCells.put(toInsert.getCoordinate(),toInsert);
         OrignalValueUtilis.findInfluenceFrom(toInsert.getOriginalValue(),this).forEach(coord ->
         {
+            isCoordinateInBoundaries(coord);
             if(!activeCells.containsKey(coord)) {
                 Cell c = CellImpl.create(coord,version, DataImpl.empty);
                 c.computeEffectiveValue();
