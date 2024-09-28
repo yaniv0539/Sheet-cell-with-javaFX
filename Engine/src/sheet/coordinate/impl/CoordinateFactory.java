@@ -26,7 +26,8 @@ public class CoordinateFactory {
         coordinateName = coordinateName.toUpperCase();
 
         if (!isValidCoordinateFormat(coordinateName))
-            throw new IllegalArgumentException("Invalid cell-id");
+            throw new IllegalArgumentException("Invalid cell-id: " + "\"" + coordinateName + "\"\n"+
+                    "format example: \"A5\" (make sure you dont have spaces in input).");
 
         int row = extractRow(coordinateName) - 1;
         int column = parseColumnToInt(extractColumn(coordinateName)) - 1;

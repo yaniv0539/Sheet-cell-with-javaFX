@@ -155,7 +155,17 @@ public enum Operation {
                     } catch (InstantiationException | IllegalAccessException e) {
                         throw new RuntimeException(e.getMessage());
                     } catch (InvocationTargetException e) {
-                        throw new RuntimeException(e.getTargetException().getMessage());
+                        throw new RuntimeException("input function: " + clazz.getSimpleName().toUpperCase() +"\n" +
+                                "input argument: " + Arrays.toString(args) + "\n" + "" +
+                                "number of input arguments: " + args.length + "\n" +
+                                "expected argument for this function: " + numberOfArgs + "\n" +
+                                "Error:\n" + e.getTargetException().getMessage());
+                    }catch(Exception e){
+                        throw new RuntimeException("input function: " + clazz.getSimpleName().toUpperCase() +"\n" +
+                                "input argument: " + Arrays.toString(args) + "\n" + "" +
+                                "number of input arguments: " + args.length + "\n" +
+                                "expected argument for this function: " + numberOfArgs + "\n" +
+                                "Error:\n" + e.getMessage());
                     }
                 })
                 .get();

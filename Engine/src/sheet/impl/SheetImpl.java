@@ -150,9 +150,7 @@ public class SheetImpl implements Sheet, Serializable {
          Sum.sheetView = this;
          Average.sheetView = this;
 
-         if (!isCoordinateInBoundaries(target)) {
-             throw new IllegalArgumentException("Row or column out of bounds !");
-         }
+         isCoordinateInBoundaries(target);
 
          Cell updatedCell = CellImpl.create(target, version, originalValue);
          Cell previousCell =  insertCellToSheet(updatedCell);
@@ -234,7 +232,7 @@ public class SheetImpl implements Sheet, Serializable {
                 setCellsHelper(newOriginalValuesMap, flagMap, oldOriginalValueMap, updatedCellsCoordinates, refCoordinate);
             }
             else if (!this.activeCells.containsKey(refCoordinate)) {
-                throw new IndexOutOfBoundsException(refCoordinate + " is empty, cannot get data");
+                throw new IndexOutOfBoundsException(refCoordinate + " is not define in file, cannot get data !");
             }
         });
 
@@ -242,7 +240,6 @@ public class SheetImpl implements Sheet, Serializable {
             Cell cell = this.activeCells.get(coordinate);
             oldOriginalValueMap.put(coordinate, cell.getOriginalValue());
         }
-
         else {
             oldOriginalValueMap.put(coordinate, "");
         }
