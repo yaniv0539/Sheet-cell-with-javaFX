@@ -166,6 +166,7 @@ public class CommandsController {
             startFilter = false;
         } else {
             mainController.resetFilter();
+            buttonSort.setDisable(false);
             resetButtonFilter();
         }
     }
@@ -181,6 +182,7 @@ public class CommandsController {
             startSort = false;
         } else {
             mainController.resetSort();
+            buttonFilter.setDisable(false);
             resetButtonSort();
         }
     }
@@ -313,11 +315,13 @@ public class CommandsController {
 
     public void filterRange(Boundaries boundariesToFilter, String filteringByColumn, List<String> filteringByValues) {
         this.mainController.getFilteredSheet(boundariesToFilter, filteringByColumn, filteringByValues);
+        buttonSort.setDisable(true);
         buttonFilter.setText("Reset Filter");
         filterStage.close();
     }
     public void sortRange(Boundaries boundariesToFilter, List<String> sortingByColumns) {
         this.mainController.getSortedSheet(boundariesToFilter, sortingByColumns);
+        buttonFilter.setDisable(true);
         buttonSort.setText("Reset Sort");
         sortStage.close();
     }

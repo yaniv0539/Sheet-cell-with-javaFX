@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Main-Class: javaFXSheetCellApplication
+Class-Path: Engine.jar jaxb-xjc.jar jaxb-jxc.jar jaxb-impl.jar jaxb-core
+ .jar jakarta.xml.bind-api.jar jakarta.activation-api.jar angus-activati
+ on.jar
