@@ -55,8 +55,8 @@ public class FilterController {
     private void handleChangeTextRange(String newValue) {
         if (!isInputValid(newValue)) {
             // Show tooltip if the input is invalid
-            validationTooltip.show(textFieldRange, textFieldRange.getScene().getWindow().getX() + textFieldRange.getLayoutX() + 10,
-                    textFieldRange.getScene().getWindow().getY() + textFieldRange.getLayoutY() + textFieldRange.getHeight() + 30);
+            validationTooltip.show(textFieldRange, textFieldRange.getScene().getWindow().getX() + textFieldRange.getLayoutX() + 170,
+                    textFieldRange.getScene().getWindow().getY() + textFieldRange.getLayoutY() + textFieldRange.getHeight() + 45);
             textFieldRange.setStyle("-fx-border-color: red;");
             validRange.set(false);
             comboBoxColumn1.getItems().clear();

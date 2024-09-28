@@ -8,6 +8,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
+import javafx.stage.Window;
 import sheet.coordinate.api.Coordinate;
 import sheet.coordinate.impl.CoordinateFactory;
 import sheet.range.boundaries.api.Boundaries;
@@ -58,8 +59,8 @@ public class SortController {
     private void handleChangeTextRange(String newValue) {
         if (!isInputValid(newValue)) {
             // Show tooltip if the input is invalid
-            validationTooltip.show(textFieldRange, textFieldRange.getScene().getWindow().getX() + textFieldRange.getLayoutX() + 10,
-                    textFieldRange.getScene().getWindow().getY() + textFieldRange.getLayoutY() + textFieldRange.getHeight() + 30);
+            validationTooltip.show(textFieldRange, textFieldRange.getScene().getWindow().getX() + textFieldRange.getLayoutX() + 160,
+                    textFieldRange.getScene().getWindow().getY() + textFieldRange.getLayoutY() + textFieldRange.getHeight() + 55);
             textFieldRange.setStyle("-fx-border-color: red;");
             validRange.set(false);
         } else {
@@ -98,6 +99,10 @@ public class SortController {
                 flowPaneColumns.getChildren().add(checkBox);
             }
         }
+        if(flowPaneColumns.getChildren().isEmpty()){
+            Label label = new Label("No numeric columns in range !");
+            flowPaneColumns.getChildren().add(label);
+        }
     }
 
     @FXML
@@ -126,4 +131,6 @@ public class SortController {
     public void setMainController(CommandsController mainController){
         this.mainController = mainController;
     }
+
+
 }
