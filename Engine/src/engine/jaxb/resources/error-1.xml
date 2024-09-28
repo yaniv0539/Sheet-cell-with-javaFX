@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <STL-Sheet name="beginner" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="shtisel-v2.xsd">
 	<STL-Layout rows="20" columns="10">
-		<STL-Size column-width-units="100" rows-height-units="50"/>
+		<STL-Size column-width-units="150" rows-height-units="100"/>
 	</STL-Layout>
 	<STL-Ranges>
 <!--		<STL-Range name="grades">-->
@@ -11,7 +11,7 @@
 			<STL-Boundaries from="D3" to="D5"/>
 		</STL-Range>
 		<STL-Range name="grades">
-			<STL-Boundaries from="C3" to="C5"/>
+			<STL-Boundaries from="C3" to="g75"/>
 		</STL-Range>
 	</STL-Ranges>
 	<STL-Cells>
