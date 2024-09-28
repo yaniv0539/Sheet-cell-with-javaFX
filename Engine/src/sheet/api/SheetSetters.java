@@ -12,4 +12,6 @@ public interface SheetSetters {
     void setVersion(int version);
     void addRange(String name, Boundaries boundaries);
     void deleteRange(RangeGetters range);
+
+    void addRangeForXml(String rangeName, Boundaries boundaries);
 }

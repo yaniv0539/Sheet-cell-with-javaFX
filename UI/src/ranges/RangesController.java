@@ -76,8 +76,7 @@ public class RangesController {
 
         }
         catch(Exception e){
-            //alert popup
-            System.out.println(e.getMessage());
+            mainController.showAlertPopup(e,"Delete Range");
         }
     }
 
@@ -143,10 +142,15 @@ public class RangesController {
     }
 
     public void addRange(String name, String boundaries) {
-        this.mainController.addRange(name, boundaries);
-        ranges.add(this.mainController.getRange(name));
-        popupStage.close();
-        tableViewActiveRanges.refresh();
+        try{
+            this.mainController.addRange(name, boundaries);
+            ranges.add(this.mainController.getRange(name));
+            popupStage.close();
+            tableViewActiveRanges.refresh();
+        }catch(Exception e){
+            mainController.showAlertPopup(e,"add range");
+        }
+
     }
 
     public void uploadRanges(Set<RangeGetters> ranges) {

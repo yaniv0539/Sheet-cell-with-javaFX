@@ -202,7 +202,7 @@ public class CommandsController {
         sortStage.setTitle(title);
         sortStage.setOnCloseRequest((WindowEvent event) -> startSort = true);
 
-        Scene popupScene = new Scene(popupRoot, 770, 140);
+        Scene popupScene = new Scene(popupRoot, 770, 200);
         sortStage.setResizable(true);
         sortStage.setScene(popupScene);
 

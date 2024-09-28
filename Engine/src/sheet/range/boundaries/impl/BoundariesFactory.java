@@ -23,11 +23,12 @@ public class BoundariesFactory {
         boundariesName = boundariesName.toUpperCase();
 
         if (boundariesName.trim().isEmpty()) {
-            throw new IllegalArgumentException("Range name cannot be empty");
+            throw new IllegalArgumentException("Range name/boundaries cannot be empty !");
         }
 
         if (!boundariesName.matches(CELL_RANGE_REGEX)) {
-            throw new NumberFormatException("Invalid range boundaries");
+            throw new NumberFormatException("Invalid range boundaries format!\nFormat example: " +
+                    "b2..e6");
         }
 
         String[] cells = boundariesName.split("\\.\\.");

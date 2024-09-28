@@ -116,12 +116,13 @@ public class SheetImpl implements Sheet, Serializable {
     @Override
     public void addRange(String name, Boundaries boundaries) {
         if(!isRangeInBoundaries(boundaries)){
-            throw new IndexOutOfBoundsException("first coordinate" + boundaries.getFrom() + " < " + boundaries.getTo());
+            throw new IndexOutOfBoundsException("first coordinate " + boundaries.getFrom() + " < " + boundaries.getTo() + " last coordinate in " + name+ "\n" +
+                                                "Range format:<top-left-cell>..<bottom-right-cell>");
         }
         ///itay change
         RangeImpl range = RangeImpl.create(name, boundaries);
         if (!ranges.add(range)) {
-            throw new IllegalArgumentException("Range already exists in " + this.name);
+            throw new IllegalArgumentException("Range " +"\""+name+"\""+ " already exists in " + "\""+this.name+"\"");
         }
         //itay change
         this.rangeUses(range).forEach(coordinate -> {
@@ -134,7 +135,6 @@ public class SheetImpl implements Sheet, Serializable {
 
         return (isCoordinateInBoundaries(boundaries.getFrom()) && isCoordinateInBoundaries(boundaries.getTo())
                  && CoordinateFactory.isGreaterThen(boundaries.getTo(),boundaries.getFrom()));
-//        throw new IndexOutOfBoundsException("The range " + boundaries.getFrom() + ".." + boundaries.getTo() + " is not in sheet boundaries.");
     }
 
     @Override
@@ -149,9 +149,7 @@ public class SheetImpl implements Sheet, Serializable {
          Sum.sheetView = this;
          Average.sheetView = this;
 
-         if (!isCoordinateInBoundaries(target)) {
-             throw new IllegalArgumentException("Row or column out of bounds !");
-         }
+         isCoordinateInBoundaries(target);
 
          Cell updatedCell = CellImpl.create(target, version, originalValue);
          Cell previousCell =  insertCellToSheet(updatedCell);
@@ -233,7 +231,7 @@ public class SheetImpl implements Sheet, Serializable {
                 setCellsHelper(newOriginalValuesMap, flagMap, oldOriginalValueMap, updatedCellsCoordinates, refCoordinate);
             }
             else if (!this.activeCells.containsKey(refCoordinate)) {
-                throw new IndexOutOfBoundsException(refCoordinate + " is empty, cannot get data");
+                throw new IndexOutOfBoundsException(refCoordinate + " is not define in file, cannot get data !");
             }
         });
 
@@ -241,7 +239,6 @@ public class SheetImpl implements Sheet, Serializable {
             Cell cell = this.activeCells.get(coordinate);
             oldOriginalValueMap.put(coordinate, cell.getOriginalValue());
         }
-
         else {
             oldOriginalValueMap.put(coordinate, "");
         }
@@ -254,7 +251,7 @@ public class SheetImpl implements Sheet, Serializable {
     public boolean isCoordinateInBoundaries(Coordinate target) {
 
         if(!isRowInSheetBoundaries(target.getRow()) || !isColumnInSheetBoundaries(target.getCol())) {
-            throw new IllegalArgumentException(target.toString() + "is out of bounds !");
+            throw new IllegalArgumentException(target.toString() + " is out of bounds !");
         }
 
         return true;
@@ -355,6 +352,7 @@ public class SheetImpl implements Sheet, Serializable {
         Cell toReplace = activeCells.put(toInsert.getCoordinate(),toInsert);
         OrignalValueUtilis.findInfluenceFrom(toInsert.getOriginalValue(),this).forEach(coord ->
         {
+            isCoordinateInBoundaries(coord);
             if(!activeCells.containsKey(coord)) {
                 Cell c = CellImpl.create(coord,version, DataImpl.empty);
                 c.computeEffectiveValue();
@@ -499,5 +497,17 @@ public class SheetImpl implements Sheet, Serializable {
         });
 
         return coordinatesThatUseRange;
+    }
+
+    @Override
+    public void addRangeForXml(String rangeName, Boundaries boundaries) {
+        if(!isRangeInBoundaries(boundaries)){
+            throw new IndexOutOfBoundsException("first coordinate" + boundaries.getFrom() + " < " + boundaries.getTo());
+        }
+        ///itay change
+        RangeImpl range = RangeImpl.create(name, boundaries);
+        if (!ranges.add(range)) {
+            throw new IllegalArgumentException("Range already exists in " + this.name);
+        }
     }
 }
