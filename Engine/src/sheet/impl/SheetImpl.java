@@ -114,7 +114,7 @@ public class SheetImpl implements Sheet, Serializable {
     }
 
     @Override
-    public void addRange(String name, Boundaries boundaries) {
+    public boolean addRange(String name, Boundaries boundaries) {
         if(!isRangeInBoundaries(boundaries)){
             throw new IndexOutOfBoundsException("first coordinate " + boundaries.getFrom() + " < " + boundaries.getTo() + " last coordinate in " + name+ "\n" +
                                                 "Range format:<top-left-cell>..<bottom-right-cell>");
@@ -125,9 +125,13 @@ public class SheetImpl implements Sheet, Serializable {
             throw new IllegalArgumentException("Range " +"\""+name+"\""+ " already exists in " + "\""+this.name+"\"");
         }
         //itay change
-        this.rangeUses(range).forEach(coordinate -> {
-            this.setCell(coordinate, activeCells.get(coordinate).getOriginalValue());
-        });
+        Collection<Coordinate> coordinates = this.rangeUses(range);
+        if (!coordinates.isEmpty()) {
+            coordinates.forEach(coordinate -> {
+                this.setCell(coordinate, activeCells.get(coordinate).getOriginalValue());
+            });
+        }
+        return !coordinates.isEmpty();
     }
 
     @Override

@@ -393,11 +393,14 @@ public class EngineImpl implements Engine, Serializable {
     }
 
     @Override
-    public void addRange(String name, String boundariesString) {
-        sheet.addRange(name, BoundariesFactory.toBoundaries(boundariesString));
-        //itay change
-        versionManager.increaseVersion(sheet);
-        versionManager.addVersion(this.sheet);
+    public boolean addRange(String name, String boundariesString) {
+        if(sheet.addRange(name, BoundariesFactory.toBoundaries(boundariesString))){
+            //itay change
+            versionManager.increaseVersion(sheet);
+            versionManager.addVersion(this.sheet);
+            return true;
+        }
+        return false;
     }
 
     @Override

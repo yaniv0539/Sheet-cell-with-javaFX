@@ -367,12 +367,13 @@ public class AppController {
 
 
     public void addRange(String name, String boundaries) {
-            engine.addRange(name, boundaries);
-            this.currentSheet = engine.getSheetStatus();
-            setEffectiveValuesPoolProperty(engine.getSheetStatus(), this.effectiveValuesPool);
-            versionDesignManager.addVersion();
-            //need to make in engine version manager, current version number.
-            headerComponentController.addMenuOptionToVersionSelection(String.valueOf(engine.getVersionsManagerStatus().getVersions().size()));
+           if(engine.addRange(name, boundaries)){
+               this.currentSheet = engine.getSheetStatus();
+               setEffectiveValuesPoolProperty(engine.getSheetStatus(), this.effectiveValuesPool);
+               versionDesignManager.addVersion();
+               //need to make in engine version manager, current version number.
+               headerComponentController.addMenuOptionToVersionSelection(String.valueOf(engine.getVersionsManagerStatus().getVersions().size()));
+           }
     }
 
     public RangeGetters getRange(String name) {

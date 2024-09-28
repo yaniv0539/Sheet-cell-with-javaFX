@@ -22,7 +22,7 @@ public interface Engine {
     CellGetters getCellStatus(SheetGetters sheet, int row, int col);
     void updateCellStatus(String cellName, String value);
     VersionManagerGetters getVersionsManagerStatus();
-    void addRange(String from, String to);
+    boolean addRange(String from, String to);
     RangeGetters getRange(String name);
     Set<RangeGetters> getRanges();
     void deleteRange(String name);
