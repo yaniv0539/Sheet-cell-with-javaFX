@@ -162,8 +162,6 @@ public class HeaderController {
         public void init() {
                 SimpleBooleanProperty showHeadersProperty = this.mainController.showHeadersProperty();
 
-//                textFieldOrignalValue.setDisable(true);
-//                buttonUpdateCell.setDisable(true);
                 buttonUpdateCell.disableProperty().bind(showHeadersProperty.not());
                 splitMenuButtonSelectVersion.setDisable(true);
                 textFieldOrignalValue.disableProperty().bind(showHeadersProperty.not());

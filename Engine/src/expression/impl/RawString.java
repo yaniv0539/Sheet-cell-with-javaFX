@@ -21,6 +21,11 @@ public class RawString extends ExpressionImpl {
     }
 
     @Override
+    public String toString() {
+        return value;
+    }
+
+    @Override
     public boolean isValidArgs(Object... args) {
         try{
             Arrays
@@ -30,6 +35,7 @@ public class RawString extends ExpressionImpl {
         catch(ClassCastException e) {
             throw new IllegalArgumentException("arguments must be String in " + this.getClass().getSimpleName());
         }
+
 
         return true;
     }
