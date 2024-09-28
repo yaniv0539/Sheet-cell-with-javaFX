@@ -146,7 +146,7 @@ public class AppController {
         FileTask.setOnFailed(workerStateEvent -> {
             loadingStage.close();
             Throwable exception = FileTask.getException();
-            Platform.runLater(()->showAlertPopup(exception));
+            Platform.runLater(()->showAlertPopup(exception, "loading a file"));
         });
 
         loadingStage.show();
@@ -364,13 +364,12 @@ public class AppController {
 
 
     public void addRange(String name, String boundaries) {
-        engine.addRange(name, boundaries);
-
-        this.currentSheet = engine.getSheetStatus();
-        setEffectiveValuesPoolProperty(engine.getSheetStatus(), this.effectiveValuesPool);
-        versionDesignManager.addVersion();
-        //need to make in engine version manager, current version number.
-        headerComponentController.addMenuOptionToVersionSelection(String.valueOf(engine.getVersionsManagerStatus().getVersions().size()));
+            engine.addRange(name, boundaries);
+            this.currentSheet = engine.getSheetStatus();
+            setEffectiveValuesPoolProperty(engine.getSheetStatus(), this.effectiveValuesPool);
+            versionDesignManager.addVersion();
+            //need to make in engine version manager, current version number.
+            headerComponentController.addMenuOptionToVersionSelection(String.valueOf(engine.getVersionsManagerStatus().getVersions().size()));
     }
 
     public RangeGetters getRange(String name) {
@@ -383,7 +382,7 @@ public class AppController {
         if (coordinates.isEmpty()) {
             engine.deleteRange(range.getName());
         } else {
-            throw new Exception("cells depend on range: " + coordinates.toString());
+            throw new Exception("Can not delete range in use !\nCells that using range: " + coordinates.toString());
         }
     }
 
@@ -562,11 +561,11 @@ public class AppController {
         return currentSheet.getColumnUniqueValuesInRange(column,startRow,endRow);
     }
 
-    public void showAlertPopup(Throwable exception) {
+    public void showAlertPopup(Throwable exception,String error) {
         // Create a new alert dialog for the error
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error");
-        alert.setHeaderText("An Error Occurred While Loading the File");
+        alert.setHeaderText("An Error Occurred While " + error);
         TextArea textArea = new TextArea();
         if (exception != null) {
             textArea.setText(exception.getMessage());

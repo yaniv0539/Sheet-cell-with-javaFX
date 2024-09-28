@@ -135,7 +135,6 @@ public class SheetImpl implements Sheet, Serializable {
 
         return (isCoordinateInBoundaries(boundaries.getFrom()) && isCoordinateInBoundaries(boundaries.getTo())
                  && CoordinateFactory.isGreaterThen(boundaries.getTo(),boundaries.getFrom()));
-//        throw new IndexOutOfBoundsException("The range " + boundaries.getFrom() + ".." + boundaries.getTo() + " is not in sheet boundaries.");
     }
 
     @Override
